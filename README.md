@@ -1,79 +1,55 @@
-# 🧩 Autim | Tech for Inclusion
-> **Projeto Integrador | 2º ADS-AMS - FATEC TAUBATÉ**
-
-<div align="left">
-  <img src="https://shields.io" height="25" />
-  <img src="https://shields.io" height="25" />
-  <img src="https://shields.io" height="25" />
+# 🧩 Autim | Inclusão Inteligente
+<div style="border-left: 4px solid #8a2be2; padding-left: 15px;">
+  <strong><span style="color: #8a2be2;">Projeto Integrador</span> | 2º ADS-AMS - FATEC TAUBATÉ</strong>
 </div>
+
 
 <br>
 
-> [!IMPORTANT]
-> **Missão do Produto:** Promover a inclusão, autonomia e desenvolvimento de pessoas autistas não verbais por meio de uma solução tecnológica acessível, intuitiva e adaptativa.
+>**Missão do Produto**
+* Prover voz, autonomia e inclusão para pessoas autistas não verbais por meio de uma arquitetura tecnológica adaptativa. Nossa missão é romper barreiras comunicativas e pedagógicas, transformando a interação humana através de uma interface intuitiva que respeita a neurodiversidade e elimina a sobrecarga sensorial.
 
----
-
-### 💡 Visão do Projeto
-
-<table border="0">
-  <tr>
-    <td width="50%" valign="top">
-      > [!IMPORTANT]
-      > **O Objetivo**
-      > Facilitar a comunicação por símbolos e áudio, permitindo a expressão de necessidades. A plataforma usa **IA** para personalizar atividades, respeitando o ritmo individual e evitando sobrecarga sensorial.
-    </td>
-    <td width="50%" valign="top">
-      > **O Desafio**
-      > Superar a falta de ferramentas que integrem comunicação assistiva, ensino personalizado e monitoramento de progresso em um ecossistema único e eficiente.
-    </td>
-  </tr>
-</table>
+> **Descrição da Solução**
+* O Autim é um ecossistema multimodal que integra comunicação assistiva e aprendizado personalizado. Através de um motor de Inteligência Artificial, o sistema calibra automaticamente o nível das atividades conforme o progresso do usuário. A plataforma conecta o aluno à sua rede de apoio, entregando dashboards analíticos para responsáveis e profissionais, garantindo que cada etapa do desenvolvimento seja monitorada com precisão e empatia.
 
 ---
 
 ### 🛠️ Engenharia e Escopo
 
-**Requisitos Funcionais**
-> * **Comunicação por Símbolos e Áudio:** Permitir que o usuário se expresse através de imagens que reproduzem sons.
-> * **Atividades Adaptativas com IA:** O sistema ajusta o nível de dificuldade das tarefas automaticamente com base no desempenho.
-> * **Acompanhamento de Progresso:** Dashboards detalhados para responsáveis e profissionais visualizarem a evolução do aluno.
-> * **Gerenciamento de Perfis:** Cadastro e controle de acessos específicos para Administradores, Profissionais e Alunos.
-> * **Repositório de Mídia:** Armazenamento de imagens e sons personalizados para as atividades.
+>**Requisitos Funcionais**
+* **Comunicação por Símbolos e Áudio:** Permitir que o usuário se expresse através de imagens que reproduzem sons.
+* **Atividades Adaptativas com IA:** O sistema ajusta o nível de dificuldade das tarefas automaticamente com base no desempenho.
+* **Acompanhamento de Progresso:** Dashboards detalhados para responsáveis e profissionais visualizarem a evolução do aluno.
+* **Gerenciamento de Perfis:** Cadastro e controle de acessos específicos para Administradores, Profissionais e Alunos.
+* **Repositório de Mídia:** Armazenamento de imagens e sons personalizados para as atividades.
 
 <br>
 
-**Requisitos Não Funcionais**
-> * **Segurança de Dados:** Armazenamento criptografado e autenticação segura para proteger informações sensíveis (LGPD).
-> * **Design Inclusivo:** Interface intuitiva desenvolvida especificamente para crianças com TEA, evitando sobrecarga sensorial.
-> * **Performance:** Resposta às interações em até 2 segundos para garantir a fluidez do uso.
-> * **Compatibilidade:** Desenvolvido para dispositivos Android.
+>**Requisitos Não Funcionais**
+* **Segurança de Dados:** Armazenamento criptografado e autenticação segura para proteger informações sensíveis (LGPD).
+* **Design Inclusivo:** Interface intuitiva desenvolvida especificamente para crianças com TEA, evitando sobrecarga sensorial.
+* **Performance:** Resposta às interações em até 2 segundos para garantir a fluidez do uso.
+* **Compatibilidade:** Desenvolvido para dispositivos Android.
 
 ---
 
 ### 🚀 Tecnologias Utilizadas
 
-<br>
 <div align="center">
-  <img src="https://skillicons.dev" />
-  <p><i>Integrando Inteligência Artificial local com <b>Ollama</b></i></p>
-</div>
+      <img src="https://img.shields.io/badge/Java-green?style=for-the-badge&logo=openjdk&logoColor=white" height="22" />
+      <img src="https://img.shields.io/badge/React-blue?style=for-the-badge&logo=react&logoColor=white" height="22" />
+      <img src="https://img.shields.io/badge/MySQL-yellow?style=for-the-badge&logo=mysql&logoColor=white" height="22" />
+      <img src="https://img.shields.io/badge/GitHub-red?style=for-the-badge&logo=github&logoColor=white" height="22" />
+      <img src="https://img.shields.io/badge/VS_Code-blue?style=for-the-badge&logo=visual-studio-code&logoColor=white" height="22" />
 
-<br>
+## 📅 Planejamento de Entregas  
 
----
+- **SPRINT 1:** 02/06 a 03/07 ✅  
+- **SPRINT 2:** 04/07 a 28/08 ✅  
+- **SPRINT 3:** 29/08 a 25/09 ✅
+- **SPRINT 4:** 26/09 a 30/10 ✅
+- **SPRINT 5:** 31/10 a 04/12 ✅
 
-### 📅 Cronograma de Entregas (Sprints)
-
-
-| Fase | Status | Descrição |
-| :--- | :---: | :--- |
-| **SPRINT 1** | ✅ | Planejamento e Prototipagem |
-| **SPRINT 2** | 🔄 | Desenvolvimento do Banco de Dados e Login |
-| **SPRINT 3** | ⏳ | Implementação das Funcionalidades Principais |
-| **SPRINT 4** | ⏳ | Testes e Refinamento |
-
----
 
 <div align="center">
   <sub><i>"A tecnologia move o mundo, mas a empatia move a inclusão."</i></sub>
