@@ -1,9 +1,5 @@
 # 🧩 Autim | Inclusão Inteligente
-<div style="border-left: 4px solid #8a2be2; padding-left: 15px;">
-  <strong><span style="color: #8a2be2;">Projeto Integrador</span> | 2º ADS-AMS - FATEC TAUBATÉ</strong>
-</div>
-
-
+Projeto Integrador</span> | 2º ADS-AMS - FATEC TAUBATÉ</strong>
 <br>
 
 >**Missão do Produto**
@@ -44,8 +40,8 @@
 
 ## 📅 Planejamento de Entregas  
 
-- **SPRINT 1:** 02/06 a 03/07 ✅  
-- **SPRINT 2:** 04/07 a 28/08 ✅  
+- **SPRINT 1:** 24/03 a 24/04 ✅  
+- **SPRINT 2:** 25/04 a 28/05 ✅  
 - **SPRINT 3:** 29/08 a 25/09 ✅
 - **SPRINT 4:** 26/09 a 30/10 ✅
 - **SPRINT 5:** 31/10 a 04/12 ✅
