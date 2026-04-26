@@ -1,33 +1,75 @@
 # 🧩 Autim | Inclusão Inteligente
-Projeto Integrador</span> | 2º ADS-AMS - FATEC TAUBATÉ</strong>
+> Plataforma de comunicação assistiva para pessoas com TEA não verbais, utilizando IA para adaptação personalizada.
+
+🚀Projeto Integrador</span> | 2º ADS-AMS - FATEC TAUBATÉ</strong>
 <br>
+Foco: Inclusão, acessibilidade e tecnologia adptativa 
 
 >**Missão do Produto**
 * Prover voz, autonomia e inclusão para pessoas autistas não verbais por meio de uma arquitetura tecnológica adaptativa. Nossa missão é romper barreiras comunicativas e pedagógicas, transformando a interação humana através de uma interface intuitiva que respeita a neurodiversidade e elimina a sobrecarga sensorial.
 
-> **Descrição da Solução**
-* O Autim é um ecossistema multimodal que integra comunicação assistiva e aprendizado personalizado. Através de um motor de Inteligência Artificial, o sistema calibra automaticamente o nível das atividades conforme o progresso do usuário. A plataforma conecta o aluno à sua rede de apoio, entregando dashboards analíticos para responsáveis e profissionais, garantindo que cada etapa do desenvolvimento seja monitorada com precisão e empatia.
+## ❗ Problema
+Pessoas autistas não verbais enfrentam dificuldades na comunicação e no aprendizado, muitas vezes dependendo de ferramentas pouco adaptativas e interfaces sobrecarregadas.
 
+> **Descrição da Solução**
+* O Autim é um ecossistema multimodal que integra: 
+- comunicação assistiva e aprendizado personalizado.
+- Atividades adaptativas com base em IA
+- Monitoramento automatico ao nível das atividades conforme o progresso do usuário.
+- Conexão entre aluno, responsáveis e profissionais
 ---
 
 ### 🛠️ Engenharia e Escopo
 
->**Requisitos Funcionais**
-* **Comunicação por Símbolos e Áudio:** Permitir que o usuário se expresse através de imagens que reproduzem sons.
-* **Atividades Adaptativas com IA:** O sistema ajusta o nível de dificuldade das tarefas automaticamente com base no desempenho.
-* **Acompanhamento de Progresso:** Dashboards detalhados para responsáveis e profissionais visualizarem a evolução do aluno.
-* **Gerenciamento de Perfis:** Cadastro e controle de acessos específicos para Administradores, Profissionais e Alunos.
-* **Repositório de Mídia:** Armazenamento de imagens e sons personalizados para as atividades.
+>**Funcionalidades **
+- 🗣️ Comunicação por símbolos com reprodução de áudio
+- 🤖 Adaptação automática de atividades com IA
+- 📊 Dashboard de acompanhamento de progresso
+- 👤 Sistema de perfis (Admin, Profissional, Aluno)
+- 🖼️ Biblioteca de mídias personalizadas
 
-<br>
+> ## 🏗️ Arquitetura
 
->**Requisitos Não Funcionais**
-* **Segurança de Dados:** Armazenamento criptografado e autenticação segura para proteger informações sensíveis (LGPD).
-* **Design Inclusivo:** Interface intuitiva desenvolvida especificamente para crianças com TEA, evitando sobrecarga sensorial.
-* **Performance:** Resposta às interações em até 2 segundos para garantir a fluidez do uso.
-* **Compatibilidade:** Desenvolvido para dispositivos Android.
-
+- Frontend: React
+- Backend: Java
+- Banco de Dados: MySQL
+- Comunicação: API REST
 ---
+*Diagramas Autim*
+[DiagramasAUTIMM.pdf](https://github.com/user-attachments/files/27103746/DiagramasAUTIMM.pdf)
+
+## ▶️ Como executar
+
+bash
+# Clone o repositório
+git clone https://github.com/seu-repo
+
+# Entre na pasta
+cd autim
+
+# Instale dependências (frontend)
+npm install
+
+# Rode o projeto
+npm start
+
+
+Para Backend e Frontend
+
+## 📸 6. Adicione imagens do sistema
+
+md
+## 📷 Demonstração
+
+![Tela 1](link)
+![Tela 2](link)
+
+## 🔒 Segurança
+
+O sistema segue princípios da LGPD, garantindo:
+- Criptografia de dados sensíveis
+- Controle de acesso por perfil
+- Proteção de informações dos usuários
 
 ### 🚀 Tecnologias Utilizadas
 
@@ -40,13 +82,20 @@ Projeto Integrador</span> | 2º ADS-AMS - FATEC TAUBATÉ</strong>
 
 ## 📅 Planejamento de Entregas  
 
-  - **SPRINT 1:** 24/03 a 24/04 ✅
-  - **SPRINT 2:** 25/04 a 28/05 
-  - **SPRINT 3:** 29/08 a 25/09 
-  - **SPRINT 4:** 26/09 a 30/10 
-  - **SPRINT 5:** 31/10 a 04/12 
+- ✅ Sprint 1 – Base do sistema
+- 🔄 Sprint 2 – IA adaptativa
+- ⏳ Sprint 3 – Dashboards
+- ⏳ Sprint 4 – Integrações
+- ⏳ Sprint 5 – Finalização
 
+  
+## 🌟 Diferenciais
 
+- Interface pensada para evitar sobrecarga sensorial
+- Uso de IA para personalização real do aprendizado
+- Foco em inclusão e neurodiversidade
+
+  
 <div align="center">
   <sub><i>"A tecnologia move o mundo, mas a empatia move a inclusão."</i></sub>
   <br>
