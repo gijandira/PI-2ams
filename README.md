@@ -40,11 +40,11 @@ Projeto Integrador</span> | 2º ADS-AMS - FATEC TAUBATÉ</strong>
 
 ## 📅 Planejamento de Entregas  
 
- **SPRINT 1:** 24/03 a 24/04 ✅  
- **SPRINT 2:** 25/04 a 28/05 
- **SPRINT 3:** 29/08 a 25/09 
- **SPRINT 4:** 26/09 a 30/10 
- **SPRINT 5:** 31/10 a 04/12 
+  - **SPRINT 1:** 24/03 a 24/04 ✅
+  - **SPRINT 2:** 25/04 a 28/05 
+  - **SPRINT 3:** 29/08 a 25/09 
+  - **SPRINT 4:** 26/09 a 30/10 
+  - **SPRINT 5:** 31/10 a 04/12 
 
 
 <div align="center">
