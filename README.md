@@ -38,33 +38,33 @@ Pessoas autistas não verbais enfrentam dificuldades na comunicação e no apren
 *Diagramas Autim*
 [DiagramasAUTIMM.pdf](https://github.com/user-attachments/files/27103746/DiagramasAUTIMM.pdf)
 
-## ▶️ Como executar
+>**▶️ Como executar**
 
 bash
-# Clone o repositório
+**Clone o repositório**
 git clone https://github.com/seu-repo
 
-# Entre na pasta
+**Entre na pasta**
 cd autim
 
-# Instale dependências (frontend)
+**Instale dependências (frontend)**
 npm install
 
-# Rode o projeto
+**Rode o projeto**
 npm start
 
 
 Para Backend e Frontend
 
-## 📸 6. Adicione imagens do sistema
+>**📸 6. Adicione imagens do sistema**
 
 md
-## 📷 Demonstração
+📷 Demonstração
 
 ![Tela 1](link)
 ![Tela 2](link)
 
-## 🔒 Segurança
+>**🔒 Segurança**
 
 O sistema segue princípios da LGPD, garantindo:
 - Criptografia de dados sensíveis
