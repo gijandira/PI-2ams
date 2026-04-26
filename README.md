@@ -5,13 +5,13 @@
 <br>
 Foco: Inclusão, acessibilidade e tecnologia adptativa 
 
->**Missão do Produto**
+## 🤩 Missão do Produto
 * Prover voz, autonomia e inclusão para pessoas autistas não verbais por meio de uma arquitetura tecnológica adaptativa. Nossa missão é romper barreiras comunicativas e pedagógicas, transformando a interação humana através de uma interface intuitiva que respeita a neurodiversidade e elimina a sobrecarga sensorial.
 
 ## ❗ Problema
 Pessoas autistas não verbais enfrentam dificuldades na comunicação e no aprendizado, muitas vezes dependendo de ferramentas pouco adaptativas e interfaces sobrecarregadas.
 
-*Descrição da Solução*
+## Descrição da Solução
 * O Autim é um ecossistema multimodal que integra: 
 - comunicação assistiva e aprendizado personalizado.
 - Atividades adaptativas com base em IA
@@ -21,7 +21,7 @@ Pessoas autistas não verbais enfrentam dificuldades na comunicação e no apren
 
 ### 🛠️ Engenharia e Escopo
 
->**Funcionalidades **
+>**Funcionalidades**
 - 🗣️ Comunicação por símbolos com reprodução de áudio
 - 🤖 Adaptação automática de atividades com IA
 - 📊 Dashboard de acompanhamento de progresso
