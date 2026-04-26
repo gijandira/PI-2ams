@@ -11,7 +11,7 @@ Foco: Inclusão, acessibilidade e tecnologia adptativa
 ## ❗ Problema
 Pessoas autistas não verbais enfrentam dificuldades na comunicação e no aprendizado, muitas vezes dependendo de ferramentas pouco adaptativas e interfaces sobrecarregadas.
 
-> **Descrição da Solução**
+*Descrição da Solução*
 * O Autim é um ecossistema multimodal que integra: 
 - comunicação assistiva e aprendizado personalizado.
 - Atividades adaptativas com base em IA
