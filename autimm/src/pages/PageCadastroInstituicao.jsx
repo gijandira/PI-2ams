@@ -1,4 +1,36 @@
+import { useState } from 'react';
+
+
 export default function PageCadastroInstituicao({ navigate }) {
+
+  const [form, setForm] = useState({
+  nome: '',
+  telefone: '',
+  email: '',
+  senha: '',
+  confirmarsenha: '',
+  codigo: ''
+});
+
+const handleCadastroInstituicao = async () => {
+  const response = await fetch('http://localhost:3001/auth/cadastro-instituicao', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(form)
+  });
+
+  const data = await response.json();
+
+  if (response.ok) {
+    alert('Instituição cadastrada com sucesso');
+    navigate('login');
+  } else {
+    alert(data.erro);
+  }
+};
+
   return (
     <>
       <style>{`
@@ -25,16 +57,16 @@ export default function PageCadastroInstituicao({ navigate }) {
             <div className="avatar-circle" style={{ borderRadius:16, borderColor:'var(--green)' }}>🏫</div>
             <div className="avatar-label" style={{ color:'var(--green)' }}>Logo da instituição</div>
           </div>
-          <div className="field"><label>Nome da instituição:</label><input type="text" placeholder="Nome da instituição..." /></div>
-          <div className="field"><label>Telefone:</label><input type="tel" placeholder="(00) 00000-0000" /></div>
-          <div className="field"><label>E-mail institucional:</label><input type="email" placeholder="email@instituicao.com" /></div>
-          <div className="field"><label>Crie uma senha:</label><input type="password" placeholder="Crie uma senha..." /></div>
-          <div className="field"><label>Confirme a senha:</label><input type="password" placeholder="Confirme a senha..." /></div>
-          <div className="field code-input"><label>Código de acesso:</label><input type="text" placeholder="Ex: Autim-2024" maxLength={12} /></div>
+          <div className="field"><label>Nome da instituição:</label><input type="text" placeholder="Nome da instituição..." value={form.nome}onChange={(e) =>setForm({...form,nome: e.target.value})}/></div>
+          <div className="field"><label>Telefone:</label><input type="tel" placeholder="(00) 00000-0000" value={form.telefone}onChange={(e) =>setForm({...form,telefone: e.target.value})}/></div>
+          <div className="field"><label>E-mail institucional:</label><input type="email" placeholder="email@instituicao.com" value={form.email}onChange={(e) =>setForm({...form,email: e.target.value})}/></div>
+          <div className="field"><label>Crie uma senha:</label><input type="password" placeholder="Crie uma senha..." value={form.senha}onChange={(e) =>setForm({...form,senha: e.target.value})}/></div>
+          <div className="field"><label>Confirme a senha:</label><input type="password" placeholder="Confirme a senha..." value={form.confirmarsenha}onChange={(e) =>setForm({...form,confirmarsenha: e.target.value})}/></div>
+          <div className="field code-input"><label>Código de acesso:</label><input type="text" placeholder="Ex: Autim-2024" maxLength={12} value={form.codigo}onChange={(e) =>setForm({...form,codigo: e.target.value})}/></div>
           <div style={{ fontSize:11, color:'var(--green)', fontWeight:700, textAlign:'center', marginTop:-4 }}>🔑 Este código será usado pelos responsáveis para se afiliar à sua instituição</div>
         </div>
         <div style={{ padding:'10px 24px 28px' }}>
-          <button className="btn btn-green" onClick={() => navigate('home-instituicao')}>Cadastrar Instituição</button>
+          <button onClick={handleCadastroInstituicao}>Cadastrar Instituição</button>
           <div className="footer-link mt-12">Já tem conta? <span className="link" style={{ color:'var(--green)' }} onClick={() => navigate('login')}>Fazer login</span></div>
         </div>
       </div>
@@ -96,12 +128,12 @@ export default function PageCadastroInstituicao({ navigate }) {
               </div>
 
               <div className="grid-2">
-                <div className="field col-span-2"><label>Nome da instituição:</label><input type="text" placeholder="Nome da instituição..." /></div>
-                <div className="field"><label>Telefone:</label><input type="tel" placeholder="(00) 00000-0000" /></div>
-                <div className="field"><label>E-mail institucional:</label><input type="email" placeholder="email@instituicao.com" /></div>
-                <div className="field"><label>Crie uma senha:</label><input type="password" placeholder="••••••••" /></div>
-                <div className="field"><label>Confirme a senha:</label><input type="password" placeholder="••••••••" /></div>
-                <div className="field col-span-2 code-input"><label>Código de acesso:</label><input type="text" placeholder="Ex: Autim-2024" maxLength={12} /></div>
+                <div className="field col-span-2"><label>Nome da instituição:</label><input type="text" placeholder="Nome da instituição..." value={form.nome}onChange={(e) =>setForm({...form,nome: e.target.value})} /></div>
+                <div className="field"><label>Telefone:</label><input type="tel" placeholder="(00) 00000-0000" value={form.telefone}onChange={(e) =>setForm({...form,telefone: e.target.value})}/></div>
+                <div className="field"><label>E-mail institucional:</label><input type="email" placeholder="email@instituicao.com"value={form.email}onChange={(e) =>setForm({...form,email: e.target.value})} /></div>
+                <div className="field"><label>Crie uma senha:</label><input type="password" placeholder="••••••••" value={form.senha}onChange={(e) =>setForm({...form,senha: e.target.value})} /></div>
+                <div className="field"><label>Confirme a senha:</label><input type="password" placeholder="••••••••"value={form.senha}onChange={(e) =>setForm({...form,senha: e.target.value})} /></div>
+                <div className="field col-span-2 code-input"><label>Código de acesso:</label><input type="text" placeholder="Ex: Autim-2024" maxLength={12} value={form.codigo}onChange={(e) =>setForm({...form,codigo: e.target.value})}/></div>
                 <div className="col-span-2">
                   <div style={{ background:'#edfaf3', border:'1.5px solid var(--green)', borderRadius:16, padding:'14px 18px', display:'flex', alignItems:'center', gap:12, marginBottom:20 }}>
                     <span style={{ fontSize:24, flexShrink:0 }}>🔑</span>
@@ -112,7 +144,7 @@ export default function PageCadastroInstituicao({ navigate }) {
                   </div>
                 </div>
                 <div className="col-span-2">
-                  <button className="btn btn-green" style={{ fontSize:15, padding:16 }} onClick={() => navigate('home-instituicao')}>Cadastrar Instituição</button>
+                  <button className="btn btn-green" style={{ fontSize:15, padding:16 }} onClick={handleCadastroInstituicao}>Cadastrar Instituição</button>
                 </div>
                 <div className="col-span-2">
                   <div className="footer-link">Já tem conta? <span className="link" style={{ color:'var(--green)' }} onClick={() => navigate('login')}>Fazer login</span></div>

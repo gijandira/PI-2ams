@@ -1,8 +1,75 @@
 import logoIconeBranco from '../assets/logo-icone-branco.png';
+import { useState } from 'react';
 
 export default function PageCadastroResponsavel({ navigate }) {
+
+  const [tipoCadastro, setTipoCadastro] =
+    useState('responsavel');
+
+  const [form, setForm] = useState({
+    nomeAluno: '',
+    nomeResponsavel: '',
+    telefone: '',
+    email: '',
+    senha: '',
+    confirmarSenha: ''
+  });
+
+const handleCadastro = async () => {
+
+  try {
+
+    if (form.senha !== form.confirmarSenha) {
+
+      alert('As senhas não coincidem');
+      return;
+
+    }
+
+    console.log('Enviando cadastro...', form);
+
+    const response = await fetch(
+      'http://localhost:3001/auth/cadastro-usuario',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+  ...form,
+  tipo: tipoCadastro
+})
+      }
+    );
+
+    const data = await response.json();
+
+    console.log(data);
+
+    if (response.ok) {
+
+      alert('Cadastro realizado com sucesso');
+
+      navigate('login');
+
+    } else {
+
+      alert(data.erro || 'Erro ao cadastrar');
+
+    }
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert('Erro ao conectar com servidor');
+
+  }
+
+};
+
   return (
-    <>
+    <>  
       <style>{`
         @media (min-width: 768px) { .cadr-mobile { display: none !important; } }
         .cadr-desktop { display: none; }
@@ -28,15 +95,16 @@ export default function PageCadastroResponsavel({ navigate }) {
             <div className="avatar-circle">📷</div>
             <div className="avatar-label">Foto de perfil do aluno</div>
           </div>
-          <div className="field"><label>Nome do aluno:</label><input type="text" placeholder="Digite o nome do aluno..." /></div>
-          <div className="field"><label>Nome do responsável:</label><input type="text" placeholder="Digite o nome do responsável..." /></div>
-          <div className="field"><label>Telefone:</label><input type="tel" placeholder="(00) 00000-0000" /></div>
-          <div className="field"><label>E-mail:</label><input type="email" placeholder="Digite o e-mail..." /></div>
-          <div className="field"><label>Crie uma senha:</label><input type="password" placeholder="Crie uma senha..." /></div>
-          <div className="field"><label>Confirme a senha:</label><input type="password" placeholder="Confirme a senha..." /></div>
+
+          <div className="field"><label>Nome do aluno:</label><input type="text" placeholder="Digite o nome do aluno..."value={form.nomeAluno} onChange={(e) =>setForm({...form,nomeAluno: e.target.value})}/></div>
+          <div className="field"><label>Nome do responsável:</label><input type="text" placeholder="Digite o nome do responsável..." value={form.nomeResponsavel} onChange={(e) =>setForm({...form,nomeResponsavel: e.target.value})}/></div>
+          <div className="field"><label>Telefone:</label><input type="tel" placeholder="(00) 00000-0000" value={form.telefone} onChange={(e) =>setForm({...form,telefone: e.target.value})}/></div>
+          <div className="field"><label>E-mail:</label><input type="email" placeholder="Digite o e-mail..." value={form.email} onChange={(e) =>setForm({...form,email: e.target.value})}/></div>
+          <div className="field"><label>Crie uma senha:</label><input type="password" placeholder="Crie uma senha..." value={form.senha} onChange={(e) =>setForm({...form,senha: e.target.value})}/> </div>
+          <div className="field"><label>Confirme a senha:</label><input type="password" placeholder="Confirme a senha..." value={form.confirmarSenha} onChange={(e) =>setForm({...form,confirmarSenha: e.target.value})}/></div>
         </div>
         <div style={{ padding:'10px 24px 28px' }}>
-          <button className="btn btn-blue" onClick={() => navigate('home-aluno')}>Criar Conta</button>
+          <button onClick={handleCadastro}>Criar Conta</button>
           <div className="footer-link mt-12">Já tem conta? <span className="link" onClick={() => navigate('login')}>Fazer login</span></div>
         </div>
       </div>
@@ -98,16 +166,185 @@ export default function PageCadastroResponsavel({ navigate }) {
                   <div style={{ fontSize:12, color:'#aaa', fontWeight:600, marginTop:3 }}>Clique para enviar uma foto (opcional)</div>
                 </div>
               </div>
+<div
+  style={{
+    display:'flex',
+    background:'#edf2f7',
+    borderRadius:16,
+    padding:4,
+    marginBottom:24
+  }}
+>
+  <button
+    onClick={() => setTipoCadastro('responsavel')}
+    style={{
+      flex:1,
+      padding:'14px',
+      border:'none',
+      borderRadius:12,
+      fontWeight:800,
+      cursor:'pointer',
+      background:
+        tipoCadastro === 'responsavel'
+          ? 'white'
+          : 'transparent'
+    }}
+  >
+    👤 Responsável
+  </button>
 
+  <button
+    onClick={() => setTipoCadastro('instituicao')}
+    style={{
+      flex:1,
+      padding:'14px',
+      border:'none',
+      borderRadius:12,
+      fontWeight:800,
+      cursor:'pointer',
+      background:
+        tipoCadastro === 'instituicao'
+          ? 'white'
+          : 'transparent'
+    }}
+  >
+    🏫 Instituição
+  </button>
+</div>
               <div className="grid-2">
-                <div className="field"><label>Nome do aluno:</label><input type="text" placeholder="Nome do aluno..." /></div>
-                <div className="field"><label>Nome do responsável:</label><input type="text" placeholder="Nome do responsável..." /></div>
-                <div className="field"><label>Telefone:</label><input type="tel" placeholder="(00) 00000-0000" /></div>
-                <div className="field"><label>E-mail:</label><input type="email" placeholder="seu@email.com" /></div>
-                <div className="field"><label>Crie uma senha:</label><input type="password" placeholder="••••••••" /></div>
-                <div className="field"><label>Confirme a senha:</label><input type="password" placeholder="••••••••" /></div>
-                <div className="col-span-2">
-                  <button className="btn btn-blue" style={{ fontSize:15, padding:16 }} onClick={() => navigate('home-aluno')}>Criar Conta</button>
+
+  {
+    tipoCadastro === 'responsavel'
+    ? (
+      <>
+        <div className="field">
+          <label>Nome do aluno:</label>
+          <input
+            type="text"
+            placeholder="Digite o nome do aluno..."
+            value={form.nomeAluno}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                nomeAluno: e.target.value
+              })
+            }
+          />
+        </div>
+
+        <div className="field">
+          <label>Nome do responsável:</label>
+          <input
+            type="text"
+            placeholder="Digite o nome do responsável..."
+            value={form.nomeResponsavel}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                nomeResponsavel: e.target.value
+              })
+            }
+          />
+        </div>
+      </>
+    )
+    : (
+      <>
+        <div className="field">
+          <label>Nome da instituição:</label>
+          <input
+            type="text"
+            placeholder="Digite o nome da instituição..."
+            value={form.nomeInstituicao || ''}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                nomeInstituicao: e.target.value
+              })
+            }
+          />
+        </div>
+
+        <div className="field">
+          <label>Código da instituição:</label>
+          <input
+            type="text"
+            placeholder="Ex: AUTIM2025"
+            value={form.codigo || ''}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                codigo: e.target.value
+              })
+            }
+          />
+        </div>
+      </>
+    )
+  }
+
+  <div className="field">
+    <label>Telefone:</label>
+    <input
+      type="tel"
+      placeholder="(00) 00000-0000"
+      value={form.telefone}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          telefone: e.target.value
+        })
+      }
+    />
+  </div>
+
+  <div className="field">
+    <label>E-mail:</label>
+    <input
+      type="email"
+      placeholder="Digite o e-mail..."
+      value={form.email}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          email: e.target.value
+        })
+      }
+    />
+  </div>
+
+  <div className="field">
+    <label>Crie uma senha:</label>
+    <input
+      type="password"
+      placeholder="Crie uma senha..."
+      value={form.senha}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          senha: e.target.value
+        })
+      }
+    />
+  </div>
+
+  <div className="field">
+    <label>Confirme a senha:</label>
+    <input
+      type="password"
+      placeholder="Confirme a senha..."
+      value={form.confirmarSenha}
+      onChange={(e) =>
+        setForm({
+          ...form,
+          confirmarSenha: e.target.value
+        })
+      }
+    />
+  </div>
+
+  <div className="col-span-2">
+                  <button className="btn btn-blue" style={{ fontSize:15, padding:16 }} onClick={handleCadastro}>Criar Conta</button>
                 </div>
                 <div className="col-span-2">
                   <div className="footer-link">Já tem conta? <span className="link" onClick={() => navigate('login')}>Fazer login</span></div>
