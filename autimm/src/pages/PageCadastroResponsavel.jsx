@@ -6,6 +6,8 @@ export default function PageCadastroResponsavel({ navigate }) {
   const [tipoCadastro, setTipoCadastro] =
     useState('responsavel');
 
+  const [erro, setErro] = useState('');
+
   const [form, setForm] = useState({
     nomeAluno: '',
     nomeResponsavel: '',
@@ -15,15 +17,39 @@ export default function PageCadastroResponsavel({ navigate }) {
     confirmarSenha: ''
   });
 
+  const regrasSenha = {
+  tamanho: form.senha.length >= 8,
+  maiuscula: /[A-Z]/.test(form.senha),
+  minuscula: /[a-z]/.test(form.senha),
+  numero: /[0-9]/.test(form.senha),
+  especial: /[^A-Za-z0-9]/.test(form.senha),
+
+  iguais:
+    form.confirmarSenha.length > 0 &&
+    form.senha === form.confirmarSenha
+};
+
+  const senhaValida =
+    regrasSenha.tamanho &&
+    regrasSenha.maiuscula &&
+    regrasSenha.minuscula &&
+    regrasSenha.numero &&
+    regrasSenha.especial &&
+    regrasSenha.iguais;
+
 const handleCadastro = async () => {
 
   try {
 
-    if (form.senha !== form.confirmarSenha) {
 
-      alert('As senhas não coincidem');
-      return;
+    if (!senhaValida) {
 
+  setErro('Sua senha ainda não atende todos os requisitos');
+
+  setLoading(false);
+
+  return;
+  
     }
 
     console.log('Enviando cadastro...', form);
@@ -104,6 +130,25 @@ const handleCadastro = async () => {
           <div className="field"><label>Confirme a senha:</label><input type="password" placeholder="Confirme a senha..." value={form.confirmarSenha} onChange={(e) =>setForm({...form,confirmarSenha: e.target.value})}/></div>
         </div>
         <div style={{ padding:'10px 24px 28px' }}>
+          {
+  erro && (
+    <div
+      style={{
+        background:'#ffe5e5',
+        color:'#d00000',
+        padding:'12px',
+        borderRadius:12,
+        fontSize:13,
+        fontWeight:700,
+        marginBottom:16,
+        border:'1px solid #ffb3b3',
+        textAlign:'center'
+      }}
+    >
+      ⚠️ {erro}
+    </div>
+  )
+}
           <button onClick={handleCadastro}>Criar Conta</button>
           <div className="footer-link mt-12">Já tem conta? <span className="link" onClick={() => navigate('login')}>Fazer login</span></div>
         </div>
@@ -193,23 +238,6 @@ const handleCadastro = async () => {
     👤 Responsável
   </button>
 
-  <button
-    onClick={() => setTipoCadastro('instituicao')}
-    style={{
-      flex:1,
-      padding:'14px',
-      border:'none',
-      borderRadius:12,
-      fontWeight:800,
-      cursor:'pointer',
-      background:
-        tipoCadastro === 'instituicao'
-          ? 'white'
-          : 'transparent'
-    }}
-  >
-    🏫 Instituição
-  </button>
 </div>
               <div className="grid-2">
 
@@ -250,35 +278,6 @@ const handleCadastro = async () => {
     )
     : (
       <>
-        <div className="field">
-          <label>Nome da instituição:</label>
-          <input
-            type="text"
-            placeholder="Digite o nome da instituição..."
-            value={form.nomeInstituicao || ''}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                nomeInstituicao: e.target.value
-              })
-            }
-          />
-        </div>
-
-        <div className="field">
-          <label>Código da instituição:</label>
-          <input
-            type="text"
-            placeholder="Ex: AUTIM2025"
-            value={form.codigo || ''}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                codigo: e.target.value
-              })
-            }
-          />
-        </div>
       </>
     )
   }
@@ -326,6 +325,44 @@ const handleCadastro = async () => {
         })
       }
     />
+<div
+  style={{
+    background:'#f4f7fb',
+    borderRadius:12,
+    padding:'12px',
+    marginTop:10,
+    fontSize:12,
+    fontWeight:700,
+    display:'flex',
+    flexDirection:'column',
+    gap:6
+  }}
+>
+  <div style={{ color: regrasSenha.tamanho ? 'green' : '#999' }}>
+    {regrasSenha.tamanho ? '✅' : '❌'} Mínimo de 8 caracteres
+  </div>
+
+  <div style={{ color: regrasSenha.maiuscula ? 'green' : '#999' }}>
+    {regrasSenha.maiuscula ? '✅' : '❌'} Uma letra maiúscula
+  </div>
+
+  <div style={{ color: regrasSenha.minuscula ? 'green' : '#999' }}>
+    {regrasSenha.minuscula ? '✅' : '❌'} Uma letra minúscula
+  </div>
+
+  <div style={{ color: regrasSenha.numero ? 'green' : '#999' }}>
+    {regrasSenha.numero ? '✅' : '❌'} Um número
+  </div>
+
+  <div style={{ color: regrasSenha.especial ? 'green' : '#999' }}>
+    {regrasSenha.especial ? '✅' : '❌'} Um caractere especial
+  </div>
+
+  <div style={{ color: regrasSenha.iguais ? 'green' : '#999' }}>
+    {regrasSenha.iguais ? '✅' : '❌'} As senhas coincidem
+  </div>
+</div>
+    
   </div>
 
   <div className="field">
@@ -344,6 +381,25 @@ const handleCadastro = async () => {
   </div>
 
   <div className="col-span-2">
+    {
+  erro && (
+    <div
+      style={{
+        background:'#ffe5e5',
+        color:'#d00000',
+        padding:'12px',
+        borderRadius:12,
+        fontSize:13,
+        fontWeight:700,
+        marginBottom:16,
+        border:'1px solid #ffb3b3',
+        textAlign:'center'
+      }}
+    >
+      ⚠️ {erro}
+    </div>
+  )
+}
                   <button className="btn btn-blue" style={{ fontSize:15, padding:16 }} onClick={handleCadastro}>Criar Conta</button>
                 </div>
                 <div className="col-span-2">

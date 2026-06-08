@@ -29,24 +29,54 @@ export default function PageLogin({ navigate }) {
 };
 
 const handleLoginInstituicao = async () => {
-  const response = await fetch('http://localhost:3001/auth/login-instituicao', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ email, senha })
-  });
 
-  const data = await response.json();
+  try {
 
-  if (response.ok) {
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('instituicao', JSON.stringify(data.instituicao));
+    console.log('Tentando login...');
 
-    navigate('home-instituicao');
-  } else {
-    alert(data.erro);
+    const response = await fetch(
+      'http://localhost:3001/auth/login-instituicao',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email,
+          senha
+        })
+      }
+    );
+
+    console.log('Response:', response);
+
+    const data = await response.json();
+
+    if (response.ok) {
+
+      localStorage.setItem('token', data.token);
+
+      localStorage.setItem(
+        'instituicao',
+        JSON.stringify(data.instituicao)
+      );
+
+      navigate('home-instituicao');
+
+    } else {
+
+      alert(data.erro || 'Erro no login');
+
+    }
+
+  } catch (error) {
+
+    console.log('ERRO LOGIN:', error);
+
+    alert('Erro ao conectar ao servidor');
+
   }
+
 };
 
   return (
@@ -99,7 +129,7 @@ const handleLoginInstituicao = async () => {
                 <div className="field"><label>E-mail institucional:</label><input className="login-input-focus" type="email" placeholder="Digite o e-mail..." onChange={(e) => setEmail(e.target.value)}/></div>
                 <div className="field"><label>Senha:</label><input className="login-input-focus" type="password" placeholder="Digite a senha..." onChange={(e) => setSenha(e.target.value)} /></div>
               </div>
-              <button className="btn btn-green" style={{ marginBottom:16 }} onClick={() => navigate('home-instituicao')}>Entrar como Instituição</button>
+              <button className="btn btn-green" style={{ marginBottom:16 }} onClick={handleLoginInstituicao}>Entrar como Instituição</button>
               <div className="footer-link">Não tem conta? <span className="link" onClick={() => navigate('cadastro-instituicao')}>Cadastrar instituição</span></div>
             </div>
           )}

@@ -1,0 +1,27 @@
+1° No https://downgit.github.io/#/home
+2° Cole o link do diretório
+3° Descompacte a pasta em Documentos do PC
+4° Liga o Apache e o MySQL do XAMPP
+5° Crie o banco autim (CREATE DATABASE autim;)
+
+6°Abra o projeto no VS Code
+7°Execute o npm install
+8°npm install react
+9°npm install vite
+10°npm install electron
+11° cd backend
+12°npm install cors
+13°npm install mysql2
+14°npm install dotenv
+15°npm install bcryptjs
+16°npm install jsonwebtoken
+17° cd ..
+18° Na pasta raiz npm run dev
+
+19°Abra o terminal do prompt do windows cd C:\Users\User\Documents\autimm\backend
+20°node server.js
+
+
+INSERT INTO midia (MID_TIPO, MID_URL, MID_ROTULO, MID_EMOJI, MID_BG_COLOR, MID_SHADOW_COLOR, CAT_ID)
+VALUES ('audio', 'speech:Ansioso', 'Ansioso', '??', '#9c27b0', 'rgba(156,39,176,.45)', 1);
+Para adicionar um  novo botão de áudio, basta adicionar no banco de dados e a tela comunicação puxa.
