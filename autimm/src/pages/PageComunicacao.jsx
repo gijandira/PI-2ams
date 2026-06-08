@@ -170,11 +170,58 @@ function ECard({ card, size }) {
 
 // ─── Página principal ─────────────────────────────────────────────────────────
 export default function PageComunicacao({ navigate }) {
+  const [usuario, setUsuario] = useState(null);
   var [activeCat,  setActiveCat]  = useState(null);
   var [categorias, setCategorias] = useState([]);
   var [allCards,   setAllCards]   = useState({});
   var [loading,    setLoading]    = useState(true);
   var [erro,       setErro]       = useState(false);
+
+  useEffect(() => {
+
+  carregarUsuario();
+
+}, []);
+
+const carregarUsuario = async () => {
+
+  try {
+
+    const token = localStorage.getItem('token');
+
+    const response = await fetch(
+      'http://localhost:3001/auth/perfil-usuario',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+
+      setUsuario(data.usuario);
+
+    }
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+
+};
+
+  const handleLogout = () => {
+
+  localStorage.removeItem('token');
+  localStorage.removeItem('usuario');
+
+  navigate('login');
+
+};
 
   // Busca categorias e cards do backend ao montar a página
   useEffect(function () {
@@ -269,6 +316,26 @@ export default function PageComunicacao({ navigate }) {
             <img src={logoIcone} alt="Autim" style={{ width:46, height:46, objectFit:'contain' }} />
           </div>
           <div style={{ fontSize:19, fontWeight:900, color:'#fff' }}>Comunicação</div>
+          <button
+  onClick={handleLogout}
+  style={{
+    marginTop: 8,
+    width: 42,
+    height: 42,
+    borderRadius: '50%',
+    background: 'linear-gradient(135deg,#ff5f5f,#d93636)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 4px 14px rgba(255,0,0,.25)',
+    cursor: 'pointer',
+    fontSize: 18,
+    border: 'none',
+    color: '#fff'
+  }}
+>
+  🚪
+</button>
           <div style={{ fontSize:12, fontWeight:700, color:'rgba(255,255,255,.8)' }}>Toque em um card para ouvir a palavra</div>
         </div>
 
@@ -313,6 +380,7 @@ export default function PageComunicacao({ navigate }) {
             <div className="nav-icon"><IconPerson /></div>
             <div className="nav-label">Perfil</div>
           </div>
+          
         </nav>
       </div>
 
@@ -338,12 +406,28 @@ export default function PageComunicacao({ navigate }) {
           <div className="sidebar-spacer"></div>
           <div className="sidebar-nav-item"><IconPerson />Perfil</div>
           <div className="sidebar-nav-item"><IconSettings />Configurações</div>
+          <div
+  className="sidebar-nav-item"
+  onClick={handleLogout}
+  style={{
+    cursor:'pointer',
+    color:'var(--red)'
+  }}
+>
+  🚪 Sair
+</div>
           <div className="sidebar-user">
-            <div className="sidebar-avatar">J</div>
-            <div>
-              <div className="sidebar-user-name">João Pedro</div>
-              <div className="sidebar-user-role">Responsável</div>
+            <div className="sidebar-avatar">
+              {usuario?.USU_NOME?.charAt(0)}
             </div>
+            <div>
+              <div className="sidebar-user-name">
+                {usuario?.USU_NOME}
+              </div>
+              <div className="sidebar-user-role">
+                {usuario?.USU_CARGO}
+              </div>
+          </div>
           </div>
         </nav>
 

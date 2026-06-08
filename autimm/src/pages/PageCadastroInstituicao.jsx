@@ -3,6 +3,8 @@ import { useState } from 'react';
 
 export default function PageCadastroInstituicao({ navigate }) {
 
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState('');
   const [form, setForm] = useState({
   nome: '',
   telefone: '',
@@ -12,24 +14,81 @@ export default function PageCadastroInstituicao({ navigate }) {
   codigo: ''
 });
 
-const handleCadastroInstituicao = async () => {
-  const response = await fetch('http://localhost:3001/auth/cadastro-instituicao', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(form)
-  });
+const regrasSenha = {
+  tamanho: form.senha.length >= 8,
+  maiuscula: /[A-Z]/.test(form.senha),
+  minuscula: /[a-z]/.test(form.senha),
+  numero: /[0-9]/.test(form.senha),
+  especial: /[^A-Za-z0-9]/.test(form.senha),
 
-  const data = await response.json();
-
-  if (response.ok) {
-    alert('Instituição cadastrada com sucesso');
-    navigate('login');
-  } else {
-    alert(data.erro);
-  }
+  iguais:
+  form.confirmarsenha.length > 0 &&
+  form.senha === form.confirmarsenha
 };
+
+  const senhaValida =
+    regrasSenha.tamanho &&
+    regrasSenha.maiuscula &&
+    regrasSenha.minuscula &&
+    regrasSenha.numero &&
+    regrasSenha.especial &&
+    regrasSenha.iguais;
+
+const handleCadastroInstituicao = async () => {
+  setLoading(true);
+
+  try {
+
+    if (!senhaValida) {
+
+  setErro('Sua senha ainda não atende todos os requisitos');
+
+  setLoading(false);
+
+  return;
+
+}
+    setErro('');
+
+    const response = await fetch(
+      'http://localhost:3001/auth/cadastro-instituicao',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(form)
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+
+      alert('Instituição cadastrada com sucesso!');
+
+      navigate('login');
+
+    } else {
+
+      alert(data.mensagem || 'Erro ao cadastrar');
+
+    }
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert('Erro ao conectar ao servidor');
+
+  } finally {
+
+    setLoading(false);
+
+  }
+
+};
+
 
   return (
     <>
@@ -62,6 +121,43 @@ const handleCadastroInstituicao = async () => {
           <div className="field"><label>E-mail institucional:</label><input type="email" placeholder="email@instituicao.com" value={form.email}onChange={(e) =>setForm({...form,email: e.target.value})}/></div>
           <div className="field"><label>Crie uma senha:</label><input type="password" placeholder="Crie uma senha..." value={form.senha}onChange={(e) =>setForm({...form,senha: e.target.value})}/></div>
           <div className="field"><label>Confirme a senha:</label><input type="password" placeholder="Confirme a senha..." value={form.confirmarsenha}onChange={(e) =>setForm({...form,confirmarsenha: e.target.value})}/></div>
+          <div
+  style={{
+    background:'#f4f7fb',
+    borderRadius:12,
+    padding:'12px',
+    marginTop:10,
+    fontSize:12,
+    fontWeight:700,
+    display:'flex',
+    flexDirection:'column',
+    gap:6
+  }}
+>
+  <div style={{ color: regrasSenha.tamanho ? 'green' : '#999' }}>
+    {regrasSenha.tamanho ? '✅' : '❌'} Mínimo de 8 caracteres
+  </div>
+
+  <div style={{ color: regrasSenha.maiuscula ? 'green' : '#999' }}>
+    {regrasSenha.maiuscula ? '✅' : '❌'} Uma letra maiúscula
+  </div>
+
+  <div style={{ color: regrasSenha.minuscula ? 'green' : '#999' }}>
+    {regrasSenha.minuscula ? '✅' : '❌'} Uma letra minúscula
+  </div>
+
+  <div style={{ color: regrasSenha.numero ? 'green' : '#999' }}>
+    {regrasSenha.numero ? '✅' : '❌'} Um número
+  </div>
+
+  <div style={{ color: regrasSenha.especial ? 'green' : '#999' }}>
+    {regrasSenha.especial ? '✅' : '❌'} Um caractere especial
+  </div>
+
+  <div style={{ color: regrasSenha.iguais ? 'green' : '#999' }}>
+    {regrasSenha.iguais ? '✅' : '❌'} As senhas coincidem
+  </div>
+</div>
           <div className="field code-input"><label>Código de acesso:</label><input type="text" placeholder="Ex: Autim-2024" maxLength={12} value={form.codigo}onChange={(e) =>setForm({...form,codigo: e.target.value})}/></div>
           <div style={{ fontSize:11, color:'var(--green)', fontWeight:700, textAlign:'center', marginTop:-4 }}>🔑 Este código será usado pelos responsáveis para se afiliar à sua instituição</div>
         </div>
@@ -132,7 +228,44 @@ const handleCadastroInstituicao = async () => {
                 <div className="field"><label>Telefone:</label><input type="tel" placeholder="(00) 00000-0000" value={form.telefone}onChange={(e) =>setForm({...form,telefone: e.target.value})}/></div>
                 <div className="field"><label>E-mail institucional:</label><input type="email" placeholder="email@instituicao.com"value={form.email}onChange={(e) =>setForm({...form,email: e.target.value})} /></div>
                 <div className="field"><label>Crie uma senha:</label><input type="password" placeholder="••••••••" value={form.senha}onChange={(e) =>setForm({...form,senha: e.target.value})} /></div>
-                <div className="field"><label>Confirme a senha:</label><input type="password" placeholder="••••••••"value={form.senha}onChange={(e) =>setForm({...form,senha: e.target.value})} /></div>
+                <div className="field"><label>Confirme a senha:</label><input type="password" placeholder="••••••••"value={form.confirmarsenha}onChange={(e) =>setForm({...form,confirmarsenha: e.target.value})} /></div>
+                <div
+  style={{
+    background:'#f4f7fb',
+    borderRadius:12,
+    padding:'12px',
+    marginTop:10,
+    fontSize:12,
+    fontWeight:700,
+    display:'flex',
+    flexDirection:'column',
+    gap:6
+  }}
+>
+  <div style={{ color: regrasSenha.tamanho ? 'green' : '#999' }}>
+    {regrasSenha.tamanho ? '✅' : '❌'} Mínimo de 8 caracteres
+  </div>
+
+  <div style={{ color: regrasSenha.maiuscula ? 'green' : '#999' }}>
+    {regrasSenha.maiuscula ? '✅' : '❌'} Uma letra maiúscula
+  </div>
+
+  <div style={{ color: regrasSenha.minuscula ? 'green' : '#999' }}>
+    {regrasSenha.minuscula ? '✅' : '❌'} Uma letra minúscula
+  </div>
+
+  <div style={{ color: regrasSenha.numero ? 'green' : '#999' }}>
+    {regrasSenha.numero ? '✅' : '❌'} Um número
+  </div>
+
+  <div style={{ color: regrasSenha.especial ? 'green' : '#999' }}>
+    {regrasSenha.especial ? '✅' : '❌'} Um caractere especial
+  </div>
+
+  <div style={{ color: regrasSenha.iguais ? 'green' : '#999' }}>
+    {regrasSenha.iguais ? '✅' : '❌'} As senhas coincidem
+  </div>
+</div>
                 <div className="field col-span-2 code-input"><label>Código de acesso:</label><input type="text" placeholder="Ex: Autim-2024" maxLength={12} value={form.codigo}onChange={(e) =>setForm({...form,codigo: e.target.value})}/></div>
                 <div className="col-span-2">
                   <div style={{ background:'#edfaf3', border:'1.5px solid var(--green)', borderRadius:16, padding:'14px 18px', display:'flex', alignItems:'center', gap:12, marginBottom:20 }}>
@@ -144,6 +277,24 @@ const handleCadastroInstituicao = async () => {
                   </div>
                 </div>
                 <div className="col-span-2">
+                  {
+  erro && (
+    <div
+      style={{
+        background:'#ffe5e5',
+        color:'#d00000',
+        padding:'12px',
+        borderRadius:12,
+        fontSize:13,
+        fontWeight:700,
+        marginBottom:16,
+        border:'1px solid #ffb3b3'
+      }}
+    >
+      ⚠️ {erro}
+    </div>
+  )
+}
                   <button className="btn btn-green" style={{ fontSize:15, padding:16 }} onClick={handleCadastroInstituicao}>Cadastrar Instituição</button>
                 </div>
                 <div className="col-span-2">

@@ -259,7 +259,7 @@ const [loading, setLoading] = useState(true);
             <div className="nav-label">Início</div>
           </div>
 
-          <div className="nav-item">
+          <div className="nav-item" onClick={() => navigate('comunicacao')}>
             <div className="nav-icon">
               <IconChat />
             </div>
@@ -313,15 +313,17 @@ const [loading, setLoading] = useState(true);
 
           {[
             { icon:<IconHome/>,     label:'Início',        active:true  },
-            { icon:<IconChat/>,     label:'Comunicação',   active:false },
+            { icon:<IconChat/>,     label:'Comunicação',   active:false, page:'comunicacao' },
             { icon:<IconSchool/>,   label:'Lições',        active:false },
             { icon:<IconCalendar/>, label:'Agenda',        active:false },
             { icon:<IconRobot/>,    label:'Assistente IA', active:false },
           ].map((item, i) => (
             <div
-              key={i}
-              className={`sidebar-nav-item ${item.active?'active':''}`}
-            >
+  key={i}
+  className={`sidebar-nav-item ${item.active?'active':''}`}
+  onClick={() => item.page && navigate(item.page)}
+  style={{ cursor:'pointer' }}
+>
               {item.icon}
               {item.label}
             </div>

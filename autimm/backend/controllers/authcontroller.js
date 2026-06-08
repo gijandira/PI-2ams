@@ -6,6 +6,15 @@ const pool = require('../config/db');
 exports.cadastroUsuario = async (req, res) => {
   try {
     const { nomeAluno, nomeResponsavel, telefone, email, senha } = req.body;
+    const senhaForte =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#_-])[A-Za-z\d@$!%*?&.#_-]{8,}$/;
+
+if (!senhaForte.test(senha)) {
+  return res.status(400).json({
+    erro:
+      'A senha deve ter pelo menos 8 caracteres, letra maiúscula, minúscula, número e símbolo.'
+  });
+}
 
     if (!nomeResponsavel || !email || !senha) {
       return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
@@ -59,15 +68,8 @@ exports.cadastroUsuario = async (req, res) => {
     );
 
     return res.status(201).json({
-      mensagem: 'Cadastro realizado com sucesso!',
-      token,
-      usuario: {
-        id: usuarioId,
-        nome: nomeResponsavel,
-        email,
-        cargo: 'responsavel'
-      }
-    });
+  mensagem: 'Cadastro realizado com sucesso!'
+});
 
   } catch (error) {
 
@@ -116,15 +118,8 @@ exports.cadastroInstituicao = async (req, res) => {
     );
 
     return res.status(201).json({
-      mensagem: 'Instituição cadastrada com sucesso!',
-      token,
-      instituicao: {
-        id: result.insertId,
-        nome,
-        email,
-        codAcesso
-      }
-    });
+  mensagem: 'Instituição cadastrada com sucesso!'
+});
 
   } catch (error) {
     console.error('Erro em cadastroInstituicao:', error);

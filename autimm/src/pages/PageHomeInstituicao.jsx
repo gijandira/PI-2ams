@@ -27,6 +27,8 @@ export default function PageHomeInstituicao({ navigate }) {
 
   const [instituicao, setInstituicao] = useState(null);
 
+  const [loading, setLoading] = useState(true);
+
   const [students, setStudents] = useState([]);
 
   const [reqsMob, setReqsMob] = useState([]);
@@ -51,7 +53,7 @@ export default function PageHomeInstituicao({ navigate }) {
       const token = localStorage.getItem('token');
 
       const response = await fetch(
-        'http://localhost:3001/instituicao/dashboard',
+        'http://localhost:3001/auth/perfil-instituicao',
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -61,22 +63,16 @@ export default function PageHomeInstituicao({ navigate }) {
 
       const data = await response.json();
 
+      console.log(data);
+      console.log(data.instituicao);
+
       if (response.ok) {
 
         setInstituicao(data.instituicao);
 
-        setStudents(data.alunos || []);
+      } else {
 
-        setReqsMob(data.solicitacoes || []);
-
-        setReqsDesk(data.solicitacoes || []);
-
-        setStats({
-          totalAlunos: data.totalAlunos || 0,
-          media: data.media || 0,
-          solicitacoes: data.solicitacoes?.length || 0,
-          ativosHoje: data.ativosHoje || 0,
-        });
+        console.log(data);
 
       }
 
@@ -84,9 +80,29 @@ export default function PageHomeInstituicao({ navigate }) {
 
       console.log(error);
 
+    } finally {
+
+      setLoading(false);
+
     }
 
   };
+
+   if (loading) {
+  return (
+    <div style={{ color: '#000', fontSize: 30 }}>
+      Carregando...
+    </div>
+  );
+}
+
+if (!instituicao) {
+  return (
+    <div style={{ color: '#000' }}>
+      Nenhuma instituição encontrada
+    </div>
+  );
+}
 
   const doActionMob = async (id, action) => {
 
@@ -112,69 +128,52 @@ export default function PageHomeInstituicao({ navigate }) {
 
   };
 
-  if (!instituicao) {
-    return (
-      <div
-        style={{
-          minHeight:'100vh',
-          display:'flex',
-          alignItems:'center',
-          justifyContent:'center',
-          fontSize:22,
-          fontWeight:800
-        }}
-      >
-        Carregando...
-      </div>
-    );
-  }
 
   return (
     <>
       <style>{`
-        @media (min-width: 768px) {
-          .hi-mobile {
-            display: none !important;
-          }
-        }
+  .hi-mobile {
+    display: flex;
+    flex-direction: column;
+  }
 
-        .hi-desktop {
-          display: none;
-        }
+  .hi-desktop {
+    display: none;
+  }
 
-        @media (min-width: 768px) {
-          .hi-desktop {
-            display: block !important;
-          }
-        }
+  @media (max-width: 767px) {
+    .hi-mobile {
+      display: flex;
+    }
+  }
 
-        .student-card-mob:hover,
-        .student-card-d:hover {
-          transform: translateX(3px);
-        }
+  .student-card-mob:hover,
+  .student-card-d:hover {
+    transform: translateX(3px);
+  }
 
-        .tab-btn-green {
-          flex:1;
-          padding:10px 6px;
-          border:none;
-          border-radius:14px;
-          font-family:'Nunito',sans-serif;
-          font-size:12px;
-          font-weight:800;
-          cursor:pointer;
-          transition:all .2s;
-          background:#e0eaf0;
-          color:#888;
-          position:relative;
-          white-space:nowrap;
-        }
+  .tab-btn-green {
+    flex:1;
+    padding:10px 6px;
+    border:none;
+    border-radius:14px;
+    font-family:'Nunito',sans-serif;
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+    transition:all .2s;
+    background:#e0eaf0;
+    color:#888;
+    position:relative;
+    white-space:nowrap;
+  }
 
-        .tab-btn-green.active {
-          background:var(--green);
-          color:#fff;
-          box-shadow:0 4px 12px rgba(72,195,120,.4);
-        }
-      `}</style>
+  .tab-btn-green.active {
+    background:#48c378;
+    color:#fff;
+    box-shadow:0 4px 12px rgba(72,195,120,.4);
+  }
+`}</style>
 
       {/* MOBILE */}
       <div
@@ -197,7 +196,26 @@ export default function PageHomeInstituicao({ navigate }) {
             gap:14
           }}
         >
-
+<button
+  onClick={handleLogout}
+  style={{
+    width:42,
+    height:42,
+    borderRadius:'50%',
+    background:'rgba(255,0,0,.22)',
+    border:'none',
+    display:'flex',
+    alignItems:'center',
+    justifyContent:'center',
+    cursor:'pointer',
+    fontSize:18,
+    position:'relative',
+    flexShrink:0,
+    color:'#fff'
+  }}
+>
+  🚪
+</button>
           <div
             style={{
               width:58,
@@ -224,7 +242,7 @@ export default function PageHomeInstituicao({ navigate }) {
                 color:'#fff'
               }}
             >
-              {instituicao?.INS_NOME}
+             {instituicao?.INS_NOME || instituicao?.ins_nome || 'Instituição'}
             </div>
 
             <div
@@ -281,26 +299,7 @@ export default function PageHomeInstituicao({ navigate }) {
           </button>
 
         </div>
-              <button
-  onClick={handleLogout}
-  style={{
-    width:42,
-    height:42,
-    borderRadius:'50%',
-    background:'rgba(255,0,0,.22)',
-    border:'none',
-    display:'flex',
-    alignItems:'center',
-    justifyContent:'center',
-    cursor:'pointer',
-    fontSize:18,
-    position:'relative',
-    flexShrink:0,
-    color:'#fff'
-  }}
->
-  🚪
-</button>
+              
         <div
           style={{
             display:'flex',
