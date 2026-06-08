@@ -1,12 +1,12 @@
 import logoIconeBranco from '../assets/logo-icone-branco.png';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function PageCadastroResponsavel({ navigate }) {
 
   const [tipoCadastro, setTipoCadastro] =
     useState('responsavel');
 
-  const [erro, setErro] = useState('');
+  const [notificacao, setNotificacao] = useState(null);
 
   const [form, setForm] = useState({
     nomeAluno: '',
@@ -16,6 +16,13 @@ export default function PageCadastroResponsavel({ navigate }) {
     senha: '',
     confirmarSenha: ''
   });
+
+  useEffect(() => {
+    if (notificacao) {
+      const timer = setTimeout(() => setNotificacao(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [notificacao]);
 
   const regrasSenha = {
   tamanho: form.senha.length >= 8,
@@ -41,15 +48,54 @@ const handleCadastro = async () => {
 
   try {
 
+    // Validar campos obrigatórios
+    const camposVazios = [];
+    if (!form.nomeAluno.trim()) camposVazios.push('Nome do aluno');
+    if (!form.nomeResponsavel.trim()) camposVazios.push('Nome do responsável');
+    if (!form.telefone.trim()) camposVazios.push('Telefone');
+    if (!form.email.trim()) camposVazios.push('E-mail');
+    if (!form.senha.trim()) camposVazios.push('Senha');
+    if (!form.confirmarSenha.trim()) camposVazios.push('Confirmação de senha');
+
+    if (camposVazios.length > 0) {
+      setNotificacao({
+        tipo: 'erro',
+        titulo: 'Campos obrigatórios não preenchidos',
+        mensagens: camposVazios.map(campo => `${campo} é obrigatório`)
+      });
+      return;
+    }
 
     if (!senhaValida) {
+      // Construir mensagem detalhada do que falta
+      const erros = [];
+      
+      if (!regrasSenha.tamanho) {
+        erros.push(`Faltam ${8 - form.senha.length} caracteres`);
+      }
+      if (!regrasSenha.maiuscula) {
+        erros.push('Falta uma letra maiúscula (A-Z)');
+      }
+      if (!regrasSenha.minuscula) {
+        erros.push('Falta uma letra minúscula (a-z)');
+      }
+      if (!regrasSenha.numero) {
+        erros.push('Falta um número (0-9)');
+      }
+      if (!regrasSenha.especial) {
+        erros.push('Falta um caractere especial (!@#$%...)');
+      }
+      if (!regrasSenha.iguais && form.confirmarSenha.length > 0) {
+        erros.push('As senhas não coincidem');
+      }
 
-  setErro('Sua senha ainda não atende todos os requisitos');
+      setNotificacao({
+        tipo: 'erro',
+        titulo: 'Sua senha não atende os requisitos',
+        mensagens: erros
+      });
 
-  setLoading(false);
-
-  return;
-  
+      return;
     }
 
     console.log('Enviando cadastro...', form);
@@ -74,13 +120,21 @@ const handleCadastro = async () => {
 
     if (response.ok) {
 
-      alert('Cadastro realizado com sucesso');
+      setNotificacao({
+        tipo: 'sucesso',
+        titulo: 'Cadastro realizado com sucesso!',
+        mensagens: ['Você será redirecionado para o login em breve']
+      });
 
-      navigate('login');
+      setTimeout(() => navigate('login'), 2000);
 
     } else {
 
-      alert(data.erro || 'Erro ao cadastrar');
+      setNotificacao({
+        tipo: 'erro',
+        titulo: 'Erro ao cadastrar',
+        mensagens: [data.erro || 'Ocorreu um erro ao processar seu cadastro']
+      });
 
     }
 
@@ -88,7 +142,11 @@ const handleCadastro = async () => {
 
     console.log(error);
 
-    alert('Erro ao conectar com servidor');
+    setNotificacao({
+      tipo: 'erro',
+      titulo: 'Erro de conexão',
+      mensagens: ['Não foi possível conectar ao servidor']
+    });
 
   }
 
@@ -103,7 +161,58 @@ const handleCadastro = async () => {
         .cadr-desktop .field input:focus { border-color: var(--blue) !important; box-shadow: 0 0 0 3px rgba(56,167,251,.12) !important; }
         .step-circle { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:900; flex-shrink:0; }
         .step-connector { width:32px; height:3px; border-radius:99px; }
+        
+        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-20px); opacity: 0; } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
+        
+        .notificacao-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .notificacao-container.saindo { animation: slideOut 0.3s ease-in; }
+        
+        .notificacao { border-radius: 20px; padding: 24px 28px; box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15); backdrop-filter: blur(10px); max-width: 90vw; width: 420px; border-left: 6px solid; position: relative; overflow: hidden; }
+        
+        .notificacao.erro { background: linear-gradient(135deg, #fff5f5 0%, #ffe6e6 100%); border-left-color: #e74c3c; }
+        .notificacao.sucesso { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-left-color: #48c378; }
+        
+        .notificacao::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.5), rgba(255,255,255,0)); }
+        
+        @media (max-width: 600px) { .notificacao { width: calc(100vw - 32px); } }
+        
+        .notificacao-titulo { font-size: 16px; font-weight: 900; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; letter-spacing: 0.3px; }
+        .notificacao.erro .notificacao-titulo { color: #c0392b; }
+        .notificacao.sucesso .notificacao-titulo { color: #27ae60; }
+        
+        .notificacao-icon { font-size: 22px; flex-shrink: 0; animation: pulse 2s ease-in-out infinite; }
+        
+        .notificacao-lista { display: flex; flex-direction: column; gap: 10px; }
+        
+        .notificacao-item { font-size: 14px; font-weight: 600; display: flex; align-items: flex-start; gap: 10px; line-height: 1.4; }
+        .notificacao.erro .notificacao-item { color: #5d4e37; }
+        .notificacao.sucesso .notificacao-item { color: #165b33; }
+        
+        .notificacao-item::before { content: '✓'; font-weight: 900; flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; }
+        .notificacao.erro .notificacao-item::before { content: '!'; background: #e74c3c; color: white; font-size: 12px; }
+        .notificacao.sucesso .notificacao-item::before { background: #48c378; color: white; font-size: 12px; }
       `}</style>
+
+      {notificacao && (
+        <div className="notificacao-container">
+          <div className={`notificacao ${notificacao.tipo}`}>
+            <div className="notificacao-titulo">
+              <span className="notificacao-icon">{notificacao.tipo === 'erro' ? '⚠️' : '🎉'}</span>
+              {notificacao.titulo}
+            </div>
+            <div className="notificacao-lista">
+              {notificacao.mensagens.map((msg, idx) => (
+                <div key={idx} className="notificacao-item">
+                  {msg}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* MOBILE */}
       <div className="cadr-mobile" style={{ minHeight:'100vh', background:'var(--white)', display:'flex', flexDirection:'column', paddingTop:60 }}>
@@ -126,29 +235,13 @@ const handleCadastro = async () => {
           <div className="field"><label>Nome do responsável:</label><input type="text" placeholder="Digite o nome do responsável..." value={form.nomeResponsavel} onChange={(e) =>setForm({...form,nomeResponsavel: e.target.value})}/></div>
           <div className="field"><label>Telefone:</label><input type="tel" placeholder="(00) 00000-0000" value={form.telefone} onChange={(e) =>setForm({...form,telefone: e.target.value})}/></div>
           <div className="field"><label>E-mail:</label><input type="email" placeholder="Digite o e-mail..." value={form.email} onChange={(e) =>setForm({...form,email: e.target.value})}/></div>
-          <div className="field"><label>Crie uma senha:</label><input type="password" placeholder="Crie uma senha..." value={form.senha} onChange={(e) =>setForm({...form,senha: e.target.value})}/> </div>
+          <div className="field">
+            <label>Crie uma senha:</label>
+            <input type="password" placeholder="Crie uma senha..." value={form.senha} onChange={(e) =>setForm({...form,senha: e.target.value})}/>
+          </div>
           <div className="field"><label>Confirme a senha:</label><input type="password" placeholder="Confirme a senha..." value={form.confirmarSenha} onChange={(e) =>setForm({...form,confirmarSenha: e.target.value})}/></div>
         </div>
         <div style={{ padding:'10px 24px 28px' }}>
-          {
-  erro && (
-    <div
-      style={{
-        background:'#ffe5e5',
-        color:'#d00000',
-        padding:'12px',
-        borderRadius:12,
-        fontSize:13,
-        fontWeight:700,
-        marginBottom:16,
-        border:'1px solid #ffb3b3',
-        textAlign:'center'
-      }}
-    >
-      ⚠️ {erro}
-    </div>
-  )
-}
           <button onClick={handleCadastro}>Criar Conta</button>
           <div className="footer-link mt-12">Já tem conta? <span className="link" onClick={() => navigate('login')}>Fazer login</span></div>
         </div>
@@ -211,34 +304,6 @@ const handleCadastro = async () => {
                   <div style={{ fontSize:12, color:'#aaa', fontWeight:600, marginTop:3 }}>Clique para enviar uma foto (opcional)</div>
                 </div>
               </div>
-<div
-  style={{
-    display:'flex',
-    background:'#edf2f7',
-    borderRadius:16,
-    padding:4,
-    marginBottom:24
-  }}
->
-  <button
-    onClick={() => setTipoCadastro('responsavel')}
-    style={{
-      flex:1,
-      padding:'14px',
-      border:'none',
-      borderRadius:12,
-      fontWeight:800,
-      cursor:'pointer',
-      background:
-        tipoCadastro === 'responsavel'
-          ? 'white'
-          : 'transparent'
-    }}
-  >
-    👤 Responsável
-  </button>
-
-</div>
               <div className="grid-2">
 
   {
@@ -325,44 +390,6 @@ const handleCadastro = async () => {
         })
       }
     />
-<div
-  style={{
-    background:'#f4f7fb',
-    borderRadius:12,
-    padding:'12px',
-    marginTop:10,
-    fontSize:12,
-    fontWeight:700,
-    display:'flex',
-    flexDirection:'column',
-    gap:6
-  }}
->
-  <div style={{ color: regrasSenha.tamanho ? 'green' : '#999' }}>
-    {regrasSenha.tamanho ? '✅' : '❌'} Mínimo de 8 caracteres
-  </div>
-
-  <div style={{ color: regrasSenha.maiuscula ? 'green' : '#999' }}>
-    {regrasSenha.maiuscula ? '✅' : '❌'} Uma letra maiúscula
-  </div>
-
-  <div style={{ color: regrasSenha.minuscula ? 'green' : '#999' }}>
-    {regrasSenha.minuscula ? '✅' : '❌'} Uma letra minúscula
-  </div>
-
-  <div style={{ color: regrasSenha.numero ? 'green' : '#999' }}>
-    {regrasSenha.numero ? '✅' : '❌'} Um número
-  </div>
-
-  <div style={{ color: regrasSenha.especial ? 'green' : '#999' }}>
-    {regrasSenha.especial ? '✅' : '❌'} Um caractere especial
-  </div>
-
-  <div style={{ color: regrasSenha.iguais ? 'green' : '#999' }}>
-    {regrasSenha.iguais ? '✅' : '❌'} As senhas coincidem
-  </div>
-</div>
-    
   </div>
 
   <div className="field">
@@ -381,26 +408,7 @@ const handleCadastro = async () => {
   </div>
 
   <div className="col-span-2">
-    {
-  erro && (
-    <div
-      style={{
-        background:'#ffe5e5',
-        color:'#d00000',
-        padding:'12px',
-        borderRadius:12,
-        fontSize:13,
-        fontWeight:700,
-        marginBottom:16,
-        border:'1px solid #ffb3b3',
-        textAlign:'center'
-      }}
-    >
-      ⚠️ {erro}
-    </div>
-  )
-}
-                  <button className="btn btn-blue" style={{ fontSize:15, padding:16 }} onClick={handleCadastro}>Criar Conta</button>
+    <button className="btn btn-blue" style={{ fontSize:15, padding:16 }} onClick={handleCadastro}>Criar Conta</button>
                 </div>
                 <div className="col-span-2">
                   <div className="footer-link">Já tem conta? <span className="link" onClick={() => navigate('login')}>Fazer login</span></div>

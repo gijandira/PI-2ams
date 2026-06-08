@@ -152,6 +152,16 @@ exports.loginUsuario = async (req, res) => {
       return res.status(401).json({ erro: 'E-mail ou senha inválidos.' });
     }
 
+    // Buscar aluno vinculado
+    const [alunos] = await pool.query(
+      `SELECT a.ALU_ID FROM ALUNO a
+       INNER JOIN ALUNO_USUARIO au ON a.ALU_ID = au.ALU_ID
+       WHERE au.USU_ID = ? LIMIT 1`,
+      [usuario.USU_ID]
+    );
+
+    const alunoId = alunos.length > 0 ? alunos[0].ALU_ID : null;
+
     const token = jwt.sign(
       { id: usuario.USU_ID, cargo: usuario.USU_CARGO },
       process.env.JWT_SECRET,
@@ -164,7 +174,8 @@ exports.loginUsuario = async (req, res) => {
         id: usuario.USU_ID,
         nome: usuario.USU_NOME,
         email: usuario.USU_EMAIL,
-        cargo: usuario.USU_CARGO
+        cargo: usuario.USU_CARGO,
+        alunoId: alunoId
       }
     });
 
