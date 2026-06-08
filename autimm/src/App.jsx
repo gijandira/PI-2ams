@@ -6,10 +6,12 @@ import PageCadastroResponsavel from './pages/PageCadastroResponsavel';
 import PageCadastroInstituicao from './pages/PageCadastroInstituicao';
 import PageHomeAluno from './pages/PageHomeAluno';
 import PageHomeInstituicao from './pages/PageHomeInstituicao';
+import PageComunicacao from './pages/PageComunicacao';
+import PageAgenda from './pages/PageAgenda';
 
 export default function App() {
-  const [page, setPage] = useState('index');
-  const navigate = (p) => setPage(p);
+  var [page, setPage] = useState('index');
+  var navigate = function(p) { setPage(p); };
 
   return (
     <>
@@ -21,6 +23,8 @@ export default function App() {
       {page === 'cadastro-instituicao' && <PageCadastroInstituicao  navigate={navigate} />}
       {page === 'home-aluno'           && <PageHomeAluno            navigate={navigate} />}
       {page === 'home-instituicao'     && <PageHomeInstituicao      navigate={navigate} />}
+      {page === 'comunicacao'          && <PageComunicacao          navigate={navigate} />}
+      {page === 'agenda'               && <PageAgenda               navigate={navigate} />}
     </>
   );
 }
