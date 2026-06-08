@@ -273,7 +273,7 @@ const [loading, setLoading] = useState(true);
             <div className="nav-label">Lições</div>
           </div>
 
-          <div className="nav-item">
+          <div className="nav-item" onClick={() => navigate('agenda')}>
             <div className="nav-icon">
               <IconCalendar />
             </div>
@@ -315,7 +315,7 @@ const [loading, setLoading] = useState(true);
             { icon:<IconHome/>,     label:'Início',        active:true  },
             { icon:<IconChat/>,     label:'Comunicação',   active:false, page:'comunicacao' },
             { icon:<IconSchool/>,   label:'Lições',        active:false },
-            { icon:<IconCalendar/>, label:'Agenda',        active:false },
+            { icon:<IconCalendar/>, label:'Agenda',        active:false, page:'agenda' },
             { icon:<IconRobot/>,    label:'Assistente IA', active:false },
           ].map((item, i) => (
             <div

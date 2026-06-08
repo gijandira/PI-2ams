@@ -21,6 +21,10 @@ export default function PageLogin({ navigate }) {
   if (response.ok) {
     localStorage.setItem('token', data.token);
     localStorage.setItem('usuario', JSON.stringify(data.usuario));
+    localStorage.setItem('userData', JSON.stringify(data.usuario));
+    if (data.usuario.alunoId) {
+      localStorage.setItem('alunoId', data.usuario.alunoId);
+    }
 
     navigate('home-aluno');
   } else {

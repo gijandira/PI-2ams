@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 
 export default function PageCadastroInstituicao({ navigate }) {
 
   const [loading, setLoading] = useState(false);
-  const [erro, setErro] = useState('');
+  const [notificacao, setNotificacao] = useState(null);
   const [form, setForm] = useState({
   nome: '',
   telefone: '',
@@ -13,6 +13,13 @@ export default function PageCadastroInstituicao({ navigate }) {
   confirmarsenha: '',
   codigo: ''
 });
+
+useEffect(() => {
+  if (notificacao) {
+    const timer = setTimeout(() => setNotificacao(null), 5000);
+    return () => clearTimeout(timer);
+  }
+}, [notificacao]);
 
 const regrasSenha = {
   tamanho: form.senha.length >= 8,
@@ -39,16 +46,58 @@ const handleCadastroInstituicao = async () => {
 
   try {
 
+    // Validar campos obrigatórios
+    const camposVazios = [];
+    if (!form.nome.trim()) camposVazios.push('Nome da instituição');
+    if (!form.telefone.trim()) camposVazios.push('Telefone');
+    if (!form.email.trim()) camposVazios.push('E-mail institucional');
+    if (!form.senha.trim()) camposVazios.push('Senha');
+    if (!form.confirmarsenha.trim()) camposVazios.push('Confirmação de senha');
+    if (!form.codigo.trim()) camposVazios.push('Código de acesso');
+
+    if (camposVazios.length > 0) {
+      setNotificacao({
+        tipo: 'erro',
+        titulo: 'Campos obrigatórios não preenchidos',
+        mensagens: camposVazios.map(campo => `${campo} é obrigatório`)
+      });
+      setLoading(false);
+      return;
+    }
+
     if (!senhaValida) {
+      // Construir mensagem detalhada do que falta
+      const erros = [];
+      
+      if (!regrasSenha.tamanho) {
+        erros.push(`Faltam ${8 - form.senha.length} caracteres`);
+      }
+      if (!regrasSenha.maiuscula) {
+        erros.push('Falta uma letra maiúscula (A-Z)');
+      }
+      if (!regrasSenha.minuscula) {
+        erros.push('Falta uma letra minúscula (a-z)');
+      }
+      if (!regrasSenha.numero) {
+        erros.push('Falta um número (0-9)');
+      }
+      if (!regrasSenha.especial) {
+        erros.push('Falta um caractere especial (!@#$%...)');
+      }
+      if (!regrasSenha.iguais && form.confirmarsenha.length > 0) {
+        erros.push('As senhas não coincidem');
+      }
 
-  setErro('Sua senha ainda não atende todos os requisitos');
+      setNotificacao({
+        tipo: 'erro',
+        titulo: 'Sua senha não atende os requisitos',
+        mensagens: erros
+      });
 
-  setLoading(false);
-
-  return;
+      setLoading(false);
+      return;
 
 }
-    setErro('');
 
     const response = await fetch(
       'http://localhost:3001/auth/cadastro-instituicao',
@@ -65,13 +114,21 @@ const handleCadastroInstituicao = async () => {
 
     if (response.ok) {
 
-      alert('Instituição cadastrada com sucesso!');
+      setNotificacao({
+        tipo: 'sucesso',
+        titulo: 'Instituição cadastrada com sucesso!',
+        mensagens: ['Você será redirecionado para o login em breve']
+      });
 
-      navigate('login');
+      setTimeout(() => navigate('login'), 2000);
 
     } else {
 
-      alert(data.mensagem || 'Erro ao cadastrar');
+      setNotificacao({
+        tipo: 'erro',
+        titulo: 'Erro ao cadastrar',
+        mensagens: [data.mensagem || 'Ocorreu um erro ao processar seu cadastro']
+      });
 
     }
 
@@ -79,7 +136,11 @@ const handleCadastroInstituicao = async () => {
 
     console.log(error);
 
-    alert('Erro ao conectar ao servidor');
+    setNotificacao({
+      tipo: 'erro',
+      titulo: 'Erro de conexão',
+      mensagens: ['Não foi possível conectar ao servidor']
+    });
 
   } finally {
 
@@ -98,7 +159,58 @@ const handleCadastroInstituicao = async () => {
         @media (min-width: 768px) { .cadi-desktop { display: flex !important; } }
         .cadi-desktop .field input:focus { border-color: var(--green) !important; box-shadow: 0 0 0 3px rgba(72,195,120,.12) !important; }
         .code-input input { letter-spacing: 3px; font-size: 16px; font-weight: 800; text-align: center; border-color: var(--green) !important; background: #edfaf3 !important; }
+        
+        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-20px); opacity: 0; } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
+        
+        .notificacao-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .notificacao-container.saindo { animation: slideOut 0.3s ease-in; }
+        
+        .notificacao { border-radius: 20px; padding: 24px 28px; box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15); backdrop-filter: blur(10px); max-width: 90vw; width: 420px; border-left: 6px solid; position: relative; overflow: hidden; }
+        
+        .notificacao.erro { background: linear-gradient(135deg, #fff5f5 0%, #ffe6e6 100%); border-left-color: #e74c3c; }
+        .notificacao.sucesso { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-left-color: #48c378; }
+        
+        .notificacao::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.5), rgba(255,255,255,0)); }
+        
+        @media (max-width: 600px) { .notificacao { width: calc(100vw - 32px); } }
+        
+        .notificacao-titulo { font-size: 16px; font-weight: 900; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; letter-spacing: 0.3px; }
+        .notificacao.erro .notificacao-titulo { color: #c0392b; }
+        .notificacao.sucesso .notificacao-titulo { color: #27ae60; }
+        
+        .notificacao-icon { font-size: 22px; flex-shrink: 0; animation: pulse 2s ease-in-out infinite; }
+        
+        .notificacao-lista { display: flex; flex-direction: column; gap: 10px; }
+        
+        .notificacao-item { font-size: 14px; font-weight: 600; display: flex; align-items: flex-start; gap: 10px; line-height: 1.4; }
+        .notificacao.erro .notificacao-item { color: #5d4e37; }
+        .notificacao.sucesso .notificacao-item { color: #165b33; }
+        
+        .notificacao-item::before { content: '✓'; font-weight: 900; flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; }
+        .notificacao.erro .notificacao-item::before { content: '!'; background: #e74c3c; color: white; font-size: 12px; }
+        .notificacao.sucesso .notificacao-item::before { background: #48c378; color: white; font-size: 12px; }
       `}</style>
+
+      {notificacao && (
+        <div className="notificacao-container">
+          <div className={`notificacao ${notificacao.tipo}`}>
+            <div className="notificacao-titulo">
+              <span className="notificacao-icon">{notificacao.tipo === 'erro' ? '⚠️' : '🎉'}</span>
+              {notificacao.titulo}
+            </div>
+            <div className="notificacao-lista">
+              {notificacao.mensagens.map((msg, idx) => (
+                <div key={idx} className="notificacao-item">
+                  {msg}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* MOBILE */}
       <div className="cadi-mobile" style={{ minHeight:'100vh', background:'var(--white)', display:'flex', flexDirection:'column', paddingTop:60 }}>
@@ -121,43 +233,6 @@ const handleCadastroInstituicao = async () => {
           <div className="field"><label>E-mail institucional:</label><input type="email" placeholder="email@instituicao.com" value={form.email}onChange={(e) =>setForm({...form,email: e.target.value})}/></div>
           <div className="field"><label>Crie uma senha:</label><input type="password" placeholder="Crie uma senha..." value={form.senha}onChange={(e) =>setForm({...form,senha: e.target.value})}/></div>
           <div className="field"><label>Confirme a senha:</label><input type="password" placeholder="Confirme a senha..." value={form.confirmarsenha}onChange={(e) =>setForm({...form,confirmarsenha: e.target.value})}/></div>
-          <div
-  style={{
-    background:'#f4f7fb',
-    borderRadius:12,
-    padding:'12px',
-    marginTop:10,
-    fontSize:12,
-    fontWeight:700,
-    display:'flex',
-    flexDirection:'column',
-    gap:6
-  }}
->
-  <div style={{ color: regrasSenha.tamanho ? 'green' : '#999' }}>
-    {regrasSenha.tamanho ? '✅' : '❌'} Mínimo de 8 caracteres
-  </div>
-
-  <div style={{ color: regrasSenha.maiuscula ? 'green' : '#999' }}>
-    {regrasSenha.maiuscula ? '✅' : '❌'} Uma letra maiúscula
-  </div>
-
-  <div style={{ color: regrasSenha.minuscula ? 'green' : '#999' }}>
-    {regrasSenha.minuscula ? '✅' : '❌'} Uma letra minúscula
-  </div>
-
-  <div style={{ color: regrasSenha.numero ? 'green' : '#999' }}>
-    {regrasSenha.numero ? '✅' : '❌'} Um número
-  </div>
-
-  <div style={{ color: regrasSenha.especial ? 'green' : '#999' }}>
-    {regrasSenha.especial ? '✅' : '❌'} Um caractere especial
-  </div>
-
-  <div style={{ color: regrasSenha.iguais ? 'green' : '#999' }}>
-    {regrasSenha.iguais ? '✅' : '❌'} As senhas coincidem
-  </div>
-</div>
           <div className="field code-input"><label>Código de acesso:</label><input type="text" placeholder="Ex: Autim-2024" maxLength={12} value={form.codigo}onChange={(e) =>setForm({...form,codigo: e.target.value})}/></div>
           <div style={{ fontSize:11, color:'var(--green)', fontWeight:700, textAlign:'center', marginTop:-4 }}>🔑 Este código será usado pelos responsáveis para se afiliar à sua instituição</div>
         </div>
@@ -181,7 +256,7 @@ const handleCadastroInstituicao = async () => {
           <div style={{ position:'absolute', bottom:'12%', left:'8%', width:180, height:180, borderRadius:'40% 60% 70% 30%/40% 50% 60% 50%', background:'rgba(253,190,45,.14)', animation:'blob 10s ease-in-out infinite reverse', filter:'blur(2px)' }}></div>
 
           <div style={{ position:'relative', zIndex:1, textAlign:'center' }}>
-            <span style={{ fontSize:80, display:'block', marginBottom:20, animation:'float4 4s ease-in-out infinite', filter:'drop-shadow(0 10px 20px rgba(0,0,0,.3))' }}>🏫</span>
+            <span style={{ fontSize:80, display:'block', marginBottom:60, animation:'float4 4s ease-in-out infinite', filter:'drop-shadow(0 10px 20px rgba(0,0,0,.3))' }}>🏫</span>
             <div style={{ fontSize:48, fontWeight:900, letterSpacing:8, color:'#fff', marginBottom:12 }}>Autim</div>
             <div style={{ width:60, height:4, borderRadius:99, background:'linear-gradient(90deg,var(--blue),var(--green))', margin:'0 auto 20px' }}></div>
             <p style={{ fontSize:15, fontWeight:600, color:'rgba(255,255,255,.78)', lineHeight:1.75, maxWidth:320, marginBottom:44 }}>
@@ -229,43 +304,6 @@ const handleCadastroInstituicao = async () => {
                 <div className="field"><label>E-mail institucional:</label><input type="email" placeholder="email@instituicao.com"value={form.email}onChange={(e) =>setForm({...form,email: e.target.value})} /></div>
                 <div className="field"><label>Crie uma senha:</label><input type="password" placeholder="••••••••" value={form.senha}onChange={(e) =>setForm({...form,senha: e.target.value})} /></div>
                 <div className="field"><label>Confirme a senha:</label><input type="password" placeholder="••••••••"value={form.confirmarsenha}onChange={(e) =>setForm({...form,confirmarsenha: e.target.value})} /></div>
-                <div
-  style={{
-    background:'#f4f7fb',
-    borderRadius:12,
-    padding:'12px',
-    marginTop:10,
-    fontSize:12,
-    fontWeight:700,
-    display:'flex',
-    flexDirection:'column',
-    gap:6
-  }}
->
-  <div style={{ color: regrasSenha.tamanho ? 'green' : '#999' }}>
-    {regrasSenha.tamanho ? '✅' : '❌'} Mínimo de 8 caracteres
-  </div>
-
-  <div style={{ color: regrasSenha.maiuscula ? 'green' : '#999' }}>
-    {regrasSenha.maiuscula ? '✅' : '❌'} Uma letra maiúscula
-  </div>
-
-  <div style={{ color: regrasSenha.minuscula ? 'green' : '#999' }}>
-    {regrasSenha.minuscula ? '✅' : '❌'} Uma letra minúscula
-  </div>
-
-  <div style={{ color: regrasSenha.numero ? 'green' : '#999' }}>
-    {regrasSenha.numero ? '✅' : '❌'} Um número
-  </div>
-
-  <div style={{ color: regrasSenha.especial ? 'green' : '#999' }}>
-    {regrasSenha.especial ? '✅' : '❌'} Um caractere especial
-  </div>
-
-  <div style={{ color: regrasSenha.iguais ? 'green' : '#999' }}>
-    {regrasSenha.iguais ? '✅' : '❌'} As senhas coincidem
-  </div>
-</div>
                 <div className="field col-span-2 code-input"><label>Código de acesso:</label><input type="text" placeholder="Ex: Autim-2024" maxLength={12} value={form.codigo}onChange={(e) =>setForm({...form,codigo: e.target.value})}/></div>
                 <div className="col-span-2">
                   <div style={{ background:'#edfaf3', border:'1.5px solid var(--green)', borderRadius:16, padding:'14px 18px', display:'flex', alignItems:'center', gap:12, marginBottom:20 }}>
@@ -277,24 +315,6 @@ const handleCadastroInstituicao = async () => {
                   </div>
                 </div>
                 <div className="col-span-2">
-                  {
-  erro && (
-    <div
-      style={{
-        background:'#ffe5e5',
-        color:'#d00000',
-        padding:'12px',
-        borderRadius:12,
-        fontSize:13,
-        fontWeight:700,
-        marginBottom:16,
-        border:'1px solid #ffb3b3'
-      }}
-    >
-      ⚠️ {erro}
-    </div>
-  )
-}
                   <button className="btn btn-green" style={{ fontSize:15, padding:16 }} onClick={handleCadastroInstituicao}>Cadastrar Instituição</button>
                 </div>
                 <div className="col-span-2">
