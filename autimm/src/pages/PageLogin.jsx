@@ -4,84 +4,6 @@ import logoIconeBranco from '../assets/logo-icone-branco.png';
 
 export default function PageLogin({ navigate }) {
   const [tab, setTab] = useState('responsavel');
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-
-  const handleLoginUsuario = async () => {
-  const response = await fetch('http://localhost:3001/auth/login-usuario', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ email, senha })
-  });
-
-  const data = await response.json();
-
-  if (response.ok) {
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('usuario', JSON.stringify(data.usuario));
-    localStorage.setItem('userData', JSON.stringify(data.usuario));
-    if (data.usuario.alunoId) {
-      localStorage.setItem('alunoId', data.usuario.alunoId);
-    }
-
-    navigate('home-aluno');
-  } else {
-    alert(data.erro);
-  }
-};
-
-const handleLoginInstituicao = async () => {
-
-  try {
-
-    console.log('Tentando login...');
-
-    const response = await fetch(
-      'http://localhost:3001/auth/login-instituicao',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email,
-          senha
-        })
-      }
-    );
-
-    console.log('Response:', response);
-
-    const data = await response.json();
-
-    if (response.ok) {
-
-      localStorage.setItem('token', data.token);
-
-      localStorage.setItem(
-        'instituicao',
-        JSON.stringify(data.instituicao)
-      );
-
-      navigate('home-instituicao');
-
-    } else {
-
-      alert(data.erro || 'Erro no login');
-
-    }
-
-  } catch (error) {
-
-    console.log('ERRO LOGIN:', error);
-
-    alert('Erro ao conectar ao servidor');
-
-  }
-
-};
 
   return (
     <>
@@ -115,10 +37,10 @@ const handleLoginInstituicao = async () => {
           {tab === 'responsavel' && (
             <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
               <div style={{ display:'flex', flexDirection:'column', gap:14, marginBottom:22 }}>
-                <div className="field"><label>E-mail:</label><input className="login-input-focus" type="email" placeholder="Digite o e-mail..." onChange={(e) => setEmail(e.target.value)} /></div>
-                <div className="field"><label>Senha:</label><input className="login-input-focus" type="password" placeholder="Digite a senha..." onChange={(e) => setSenha(e.target.value)} /></div>
+                <div className="field"><label>E-mail:</label><input className="login-input-focus" type="email" placeholder="Digite o e-mail..." /></div>
+                <div className="field"><label>Senha:</label><input className="login-input-focus" type="password" placeholder="Digite a senha..." /></div>
               </div>
-              <button className="btn btn-blue" style={{ marginBottom:18 }} onClick={handleLoginUsuario}>Fazer Login</button>
+              <button className="btn btn-blue" style={{ marginBottom:18 }} onClick={() => navigate('home-aluno')}>Fazer Login</button>
               <div className="divider-row" style={{ marginBottom:14 }}><span>Ou entre com</span></div>
               <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                 <button className="btn-social btn-facebook"><svg viewBox="0 0 24 24" fill="white" style={{width:20,height:20}}><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook</button>
@@ -130,10 +52,10 @@ const handleLoginInstituicao = async () => {
           {tab === 'instituicao' && (
             <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
               <div style={{ display:'flex', flexDirection:'column', gap:14, marginBottom:22 }}>
-                <div className="field"><label>E-mail institucional:</label><input className="login-input-focus" type="email" placeholder="Digite o e-mail..." onChange={(e) => setEmail(e.target.value)}/></div>
-                <div className="field"><label>Senha:</label><input className="login-input-focus" type="password" placeholder="Digite a senha..." onChange={(e) => setSenha(e.target.value)} /></div>
+                <div className="field"><label>E-mail institucional:</label><input className="login-input-focus" type="email" placeholder="Digite o e-mail..." /></div>
+                <div className="field"><label>Senha:</label><input className="login-input-focus" type="password" placeholder="Digite a senha..." /></div>
               </div>
-              <button className="btn btn-green" style={{ marginBottom:16 }} onClick={handleLoginInstituicao}>Entrar como Instituição</button>
+              <button className="btn btn-green" style={{ marginBottom:16 }} onClick={() => navigate('home-instituicao')}>Entrar como Instituição</button>
               <div className="footer-link">Não tem conta? <span className="link" onClick={() => navigate('cadastro-instituicao')}>Cadastrar instituição</span></div>
             </div>
           )}
@@ -185,13 +107,13 @@ const handleLoginInstituicao = async () => {
               {tab === 'responsavel' && (
                 <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
                   <div style={{ display:'flex', flexDirection:'column', gap:16, marginBottom:8 }}>
-                    <div className="field"><label>E-mail:</label><input className="login-input-focus" type="email" placeholder="seu@email.com" onChange={(e) => setEmail(e.target.value)}/></div>
+                    <div className="field"><label>E-mail:</label><input className="login-input-focus" type="email" placeholder="seu@email.com" /></div>
                     <div>
-                      <div className="field" style={{ marginBottom:6 }}><label>Senha:</label><input className="login-input-focus" type="password" placeholder="••••••••" onChange={(e) => setSenha(e.target.value)} /></div>
+                      <div className="field" style={{ marginBottom:6 }}><label>Senha:</label><input className="login-input-focus" type="password" placeholder="••••••••" /></div>
                       <div style={{ textAlign:'right' }}><span className="forgot-link">Esqueci minha senha</span></div>
                     </div>
                   </div>
-                  <button className="btn btn-blue" style={{ marginTop:16, marginBottom:22, fontSize:15, padding:16 }} onClick={handleLoginUsuario}>Entrar</button>
+                  <button className="btn btn-blue" style={{ marginTop:16, marginBottom:22, fontSize:15, padding:16 }} onClick={() => navigate('home-aluno')}>Entrar</button>
                   <div className="divider-row" style={{ marginBottom:18 }}><span>ou continue com</span></div>
                   <div className="social-row" style={{ marginBottom:22 }}>
                     <button className="btn-social btn-google" style={{ fontSize:13 }}>
@@ -209,13 +131,13 @@ const handleLoginInstituicao = async () => {
               {tab === 'instituicao' && (
                 <div>
                   <div style={{ display:'flex', flexDirection:'column', gap:16, marginBottom:16 }}>
-                    <div className="field"><label>E-mail institucional:</label><input className="login-input-focus" type="email" placeholder="escola@instituicao.com"  onChange={(e) => setEmail(e.target.value)}/></div>
+                    <div className="field"><label>E-mail institucional:</label><input className="login-input-focus" type="email" placeholder="escola@instituicao.com" /></div>
                     <div>
-                      <div className="field" style={{ marginBottom:6 }}><label>Senha:</label><input className="login-input-focus" type="password" placeholder="••••••••" onChange={(e) => setSenha(e.target.value)}/></div>
+                      <div className="field" style={{ marginBottom:6 }}><label>Senha:</label><input className="login-input-focus" type="password" placeholder="••••••••" /></div>
                       <div style={{ textAlign:'right' }}><span className="forgot-link">Esqueci minha senha</span></div>
                     </div>
                   </div>
-                  <button className="btn btn-green" style={{ marginTop:8, marginBottom:20, fontSize:15, padding:16 }} onClick={handleLoginInstituicao} >Entrar como Instituição</button>
+                  <button className="btn btn-green" style={{ marginTop:8, marginBottom:20, fontSize:15, padding:16 }} onClick={() => navigate('home-instituicao')}>Entrar como Instituição</button>
                   <div className="footer-link">Não tem conta? <span className="link" style={{ color:'var(--green)' }} onClick={() => navigate('cadastro-instituicao')}>Cadastrar instituição</span></div>
                 </div>
               )}
