@@ -4,17 +4,24 @@ import PageIndex from './pages/PageIndex';
 import PageLogin from './pages/PageLogin';
 import PageCadastroResponsavel from './pages/PageCadastroResponsavel';
 import PageCadastroInstituicao from './pages/PageCadastroInstituicao';
+import PageCadastroEscolha from './pages/PageCadastroEscolha';
 import PageHomeAluno from './pages/PageHomeAluno';
 import PageHomeInstituicao from './pages/PageHomeInstituicao';
 import PageComunicacao from './pages/PageComunicacao';
 import PageAgenda from './pages/PageAgenda';
-import PagePerfil from './pages/PagePerfil';
-import PageConfig from './pages/PageConfig';
-import PageEditarPerfil from './pages/PageEditarPerfil';
+import PageRecuperarSenha from './pages/PageRecuperarSenha';
+import PageResetarSenha from './pages/PageResetarSenha';
 
 export default function App() {
-  const [page, setPage] = useState('index');
-  const navigate = (p) => setPage(p);
+  var [page, setPage] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('reset_token') ? 'resetar-senha' : 'index';
+    } catch (e) {
+      return 'index';
+    }
+  });
+  var navigate = function(p) { setPage(p); };
 
   return (
     <>
@@ -22,15 +29,15 @@ export default function App() {
       <div className="accent-bar"></div>
       {page === 'index'                && <PageIndex                navigate={navigate} />}
       {page === 'login'                && <PageLogin                navigate={navigate} />}
+      {page === 'recuperar-senha'      && <PageRecuperarSenha       navigate={navigate} />}
+      {page === 'resetar-senha'        && <PageResetarSenha         navigate={navigate} />}
+      {page === 'cadastro-escolha'     && <PageCadastroEscolha      navigate={navigate} />}
       {page === 'cadastro-responsavel' && <PageCadastroResponsavel  navigate={navigate} />}
       {page === 'cadastro-instituicao' && <PageCadastroInstituicao  navigate={navigate} />}
       {page === 'home-aluno'           && <PageHomeAluno            navigate={navigate} />}
       {page === 'home-instituicao'     && <PageHomeInstituicao      navigate={navigate} />}
       {page === 'comunicacao'          && <PageComunicacao          navigate={navigate} />}
       {page === 'agenda'               && <PageAgenda               navigate={navigate} />}
-      {page === 'perfil'               && <PagePerfil               navigate={navigate} />}
-      {page === 'config'               && <PageConfig               navigate={navigate} />}
-      {page === 'editar-perfil'        && <PageEditarPerfil         navigate={navigate} />}
     </>
   );
 }

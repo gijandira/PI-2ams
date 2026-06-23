@@ -2,14 +2,23 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
+const fs = require('fs');
 const notificationScheduler = require('./services/notificationScheduler');
 const emailService = require('./services/emailService');
 
 const app = express();
 
+// Criar pasta de uploads se não existir
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
+app.use('/uploads', express.static('uploads'));
 
 const authRoutes         = require('./routes/authroutes');
 const comunicacaoRoutes  = require('./routes/comunicacaoroutes');

@@ -20,7 +20,7 @@ export default function PageIndex({ navigate }) {
           </p>
         </div>
         <div style={{ width:'100%', display:'flex', flexDirection:'column', gap:13 }}>
-          <button className="btn btn-blue" onClick={() => navigate('cadastro-responsavel')}>Criar Conta</button>
+            <button className="btn btn-blue" onClick={() => navigate('cadastro-escolha')}>Criar Conta</button>
           <button className="btn btn-outline-blue" onClick={() => navigate('login')}>Fazer Login</button>
         </div>
       </div>
@@ -107,7 +107,7 @@ export default function PageIndex({ navigate }) {
             </div>
 
             <div style={{ display:'flex', flexDirection:'column', gap:12, animation:'fadeUp .7s ease .6s both' }}>
-              <button className="btn btn-blue" style={{ fontSize:16, padding:'17px' }} onClick={() => navigate('cadastro-responsavel')}>Criar Conta Gratuita</button>
+              <button className="btn btn-blue" style={{ fontSize:16, padding:'17px' }} onClick={() => navigate('cadastro-escolha')}>Criar Conta Gratuita</button>
               <button className="btn btn-outline-blue" style={{ fontSize:16, padding:'17px' }} onClick={() => navigate('login')}>Já tenho uma conta</button>
             </div>
 

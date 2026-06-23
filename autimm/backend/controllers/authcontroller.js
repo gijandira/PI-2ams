@@ -1,6 +1,12 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
+const emailService = require('../services/emailService');
+
+// ─── GERADOR DE SENHA TEMPORÁRIA ──────────────────────────────────────────────
+const gerarSenhaTemporaria = () => {
+  return Math.random().toString(36).slice(2, 12);
+};
 
 // ─── CADASTRO DE USUÁRIO (Responsável) ───────────────────────────────────────
 exports.cadastroUsuario = async (req, res) => {
@@ -22,7 +28,7 @@ if (!senhaForte.test(senha)) {
 
     // Verificar se email já existe
     const [existente] = await pool.query(
-      'SELECT USU_ID FROM USUARIO WHERE USU_EMAIL = ?',
+      'SELECT USU_ID FROM USUARIO WHERE BINARY USU_EMAIL = ?',
       [email]
     );
     if (existente.length > 0) {
@@ -42,9 +48,11 @@ if (!senhaForte.test(senha)) {
     // Criar aluno vinculado
     let alunoId = null;
     if (nomeAluno) {
+      const fotoUrl = req.file ? `/uploads/${req.file.filename}` : null;
+      
       const [resultAluno] = await pool.query(
-        `INSERT INTO ALUNO (ALU_NOME) VALUES (?)`,
-        [nomeAluno]
+        `INSERT INTO ALUNO (ALU_NOME, ALU_URLAVATAR) VALUES (?, ?)`,
+        [nomeAluno, fotoUrl]
       );
       alunoId = resultAluno.insertId;
 
@@ -93,7 +101,7 @@ exports.cadastroInstituicao = async (req, res) => {
     }
 
     const [existente] = await pool.query(
-      'SELECT INS_ID FROM INSTITUICAO WHERE INS_EMAIL = ?',
+      'SELECT INS_ID FROM INSTITUICAO WHERE BINARY INS_EMAIL = ?',
       [email]
     );
     if (existente.length > 0) {
@@ -137,7 +145,7 @@ exports.loginUsuario = async (req, res) => {
     }
 
     const [usuarios] = await pool.query(
-      'SELECT * FROM USUARIO WHERE USU_EMAIL = ?',
+      'SELECT * FROM USUARIO WHERE BINARY USU_EMAIL = ?',
       [email]
     );
 
@@ -195,7 +203,7 @@ exports.loginInstituicao = async (req, res) => {
     }
 
     const [instituicoes] = await pool.query(
-      'SELECT * FROM INSTITUICAO WHERE INS_EMAIL = ?',
+      'SELECT * FROM INSTITUICAO WHERE BINARY INS_EMAIL = ?',
       [email]
     );
 
@@ -276,6 +284,109 @@ exports.perfilUsuario = async (req, res) => {
 
   } catch (error) {
     console.error('Erro em perfilUsuario:', error);
+    return res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
+};
+
+// ─── RECUPERAÇÃO DE SENHA ─────────────────────────────────────────────────────
+exports.recuperarSenha = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ erro: 'E-mail é obrigatório.' });
+    }
+
+    const trimmedEmail = email.trim();
+
+    const [usuarios] = await pool.query(
+      'SELECT * FROM USUARIO WHERE BINARY USU_EMAIL = ?',
+      [trimmedEmail]
+    );
+    const [instituicoes] = await pool.query(
+      'SELECT * FROM INSTITUICAO WHERE BINARY INS_EMAIL = ?',
+      [trimmedEmail]
+    );
+
+    if (usuarios.length === 0 && instituicoes.length === 0) {
+      return res.status(404).json({ erro: 'E-mail não cadastrado.' });
+    }
+
+    let nomeDestino = trimmedEmail;
+    let destinatario = null;
+    let tabela = null;
+    let idCampo = null;
+    let idValor = null;
+
+    if (usuarios.length > 0) {
+      destinatario = usuarios[0];
+      tabela = 'USUARIO';
+      idCampo = 'USU_ID';
+      idValor = destinatario.USU_ID;
+      nomeDestino = destinatario.USU_NOME || trimmedEmail;
+    } else {
+      destinatario = instituicoes[0];
+      tabela = 'INSTITUICAO';
+      idCampo = 'INS_ID';
+      idValor = destinatario.INS_ID;
+      nomeDestino = destinatario.INS_NOME || trimmedEmail;
+    }
+
+    // Gerar token JWT de recuperação (válido por 1 hora)
+    const token = jwt.sign({ id: idValor, tabela, tipo: 'recuperacao' }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5174';
+
+    const emailEnviado = await emailService.enviarEmailRecuperacaoSenha(trimmedEmail, nomeDestino, token, frontendUrl);
+
+    if (!emailEnviado.sucesso) {
+      console.error('Erro no envio de email de recuperação:', emailEnviado.erro);
+      return res.status(500).json({ erro: 'Não foi possível enviar o e-mail de recuperação.' });
+    }
+
+    return res.json({ mensagem: 'Enviamos um e-mail com instruções para redefinir sua senha. Verifique sua caixa de entrada.' });
+  } catch (error) {
+    console.error('Erro em recuperarSenha:', error);
+    return res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
+};
+
+// ─── RESETAR SENHA (usando token) ─────────────────────────────────────────────
+exports.resetarSenha = async (req, res) => {
+  try {
+    const { token, novaSenha } = req.body;
+
+    if (!token || !novaSenha) {
+      return res.status(400).json({ erro: 'Token e nova senha são obrigatórios.' });
+    }
+
+    let payload;
+    try {
+      payload = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      return res.status(400).json({ erro: 'Token inválido ou expirado.' });
+    }
+
+    if (payload.tipo !== 'recuperacao') {
+      return res.status(400).json({ erro: 'Token inválido.' });
+    }
+
+    const idValor = payload.id;
+    const tabela = payload.tabela;
+
+    const senhaCriptografada = await bcrypt.hash(novaSenha, 10);
+
+    const idCampo = tabela === 'USUARIO' ? 'USU_ID' : 'INS_ID';
+    const senhaCampo = tabela === 'USUARIO' ? 'USU_SENHA' : 'INS_SENHA';
+
+    await pool.query(
+      `UPDATE ${tabela} SET ${senhaCampo} = ? WHERE ${idCampo} = ?`,
+      [senhaCriptografada, idValor]
+    );
+
+    return res.json({ mensagem: 'Senha atualizada com sucesso.' });
+  } catch (error) {
+    console.error('Erro em resetarSenha:', error);
     return res.status(500).json({ erro: 'Erro interno do servidor.' });
   }
 };

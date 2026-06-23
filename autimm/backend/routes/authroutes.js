@@ -3,11 +3,13 @@ const express = require('express');
 const router = express.Router();
 
 const verificarToken = require('../middlewares/auth');
+const upload = require('../config/multerConfig');
 
 const authController = require('../controllers/authcontroller');
 
 router.post(
   '/cadastro-usuario',
+  upload.single('fotoAluno'),
   authController.cadastroUsuario
 );
 
@@ -29,6 +31,16 @@ router.post(
 router.get(
   '/perfil-usuario',
   authController.perfilUsuario
+);
+
+router.post(
+  '/recuperar-senha',
+  authController.recuperarSenha
+);
+
+router.post(
+  '/resetar-senha',
+  authController.resetarSenha
 );
 
 router.get(

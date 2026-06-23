@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 16/06/2026 às 05:09
+-- Tempo de geração: 16/06/2026 às 15:19
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -52,7 +52,8 @@ INSERT INTO `aluno` (`ALU_ID`, `ALU_NOME`, `ALU_DTNASC`, `ALU_DIAGNOSTICO`, `ALU
 (5, 'Zidane', NULL, NULL, 0, 0, NULL, NULL, '2026-05-25 22:55:07', '2026-05-25 22:55:07', NULL, NULL),
 (6, 'Zidane', NULL, NULL, 0, 0, NULL, NULL, '2026-05-25 23:05:53', '2026-05-25 23:05:53', NULL, NULL),
 (7, 'Zidane', NULL, NULL, 0, 0, NULL, NULL, '2026-05-25 23:12:01', '2026-05-25 23:12:01', NULL, NULL),
-(8, 'Lucas', NULL, NULL, 0, 0, NULL, NULL, '2026-06-15 23:43:22', '2026-06-15 23:43:22', NULL, NULL);
+(8, 'Lucas', NULL, NULL, 0, 0, NULL, NULL, '2026-06-15 23:43:22', '2026-06-15 23:43:22', NULL, NULL),
+(9, 'Vinicius', NULL, NULL, 0, 0, NULL, NULL, '2026-06-16 08:22:55', '2026-06-16 08:22:55', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -88,7 +89,8 @@ INSERT INTO `aluno_usuario` (`ALU_ID`, `USU_ID`, `ALUS_DTVINCULO`) VALUES
 (5, 8, '2026-05-25 22:55:07'),
 (6, 9, '2026-05-25 23:05:53'),
 (7, 10, '2026-05-25 23:12:01'),
-(8, 11, '2026-06-15 23:43:22');
+(8, 11, '2026-06-15 23:43:22'),
+(9, 12, '2026-06-16 08:22:55');
 
 -- --------------------------------------------------------
 
@@ -165,6 +167,13 @@ CREATE TABLE `evento_agenda` (
   `EVE_DTCAD` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Despejando dados para a tabela `evento_agenda`
+--
+
+INSERT INTO `evento_agenda` (`EVE_ID`, `ALU_ID`, `EVE_TITULO`, `EVE_DESCRICAO`, `EVE_ETIQUETA`, `EVE_DT_INICIO`, `EVE_DT_FIM`, `EVE_DTCAD`) VALUES
+(1, 8, 'Consulta Médica', 'Dr. João Ortopedista', 'saude', '2026-06-16 12:00:00', '2026-06-16 13:00:00', '2026-06-16 08:29:50');
+
 -- --------------------------------------------------------
 
 --
@@ -188,12 +197,19 @@ CREATE TABLE `frase` (
 CREATE TABLE `instituicao` (
   `INS_ID` int(10) UNSIGNED NOT NULL,
   `INS_NOME` varchar(150) NOT NULL,
-  `INS_TELEFONE` varchar(20) NOT NULL,
+  `INS_TELEFONE` varchar(11) NOT NULL,
   `INS_EMAIL` varchar(100) NOT NULL,
   `INS_SENHA` varchar(255) NOT NULL,
   `INS_COD_ACESSO` varchar(50) NOT NULL,
   `INS_DTCAD` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Despejando dados para a tabela `instituicao`
+--
+
+INSERT INTO `instituicao` (`INS_ID`, `INS_NOME`, `INS_TELEFONE`, `INS_EMAIL`, `INS_SENHA`, `INS_COD_ACESSO`, `INS_DTCAD`) VALUES
+(1, 'Fatec Taubaté', '12666554433', 'Taubaté@fatec.com.br', '$2b$10$rDfCpqesimaVBDNSP0/INubWlsJ3TGk6IHRGK3QZJ2gZ47dZ9j1hC', 'INS-S24ABU', '2026-06-16 08:36:49');
 
 -- --------------------------------------------------------
 
@@ -232,16 +248,10 @@ CREATE TABLE `midia` (
 --
 
 INSERT INTO `midia` (`MID_ID`, `MID_TIPO`, `MID_URL`, `MID_ROTULO`, `MID_EMOJI`, `MID_BG_COLOR`, `MID_SHADOW_COLOR`, `CAT_ID`, `MID_DTCAD`) VALUES
-(1, 'audio', '', 'Feliz', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
-(2, 'audio', '', 'Triste', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
-(3, 'audio', '', 'Com raiva', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
-(4, 'audio', '', 'Assustado', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
-(5, 'audio', '', 'Cansado', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
-(6, 'audio', '', 'Frustrado', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
-(7, 'audio', '', 'Água', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
-(8, 'audio', '', 'Comida', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
-(9, 'audio', '', 'Banheiro', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
-(10, 'audio', '', 'Descanso', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(7, 'audio', '', 'Água', '💧', '#38a7fb', 'rgba(56,167,251,.45)', 5, '2026-05-26 00:58:13'),
+(8, 'audio', '', 'Comida', '🍔', '#fdbe2d', 'rgba(253,190,45,.45)', 5, '2026-05-26 00:58:13'),
+(9, 'audio', '', 'Banheiro', '🚽', '#48c378', 'rgba(72,195,120,.45)', 5, '2026-05-26 00:58:13'),
+(10, 'audio', '', 'Descanso', '😴', '#5c6bc0', 'rgba(92,107,192,.4)', 5, '2026-05-26 00:58:13'),
 (11, 'audio', '', 'Abraço', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
 (12, 'audio', '', 'Ajuda', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
 (13, 'audio', '', 'Quero ir', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
@@ -250,13 +260,13 @@ INSERT INTO `midia` (`MID_ID`, `MID_TIPO`, `MID_URL`, `MID_ROTULO`, `MID_EMOJI`,
 (16, 'audio', '', 'Não', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
 (17, 'audio', '', 'Espera', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
 (18, 'audio', '', 'Obrigado', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
-(19, 'audio', 'speech:Feliz', 'Feliz', '😄', '#fdbe2d', 'rgba(253,190,45,.45)', NULL, '2026-05-25 21:58:40'),
-(20, 'audio', 'speech:Triste', 'Triste', '😢', '#38a7fb', 'rgba(56,167,251,.45)', NULL, '2026-05-25 21:58:40'),
-(21, 'audio', 'speech:Bravo', 'Bravo', '😠', '#e94542', 'rgba(233,69,66,.45)', NULL, '2026-05-25 21:58:40'),
-(22, 'audio', 'speech:Assustado', 'Assustado', '😨', '#e9589a', 'rgba(233,88,154,.45)', NULL, '2026-05-25 21:58:40'),
-(23, 'audio', 'speech:Cansado', 'Cansado', '😴', '#a1887f', 'rgba(161,136,127,.4)', NULL, '2026-05-25 21:58:40'),
-(24, 'audio', 'speech:Frustrado', 'Frustrado', '😤', '#48c378', 'rgba(72,195,120,.45)', NULL, '2026-05-25 21:58:40'),
-(25, 'audio', 'speech:Fome', 'Fome', '🍔', '#fdbe2d', 'rgba(253,190,45,.45)', NULL, '2026-05-25 21:58:40'),
+(19, 'audio', 'speech:Feliz', 'Feliz', '😄', '#fdbe2d', 'rgba(253,190,45,.45)', 4, '2026-05-25 21:58:40'),
+(20, 'audio', 'speech:Triste', 'Triste', '😢', '#38a7fb', 'rgba(56,167,251,.45)', 4, '2026-05-25 21:58:40'),
+(21, 'audio', 'speech:Bravo', 'Bravo', '😠', '#e94542', 'rgba(233,69,66,.45)', 4, '2026-05-25 21:58:40'),
+(22, 'audio', 'speech:Assustado', 'Assustado', '😨', '#e9589a', 'rgba(233,88,154,.45)', 4, '2026-05-25 21:58:40'),
+(23, 'audio', 'speech:Cansado', 'Cansado', '😴', '#a1887f', 'rgba(161,136,127,.4)', 4, '2026-05-25 21:58:40'),
+(24, 'audio', 'speech:Frustrado', 'Frustrado', '😤', '#48c378', 'rgba(72,195,120,.45)', 4, '2026-05-25 21:58:40'),
+(25, 'audio', 'speech:Fome', 'Fome', '🍔', '#fdbe2d', 'rgba(253,190,45,.45)', 5, '2026-05-25 21:58:40'),
 (26, 'audio', 'speech:Sede', 'Sede', '💧', '#38a7fb', 'rgba(56,167,251,.45)', NULL, '2026-05-25 21:58:40'),
 (27, 'audio', 'speech:Banheiro', 'Banheiro', '🚽', '#48c378', 'rgba(72,195,120,.45)', NULL, '2026-05-25 21:58:40'),
 (28, 'audio', 'speech:Dormir', 'Dormir', '😴', '#5c6bc0', 'rgba(92,107,192,.4)', NULL, '2026-05-25 21:58:40'),
@@ -306,7 +316,8 @@ INSERT INTO `perfil` (`PER_ID`, `ALU_ID`, `PER_NIVEL`, `PER_DIFICULDADE`, `PER_P
 (3, 5, 'iniciante', NULL, NULL, '2026-05-25 22:55:07'),
 (4, 6, 'iniciante', NULL, NULL, '2026-05-25 23:05:53'),
 (5, 7, 'iniciante', NULL, NULL, '2026-05-25 23:12:01'),
-(6, 8, 'iniciante', NULL, NULL, '2026-06-15 23:43:22');
+(6, 8, 'iniciante', NULL, NULL, '2026-06-15 23:43:22'),
+(7, 9, 'iniciante', NULL, NULL, '2026-06-16 08:22:55');
 
 -- --------------------------------------------------------
 
@@ -410,7 +421,7 @@ CREATE TABLE `usuario` (
   `USU_ID` int(10) UNSIGNED NOT NULL,
   `USU_NOME` varchar(100) NOT NULL,
   `USU_EMAIL` varchar(150) NOT NULL,
-  `USU_TELEFONE` varchar(20) DEFAULT NULL,
+  `USU_TELEFONE` varchar(11) DEFAULT NULL,
   `USU_SENHA` varchar(255) NOT NULL,
   `USU_CARGO` enum('responsavel','auxiliar') NOT NULL,
   `USU_DTCAD` datetime NOT NULL DEFAULT current_timestamp(),
@@ -428,7 +439,8 @@ INSERT INTO `usuario` (`USU_ID`, `USU_NOME`, `USU_EMAIL`, `USU_TELEFONE`, `USU_S
 (8, 'Pelé', 'l@gmail.com', '12999638520', '$2b$10$3hr61C5e1wOT9/JakmVGf.//7JXi8fVqG3lUNh/O448X2D3cw53sq', 'responsavel', '2026-05-25 22:55:06', '2026-05-25 22:55:06'),
 (9, 'Pelé', 'Zidane@gmail.com', '12999634520', '$2b$10$VG1XUtuxGGAxEW2mnAm.SuQtHAt5eK81y1X8/J7MDEJS80KC2ajga', 'responsavel', '2026-05-25 23:05:53', '2026-05-25 23:05:53'),
 (10, 'Pele', 'Pele@gmail.com', '12996234512', '$2b$10$IuzRKfcsZ83.Y8ujjG2sMeYdQbp32jK3KwG.klHtOyiDUM9msgzYu', 'responsavel', '2026-05-25 23:12:00', '2026-05-25 23:12:00'),
-(11, 'Marcos', 'b@gmail.com', '12999887766', '$2b$10$7hbtGqSHTX9lTuET1W.HauTlGcUWUKfV9nlFCVscr1wOUfKdr7NrG', 'responsavel', '2026-06-15 23:43:22', '2026-06-15 23:43:22');
+(11, 'Marcos', 'b@gmail.com', '12999887766', '$2b$10$7hbtGqSHTX9lTuET1W.HauTlGcUWUKfV9nlFCVscr1wOUfKdr7NrG', 'responsavel', '2026-06-15 23:43:22', '2026-06-15 23:43:22'),
+(12, 'Daniel', 'd@gmail.com', '12111223344', '$2b$10$UG7RGu5wMA/C7R1IeENPzuxpACXh16LDLtn8y45/TsX5pJ00y8ghi', 'responsavel', '2026-06-16 08:22:55', '2026-06-16 08:22:55');
 
 --
 -- Índices para tabelas despejadas
@@ -588,7 +600,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de tabela `aluno`
 --
 ALTER TABLE `aluno`
-  MODIFY `ALU_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `ALU_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de tabela `atividade`
@@ -612,7 +624,7 @@ ALTER TABLE `configuracao_app`
 -- AUTO_INCREMENT de tabela `evento_agenda`
 --
 ALTER TABLE `evento_agenda`
-  MODIFY `EVE_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `EVE_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `frase`
@@ -624,7 +636,7 @@ ALTER TABLE `frase`
 -- AUTO_INCREMENT de tabela `instituicao`
 --
 ALTER TABLE `instituicao`
-  MODIFY `INS_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `INS_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `item_rotina`
@@ -642,7 +654,7 @@ ALTER TABLE `midia`
 -- AUTO_INCREMENT de tabela `perfil`
 --
 ALTER TABLE `perfil`
-  MODIFY `PER_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `PER_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de tabela `relatorio`
@@ -684,7 +696,7 @@ ALTER TABLE `subcategoria`
 -- AUTO_INCREMENT de tabela `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `USU_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `USU_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Restrições para tabelas despejadas
