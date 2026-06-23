@@ -6,6 +6,10 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD
+  },
+  tls: {
+    // Ignora a validação de certificado autoassinado no ambiente local
+    rejectUnauthorized: false
   }
 });
 
