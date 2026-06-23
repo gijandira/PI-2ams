@@ -241,3 +241,84 @@ exports.enviarEmailTeste = async () => {
     return { sucesso: false, erro: error.message };
   }
 };
+
+/**
+ * Enviar email de recuperação de senha
+ * @param {string} emailDestino - Email do usuário ou instituição
+ * @param {string} nomeDestino - Nome do usuário ou instituição
+ * @param {string} senhaTemporaria - Senha temporária gerada
+ */
+exports.enviarEmailRecuperacaoSenha = async (emailDestino, nomeDestino, token, frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173') => {
+  try {
+    // Se a FRONTEND_URL for localhost sem porta, acrescenta a porta padrão 5173
+    try {
+      const urlObj = new URL(frontendUrl);
+      if ((urlObj.hostname === 'localhost' || urlObj.hostname === '127.0.0.1') && !urlObj.port) {
+        urlObj.port = '5173';
+        frontendUrl = urlObj.toString().replace(/\/$/, '');
+      }
+    } catch (e) {
+      // se FRONTEND_URL não for um URL válido, usa o padrão
+      frontendUrl = 'http://localhost:5173';
+    }
+
+    const resetLink = `${frontendUrl}${frontendUrl.includes('?') ? '&' : '?'}reset_token=${encodeURIComponent(token)}`;
+
+    const htmlTemplate = `
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f9f9f9; }
+          .container { background: white; border-radius: 8px; overflow: hidden; max-width: 600px; margin: 0 auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
+          .header h1 { margin: 0; font-size: 20px; font-weight: 600; }
+          .brand { font-size: 14px; opacity: 0.9; }
+          .content { padding: 25px; }
+          .button { display:inline-block; padding: 12px 20px; background:#2f6fbf; color:white; border-radius:8px; text-decoration:none; font-weight:700; }
+          .footer { background: #f9f9f9; padding: 15px; text-align: center; font-size: 12px; color: #999; border-top: 1px solid #eee; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>AUTIM</h1>
+            <div class="brand">Seu assistente de bem-estar</div>
+          </div>
+          <div class="content">
+            <p style="font-size: 15px; color: #333;">Olá <strong>${nomeDestino}</strong>,</p>
+            <p style="font-size: 15px; color: #333; line-height: 1.6;">
+              Recebemos uma solicitação para redefinir a senha da sua conta. Clique no botão abaixo para criar uma nova senha. Este link expira em 1 hora.
+            </p>
+            <p style="text-align:center; margin:24px 0;">
+              <a class="button" href="${resetLink}" style="color:#ffffff !important; text-decoration:none;" target="_blank" rel="noreferrer noopener">Redefinir minha senha</a>
+            </p>
+            <p style="font-size: 13px; color: #999; line-height: 1.6;">
+              Se você não solicitou esta recuperação de senha, ignore este email e nenhuma alteração será feita.
+            </p>
+          </div>
+          <div class="footer">
+            AUTIM © 2026 - Todos os direitos reservados
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const mailOptions = {
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+      to: emailDestino,
+      subject: '🔐 Redefina sua senha - AUTIM',
+      html: htmlTemplate
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('✅ Email de recuperação (link) enviado:', info.messageId);
+    return { sucesso: true, messageId: info.messageId, link: resetLink };
+
+  } catch (error) {
+    console.error('❌ Erro ao enviar email de recuperação:', error);
+    return { sucesso: false, erro: error.message };
+  }
+};

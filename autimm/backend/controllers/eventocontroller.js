@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const notificationScheduler = require('../services/notificationScheduler');
 
 exports.criarEvento = async (req, res) => {
   try {
@@ -17,10 +18,16 @@ exports.criarEvento = async (req, res) => {
       [alunoId, titulo, descricao || null, etiqueta, dataInicio, dataFim]
     );
 
+    const eventoId = resultado.insertId;
+    
+    // Agendar notificação 1 hora antes do evento
+    const dataHoraEvento = new Date(dataInicio);
+    notificationScheduler.agendarNotificacaoEventoUmaHoraAntes(eventoId, dataHoraEvento, alunoId);
+
     res.status(201).json({
       sucesso: true,
-      eventoId: resultado.insertId,
-      mensagem: 'Evento criado com sucesso'
+      eventoId: eventoId,
+      mensagem: 'Evento criado com sucesso e notificação agendada'
     });
   } catch (error) {
     console.log(error);
@@ -65,6 +72,12 @@ exports.atualizarEvento = async (req, res) => {
     const { eventoId } = req.params;
     const { titulo, descricao, dataInicio, dataFim, etiqueta } = req.body;
 
+    // Buscar dados antigos do evento para cancelar notificação anterior
+    const [eventoAntigo] = await pool.query(
+      `SELECT ALU_ID FROM EVENTO_AGENDA WHERE EVE_ID = ?`,
+      [eventoId]
+    );
+
     const [resultado] = await pool.query(
       `UPDATE EVENTO_AGENDA 
        SET EVE_TITULO = ?, EVE_DESCRICAO = ?, EVE_ETIQUETA = ?, 
@@ -77,6 +90,19 @@ exports.atualizarEvento = async (req, res) => {
       return res.status(404).json({
         erro: 'Evento não encontrado'
       });
+    }
+
+    // Cancelar notificação anterior
+    notificationScheduler.cancelarNotificacaoEvento(eventoId);
+
+    // Agendar nova notificação 1 hora antes do novo horário
+    if (eventoAntigo.length > 0) {
+      const dataHoraEvento = new Date(dataInicio);
+      notificationScheduler.agendarNotificacaoEventoUmaHoraAntes(
+        eventoId, 
+        dataHoraEvento, 
+        eventoAntigo[0].ALU_ID
+      );
     }
 
     res.json({
@@ -105,6 +131,9 @@ exports.deletarEvento = async (req, res) => {
         erro: 'Evento não encontrado'
       });
     }
+
+    // Cancelar notificação agendada do evento
+    notificationScheduler.cancelarNotificacaoEvento(eventoId);
 
     res.json({
       sucesso: true,
