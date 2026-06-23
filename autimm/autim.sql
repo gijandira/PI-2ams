@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 26/05/2026 às 04:56
--- Versão do servidor: 10.4.28-MariaDB
--- Versão do PHP: 8.2.4
+-- Tempo de geração: 16/06/2026 às 05:09
+-- Versão do servidor: 10.4.32-MariaDB
+-- Versão do PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -51,7 +51,8 @@ INSERT INTO `aluno` (`ALU_ID`, `ALU_NOME`, `ALU_DTNASC`, `ALU_DIAGNOSTICO`, `ALU
 (4, 'Lucas', NULL, NULL, 0, 0, NULL, NULL, '2026-05-26 00:58:12', '2026-05-26 00:58:12', NULL, NULL),
 (5, 'Zidane', NULL, NULL, 0, 0, NULL, NULL, '2026-05-25 22:55:07', '2026-05-25 22:55:07', NULL, NULL),
 (6, 'Zidane', NULL, NULL, 0, 0, NULL, NULL, '2026-05-25 23:05:53', '2026-05-25 23:05:53', NULL, NULL),
-(7, 'Zidane', NULL, NULL, 0, 0, NULL, NULL, '2026-05-25 23:12:01', '2026-05-25 23:12:01', NULL, NULL);
+(7, 'Zidane', NULL, NULL, 0, 0, NULL, NULL, '2026-05-25 23:12:01', '2026-05-25 23:12:01', NULL, NULL),
+(8, 'Lucas', NULL, NULL, 0, 0, NULL, NULL, '2026-06-15 23:43:22', '2026-06-15 23:43:22', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -86,7 +87,8 @@ INSERT INTO `aluno_usuario` (`ALU_ID`, `USU_ID`, `ALUS_DTVINCULO`) VALUES
 (4, 6, '2026-05-26 00:58:12'),
 (5, 8, '2026-05-25 22:55:07'),
 (6, 9, '2026-05-25 23:05:53'),
-(7, 10, '2026-05-25 23:12:01');
+(7, 10, '2026-05-25 23:12:01'),
+(8, 11, '2026-06-15 23:43:22');
 
 -- --------------------------------------------------------
 
@@ -125,9 +127,6 @@ CREATE TABLE `categoria` (
 --
 
 INSERT INTO `categoria` (`CAT_ID`, `CAT_NOME`, `CAT_SLUG`, `CAT_ICONE`) VALUES
-(1, 'Sentimentos', '', '😊'),
-(2, 'Necessidades', '', '🍎'),
-(3, 'Ações', '', '🏃'),
 (4, '😊 Sentimentos', 'sentimentos', '😊'),
 (5, '🍽️ Necessidades', 'necessidades', '🍽️'),
 (6, '🏃 Ações', 'acoes', '🏃'),
@@ -233,42 +232,42 @@ CREATE TABLE `midia` (
 --
 
 INSERT INTO `midia` (`MID_ID`, `MID_TIPO`, `MID_URL`, `MID_ROTULO`, `MID_EMOJI`, `MID_BG_COLOR`, `MID_SHADOW_COLOR`, `CAT_ID`, `MID_DTCAD`) VALUES
-(1, 'audio', '', 'Feliz', NULL, NULL, NULL, 1, '2026-05-26 00:58:13'),
-(2, 'audio', '', 'Triste', NULL, NULL, NULL, 1, '2026-05-26 00:58:13'),
-(3, 'audio', '', 'Com raiva', NULL, NULL, NULL, 1, '2026-05-26 00:58:13'),
-(4, 'audio', '', 'Assustado', NULL, NULL, NULL, 1, '2026-05-26 00:58:13'),
-(5, 'audio', '', 'Cansado', NULL, NULL, NULL, 1, '2026-05-26 00:58:13'),
-(6, 'audio', '', 'Frustrado', NULL, NULL, NULL, 1, '2026-05-26 00:58:13'),
-(7, 'audio', '', 'Água', NULL, NULL, NULL, 2, '2026-05-26 00:58:13'),
-(8, 'audio', '', 'Comida', NULL, NULL, NULL, 2, '2026-05-26 00:58:13'),
-(9, 'audio', '', 'Banheiro', NULL, NULL, NULL, 2, '2026-05-26 00:58:13'),
-(10, 'audio', '', 'Descanso', NULL, NULL, NULL, 2, '2026-05-26 00:58:13'),
-(11, 'audio', '', 'Abraço', NULL, NULL, NULL, 2, '2026-05-26 00:58:13'),
-(12, 'audio', '', 'Ajuda', NULL, NULL, NULL, 2, '2026-05-26 00:58:13'),
-(13, 'audio', '', 'Quero ir', NULL, NULL, NULL, 3, '2026-05-26 00:58:13'),
-(14, 'audio', '', 'Não quero', NULL, NULL, NULL, 3, '2026-05-26 00:58:13'),
-(15, 'audio', '', 'Sim', NULL, NULL, NULL, 3, '2026-05-26 00:58:13'),
-(16, 'audio', '', 'Não', NULL, NULL, NULL, 3, '2026-05-26 00:58:13'),
-(17, 'audio', '', 'Espera', NULL, NULL, NULL, 3, '2026-05-26 00:58:13'),
-(18, 'audio', '', 'Obrigado', NULL, NULL, NULL, 3, '2026-05-26 00:58:13'),
-(19, 'audio', 'speech:Feliz', 'Feliz', '😄', '#fdbe2d', 'rgba(253,190,45,.45)', 1, '2026-05-25 21:58:40'),
-(20, 'audio', 'speech:Triste', 'Triste', '😢', '#38a7fb', 'rgba(56,167,251,.45)', 1, '2026-05-25 21:58:40'),
-(21, 'audio', 'speech:Bravo', 'Bravo', '😠', '#e94542', 'rgba(233,69,66,.45)', 1, '2026-05-25 21:58:40'),
-(22, 'audio', 'speech:Assustado', 'Assustado', '😨', '#e9589a', 'rgba(233,88,154,.45)', 1, '2026-05-25 21:58:40'),
-(23, 'audio', 'speech:Cansado', 'Cansado', '😴', '#a1887f', 'rgba(161,136,127,.4)', 1, '2026-05-25 21:58:40'),
-(24, 'audio', 'speech:Frustrado', 'Frustrado', '😤', '#48c378', 'rgba(72,195,120,.45)', 1, '2026-05-25 21:58:40'),
-(25, 'audio', 'speech:Fome', 'Fome', '🍔', '#fdbe2d', 'rgba(253,190,45,.45)', 2, '2026-05-25 21:58:40'),
-(26, 'audio', 'speech:Sede', 'Sede', '💧', '#38a7fb', 'rgba(56,167,251,.45)', 2, '2026-05-25 21:58:40'),
-(27, 'audio', 'speech:Banheiro', 'Banheiro', '🚽', '#48c378', 'rgba(72,195,120,.45)', 2, '2026-05-25 21:58:40'),
-(28, 'audio', 'speech:Dormir', 'Dormir', '😴', '#5c6bc0', 'rgba(92,107,192,.4)', 2, '2026-05-25 21:58:40'),
-(29, 'audio', 'speech:Dor', 'Dor', '🤕', '#e94542', 'rgba(233,69,66,.45)', 2, '2026-05-25 21:58:40'),
-(30, 'audio', 'speech:Abraco', 'Abraço', '🤗', '#e9589a', 'rgba(233,88,154,.45)', 2, '2026-05-25 21:58:40'),
-(31, 'audio', 'speech:Correr', 'Correr', '🏃', '#48c378', 'rgba(72,195,120,.45)', 3, '2026-05-25 21:58:40'),
-(32, 'audio', 'speech:Brincar', 'Brincar', '🎮', '#38a7fb', 'rgba(56,167,251,.45)', 3, '2026-05-25 21:58:40'),
-(33, 'audio', 'speech:Estudar', 'Estudar', '📚', '#fdbe2d', 'rgba(253,190,45,.45)', 3, '2026-05-25 21:58:40'),
-(34, 'audio', 'speech:Musica', 'Música', '🎵', '#e9589a', 'rgba(233,88,154,.45)', 3, '2026-05-25 21:58:40'),
-(35, 'audio', 'speech:Comer', 'Comer', '🍽️', '#a1887f', 'rgba(161,136,127,.4)', 3, '2026-05-25 21:58:40'),
-(36, 'audio', 'speech:Banho', 'Banho', '🛁', '#5c6bc0', 'rgba(92,107,192,.4)', 3, '2026-05-25 21:58:40'),
+(1, 'audio', '', 'Feliz', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(2, 'audio', '', 'Triste', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(3, 'audio', '', 'Com raiva', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(4, 'audio', '', 'Assustado', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(5, 'audio', '', 'Cansado', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(6, 'audio', '', 'Frustrado', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(7, 'audio', '', 'Água', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(8, 'audio', '', 'Comida', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(9, 'audio', '', 'Banheiro', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(10, 'audio', '', 'Descanso', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(11, 'audio', '', 'Abraço', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(12, 'audio', '', 'Ajuda', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(13, 'audio', '', 'Quero ir', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(14, 'audio', '', 'Não quero', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(15, 'audio', '', 'Sim', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(16, 'audio', '', 'Não', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(17, 'audio', '', 'Espera', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(18, 'audio', '', 'Obrigado', NULL, NULL, NULL, NULL, '2026-05-26 00:58:13'),
+(19, 'audio', 'speech:Feliz', 'Feliz', '😄', '#fdbe2d', 'rgba(253,190,45,.45)', NULL, '2026-05-25 21:58:40'),
+(20, 'audio', 'speech:Triste', 'Triste', '😢', '#38a7fb', 'rgba(56,167,251,.45)', NULL, '2026-05-25 21:58:40'),
+(21, 'audio', 'speech:Bravo', 'Bravo', '😠', '#e94542', 'rgba(233,69,66,.45)', NULL, '2026-05-25 21:58:40'),
+(22, 'audio', 'speech:Assustado', 'Assustado', '😨', '#e9589a', 'rgba(233,88,154,.45)', NULL, '2026-05-25 21:58:40'),
+(23, 'audio', 'speech:Cansado', 'Cansado', '😴', '#a1887f', 'rgba(161,136,127,.4)', NULL, '2026-05-25 21:58:40'),
+(24, 'audio', 'speech:Frustrado', 'Frustrado', '😤', '#48c378', 'rgba(72,195,120,.45)', NULL, '2026-05-25 21:58:40'),
+(25, 'audio', 'speech:Fome', 'Fome', '🍔', '#fdbe2d', 'rgba(253,190,45,.45)', NULL, '2026-05-25 21:58:40'),
+(26, 'audio', 'speech:Sede', 'Sede', '💧', '#38a7fb', 'rgba(56,167,251,.45)', NULL, '2026-05-25 21:58:40'),
+(27, 'audio', 'speech:Banheiro', 'Banheiro', '🚽', '#48c378', 'rgba(72,195,120,.45)', NULL, '2026-05-25 21:58:40'),
+(28, 'audio', 'speech:Dormir', 'Dormir', '😴', '#5c6bc0', 'rgba(92,107,192,.4)', NULL, '2026-05-25 21:58:40'),
+(29, 'audio', 'speech:Dor', 'Dor', '🤕', '#e94542', 'rgba(233,69,66,.45)', NULL, '2026-05-25 21:58:40'),
+(30, 'audio', 'speech:Abraco', 'Abraço', '🤗', '#e9589a', 'rgba(233,88,154,.45)', NULL, '2026-05-25 21:58:40'),
+(31, 'audio', 'speech:Correr', 'Correr', '🏃', '#48c378', 'rgba(72,195,120,.45)', NULL, '2026-05-25 21:58:40'),
+(32, 'audio', 'speech:Brincar', 'Brincar', '🎮', '#38a7fb', 'rgba(56,167,251,.45)', NULL, '2026-05-25 21:58:40'),
+(33, 'audio', 'speech:Estudar', 'Estudar', '📚', '#fdbe2d', 'rgba(253,190,45,.45)', NULL, '2026-05-25 21:58:40'),
+(34, 'audio', 'speech:Musica', 'Música', '🎵', '#e9589a', 'rgba(233,88,154,.45)', NULL, '2026-05-25 21:58:40'),
+(35, 'audio', 'speech:Comer', 'Comer', '🍽️', '#a1887f', 'rgba(161,136,127,.4)', NULL, '2026-05-25 21:58:40'),
+(36, 'audio', 'speech:Banho', 'Banho', '🛁', '#5c6bc0', 'rgba(92,107,192,.4)', NULL, '2026-05-25 21:58:40'),
 (37, 'audio', 'speech:Escola', 'Escola', '🏫', '#38a7fb', 'rgba(56,167,251,.45)', 4, '2026-05-25 21:58:41'),
 (38, 'audio', 'speech:Casa', 'Casa', '🏠', '#48c378', 'rgba(72,195,120,.45)', 4, '2026-05-25 21:58:41'),
 (39, 'audio', 'speech:Hospital', 'Hospital', '🏥', '#e94542', 'rgba(233,69,66,.45)', 4, '2026-05-25 21:58:41'),
@@ -306,7 +305,8 @@ INSERT INTO `perfil` (`PER_ID`, `ALU_ID`, `PER_NIVEL`, `PER_DIFICULDADE`, `PER_P
 (2, 4, 'iniciante', NULL, NULL, '2026-05-26 00:58:12'),
 (3, 5, 'iniciante', NULL, NULL, '2026-05-25 22:55:07'),
 (4, 6, 'iniciante', NULL, NULL, '2026-05-25 23:05:53'),
-(5, 7, 'iniciante', NULL, NULL, '2026-05-25 23:12:01');
+(5, 7, 'iniciante', NULL, NULL, '2026-05-25 23:12:01'),
+(6, 8, 'iniciante', NULL, NULL, '2026-06-15 23:43:22');
 
 -- --------------------------------------------------------
 
@@ -427,7 +427,8 @@ INSERT INTO `usuario` (`USU_ID`, `USU_NOME`, `USU_EMAIL`, `USU_TELEFONE`, `USU_S
 (7, 'b', 'a@gmail.com', '1', '$2b$10$TOvx63mwxWR4DAzwYB6iA.DFRUDwrjn5lCAw8o8WmNkpMUVSIc3VG', 'responsavel', '2026-05-26 00:58:12', '2026-05-26 00:58:12'),
 (8, 'Pelé', 'l@gmail.com', '12999638520', '$2b$10$3hr61C5e1wOT9/JakmVGf.//7JXi8fVqG3lUNh/O448X2D3cw53sq', 'responsavel', '2026-05-25 22:55:06', '2026-05-25 22:55:06'),
 (9, 'Pelé', 'Zidane@gmail.com', '12999634520', '$2b$10$VG1XUtuxGGAxEW2mnAm.SuQtHAt5eK81y1X8/J7MDEJS80KC2ajga', 'responsavel', '2026-05-25 23:05:53', '2026-05-25 23:05:53'),
-(10, 'Pele', 'Pele@gmail.com', '12996234512', '$2b$10$IuzRKfcsZ83.Y8ujjG2sMeYdQbp32jK3KwG.klHtOyiDUM9msgzYu', 'responsavel', '2026-05-25 23:12:00', '2026-05-25 23:12:00');
+(10, 'Pele', 'Pele@gmail.com', '12996234512', '$2b$10$IuzRKfcsZ83.Y8ujjG2sMeYdQbp32jK3KwG.klHtOyiDUM9msgzYu', 'responsavel', '2026-05-25 23:12:00', '2026-05-25 23:12:00'),
+(11, 'Marcos', 'b@gmail.com', '12999887766', '$2b$10$7hbtGqSHTX9lTuET1W.HauTlGcUWUKfV9nlFCVscr1wOUfKdr7NrG', 'responsavel', '2026-06-15 23:43:22', '2026-06-15 23:43:22');
 
 --
 -- Índices para tabelas despejadas
@@ -587,7 +588,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de tabela `aluno`
 --
 ALTER TABLE `aluno`
-  MODIFY `ALU_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `ALU_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de tabela `atividade`
@@ -641,7 +642,7 @@ ALTER TABLE `midia`
 -- AUTO_INCREMENT de tabela `perfil`
 --
 ALTER TABLE `perfil`
-  MODIFY `PER_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `PER_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de tabela `relatorio`
@@ -683,7 +684,7 @@ ALTER TABLE `subcategoria`
 -- AUTO_INCREMENT de tabela `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `USU_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `USU_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Restrições para tabelas despejadas
