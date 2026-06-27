@@ -1,47 +1,76 @@
-# 🧩 Autim — Plataforma de Comunicação Assistiva com IA
+<div align="center">
+  <img src="autim/src/assets/logo-icone.png" alt="Autim Logo" width="160"/>
 
-<p align="center">
-  <img src="docs/banner.png" alt="Autim Banner" width="800"/>
-</p>
+  # 🧩 Autim | Inclusão Inteligente
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow?style=for-the-badge"/>
-  <img src="https://img.shields.io/badge/Curso-ADS-blue?style=for-the-badge"/>
-  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge"/>
-</p>
+  > Plataforma de comunicação assistiva para pessoas com TEA não verbais, utilizando IA para adaptação personalizada.
+
+  ![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow?style=for-the-badge)
+  ![Curso](https://img.shields.io/badge/2º%20ADS-AMS-blue?style=for-the-badge)
+  ![FATEC](https://img.shields.io/badge/FATEC-Taubaté-red?style=for-the-badge)
+  ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+
+  <sub>🚀 Projeto Integrador | 2º ADS-AMS — FATEC Taubaté</sub><br>
+  <sub>Foco: Inclusão, acessibilidade e tecnologia adaptativa</sub>
+</div>
 
 ---
 
 ## 📋 Índice
 
-- [Sobre o Projeto](#-sobre-o-projeto)
-- [Tecnologias](#-tecnologias)
+- [Missão do Produto](#-missão-do-produto)
+- [Problema](#-problema)
+- [Solução](#-descrição-da-solução)
+- [Funcionalidades](#️-funcionalidades)
+- [Arquitetura](#️-arquitetura)
+- [Tecnologias](#-tecnologias-utilizadas)
+- [Como Executar](#️-como-executar)
+- [Segurança](#-segurança)
+- [Sprints](#-planejamento-de-entregas)
+- [Diferenciais](#-diferenciais)
 - [Estrutura do Repositório](#-estrutura-do-repositório)
-- [Como Executar](#-como-executar)
-- [Sprints](#-sprints)
-- [Backlog do Produto](#-backlog-do-produto)
 - [Equipe](#-equipe)
 
 ---
 
-## 💡 Sobre o Projeto
+## 🤩 Missão do Produto
 
-O **Autim** é uma plataforma de comunicação assistiva voltada para pessoas com **Transtorno do Espectro Autista (TEA) não verbal**. Utilizando **Inteligência Artificial**, a plataforma se adapta de forma personalizada ao perfil de cada usuário, facilitando a comunicação e promovendo maior autonomia e inclusão.
-
-> 📌 **Status do projeto:** 🟡 Em desenvolvimento
+Prover voz, autonomia e inclusão para pessoas autistas não verbais por meio de uma arquitetura tecnológica adaptativa. Nossa missão é romper barreiras comunicativas e pedagógicas, transformando a interação humana através de uma interface intuitiva que respeita a neurodiversidade e elimina a sobrecarga sensorial.
 
 ---
 
-## 🛠 Tecnologias
+## ❗ Problema
 
-As seguintes tecnologias foram utilizadas no desenvolvimento do projeto:
+Pessoas autistas não verbais enfrentam dificuldades na comunicação e no aprendizado, muitas vezes dependendo de ferramentas pouco adaptativas e interfaces sobrecarregadas.
 
-<p align="left">
-  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React"/>
-  <img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java"/>
-  <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL"/>
-  <img src="https://img.shields.io/badge/REST%20API-005571?style=for-the-badge&logo=fastapi&logoColor=white" alt="REST API"/>
-</p>
+---
+
+## 💡 Descrição da Solução
+
+O **Autim** é um ecossistema multimodal que integra:
+
+- Comunicação assistiva e aprendizado personalizado
+- Atividades adaptativas com base em IA
+- Monitoramento automático e ajuste ao nível das atividades conforme o progresso do usuário
+- Conexão entre aluno, responsáveis e profissionais
+
+---
+
+## 🛠️ Funcionalidades
+
+| # | Funcionalidade | Descrição |
+|---|---|---|
+| 🗣️ | Comunicação por símbolos | Pictogramas com reprodução de áudio |
+| 🤖 | IA Adaptativa | Adaptação automática de atividades com Inteligência Artificial |
+| 📊 | Dashboard | Acompanhamento de progresso em tempo real |
+| 👤 | Sistema de Perfis | Admin, Profissional e Aluno |
+| 🖼️ | Biblioteca de Mídias | Conteúdo personalizado por perfil |
+
+---
+
+## 🏗️ Arquitetura
+
+<div align="center">
 
 | Camada | Tecnologia |
 |---|---|
@@ -50,58 +79,58 @@ As seguintes tecnologias foram utilizadas no desenvolvimento do projeto:
 | Banco de Dados | MySQL |
 | Comunicação | API REST |
 
+</div>
+
+📄 **Diagramas do sistema:** [DiagramasAUTIM.pdf](https://github.com/user-attachments/files/27103746/DiagramasAUTIMM.pdf)
+
 ---
 
-## 📁 Estrutura do Repositório
+## 🚀 Tecnologias Utilizadas
 
+<div align="center">
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"/>
+  <img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white"/>
+  <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white"/>
+  <img src="https://img.shields.io/badge/REST%20API-005571?style=for-the-badge&logo=fastapi&logoColor=white"/>
+  <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white"/>
+  <img src="https://img.shields.io/badge/VS%20Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white"/>
+</div>
+
+---
+
+## ▶️ Como Executar
+
+**Pré-requisitos:** Node.js, Java JDK e MySQL instalados.
+
+```bash
+# Clone o repositório
+git clone https://github.com/gijandira/PI-2ams.git
+
+# Entre na pasta
+cd autim
+
+# Instale as dependências do frontend
+npm install
+
+# Rode o frontend
+npm start
 ```
-PI-2ams/
-│
-├── autim/                  # Código principal do sistema
-│   ├── BD/                 # Scripts e modelos do banco de dados
-│   ├── backend/            # Lógica de servidor
-│   ├── public/             # Arquivos públicos estáticos
-│   └── src/                # Código-fonte principal
-│
-├── backend/                # Configurações do backend
-│   ├── config/             # Configurações da aplicação
-│   ├── routes/             # Rotas da API
-│   ├── .env.example        # Exemplo de variáveis de ambiente
-│   └── .gitignore
-│
-├── utilitarios-backend/    # Utilitários de suporte ao backend
-│   └── response.php
-│
-├── docs/                   # Documentação, diagramas e imagens
-│
-└── README.md
-```
+
+> Para instruções detalhadas de backend e configuração do banco de dados, consulte o arquivo [`INSTRUCOES.txt`](autim/) dentro da pasta `autim/`.
 
 ---
 
-## ⚙️ Como Executar
+## 🔒 Segurança
 
-> Siga as instruções detalhadas no arquivo [`autim/INSTRUCOES.txt`](autim/) para configurar e executar o projeto localmente.
+O sistema segue os princípios da **LGPD**, garantindo:
 
-**Requisitos básicos:**
-- Node.js instalado (para o frontend React)
-- Java JDK instalado (para o backend)
-- MySQL configurado e rodando
-
-**Passo a passo resumido:**
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/gijandira/PI-2ams.git
-   ```
-2. Configure as variáveis de ambiente copiando o `.env.example`:
-   ```bash
-   cp backend/.env.example backend/.env
-   ```
-3. Siga as instruções do arquivo `INSTRUCOES.txt` para subir o banco e os serviços.
+- Criptografia de dados sensíveis
+- Controle de acesso por perfil de usuário
+- Proteção das informações dos usuários
 
 ---
 
-## 📅 Sprints
+## 📅 Planejamento de Entregas
 
 | Sprint | Descrição | Período | Status |
 |---|---|---|---|
@@ -113,28 +142,40 @@ PI-2ams/
 
 ---
 
-## 📌 Backlog do Produto
+## 🌟 Diferenciais
 
-### Requisitos Funcionais
+- Interface pensada para **evitar sobrecarga sensorial**
+- Uso de **IA** para personalização real do aprendizado
+- Foco em **inclusão e neurodiversidade**
+- Conexão direta entre aluno, responsáveis e profissionais de saúde
 
-| ID | Descrição |
-|---|---|
-| RF-01 | O sistema deve permitir cadastro e login de usuários (responsáveis e terapeutas) |
-| RF-02 | O sistema deve oferecer comunicação por símbolos visuais (pictogramas) |
-| RF-03 | A IA deve adaptar os painéis de comunicação conforme o perfil do usuário |
-| RF-04 | O sistema deve permitir o gerenciamento de perfis de usuários com TEA |
-| RF-05 | O sistema deve disponibilizar painéis de controle para responsáveis e terapeutas |
-| RF-06 | O sistema deve integrar as diferentes funcionalidades em uma plataforma unificada |
+---
 
-### Requisitos Não Funcionais
+## 📁 Estrutura do Repositório
 
-| ID | Descrição |
-|---|---|
-| RNF-01 | Interface acessível e intuitiva, adequada ao público-alvo |
-| RNF-02 | Sistema responsivo (web e mobile) |
-| RNF-03 | Autenticação segura com controle de acesso por perfil |
-| RNF-04 | Tempo de resposta adequado para uso em tempo real |
-| RNF-05 | Documentação técnica e manual do usuário disponíveis |
+```
+PI-2ams/
+│
+├── autim/                    # Código principal do sistema
+│   ├── BD/                   # Scripts e modelos do banco de dados
+│   ├── backend/              # Lógica de servidor
+│   ├── public/               # Arquivos públicos estáticos
+│   ├── src/                  # Código-fonte principal
+│   │   └── assets/           # Imagens e recursos estáticos
+│   │       └── logo-icone.png
+│   ├── INSTRUCOES.txt        # Como executar o projeto
+│   └── ...
+│
+├── backend/                  # Configurações do backend
+│   ├── config/               # Configurações da aplicação
+│   ├── routes/               # Rotas da API
+│   └── .env.example          # Exemplo de variáveis de ambiente
+│
+├── utilitarios-backend/      # Utilitários de suporte ao backend
+│   └── response.php
+│
+└── README.md
+```
 
 ---
 
@@ -180,6 +221,8 @@ PI-2ams/
 
 ---
 
-<p align="center">
-  Desenvolvido com 💙 pela turma 2AMS — Análise e Desenvolvimento de Sistemas
-</p>
+<div align="center">
+  <sub><i>"A tecnologia move o mundo, mas a empatia move a inclusão."</i></sub>
+  <br><br>
+  <b>FATEC Taubaté — 2026 | 2º ADS-AMS</b>
+</div>
