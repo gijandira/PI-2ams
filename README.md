@@ -1,103 +1,185 @@
-# 🧩 Autim | Inclusão Inteligente
-> Plataforma de comunicação assistiva para pessoas com TEA não verbais, utilizando IA para adaptação personalizada.
+# 🧩 Autim — Plataforma de Comunicação Assistiva com IA
 
-🚀Projeto Integrador</span> | 2º ADS-AMS - FATEC TAUBATÉ</strong>
-<br>
-Foco: Inclusão, acessibilidade e tecnologia adptativa 
+<p align="center">
+  <img src="docs/banner.png" alt="Autim Banner" width="800"/>
+</p>
 
-## 🤩 Missão do Produto
-* Prover voz, autonomia e inclusão para pessoas autistas não verbais por meio de uma arquitetura tecnológica adaptativa. Nossa missão é romper barreiras comunicativas e pedagógicas, transformando a interação humana através de uma interface intuitiva que respeita a neurodiversidade e elimina a sobrecarga sensorial.
+<p align="center">
+  <img src="https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Curso-ADS-blue?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge"/>
+</p>
 
-## ❗ Problema
-Pessoas autistas não verbais enfrentam dificuldades na comunicação e no aprendizado, muitas vezes dependendo de ferramentas pouco adaptativas e interfaces sobrecarregadas.
-
-## Descrição da Solução
-* O Autim é um ecossistema multimodal que integra: 
-- comunicação assistiva e aprendizado personalizado.
-- Atividades adaptativas com base em IA
-- Monitoramento automatico ao nível das atividades conforme o progresso do usuário.
-- Conexão entre aluno, responsáveis e profissionais
 ---
 
-### 🛠️ Engenharia e Escopo
+## 📋 Índice
 
->**Funcionalidades**
-- 🗣️ Comunicação por símbolos com reprodução de áudio
-- 🤖 Adaptação automática de atividades com IA
-- 📊 Dashboard de acompanhamento de progresso
-- 👤 Sistema de perfis (Admin, Profissional, Aluno)
-- 🖼️ Biblioteca de mídias personalizadas
+- [Sobre o Projeto](#-sobre-o-projeto)
+- [Tecnologias](#-tecnologias)
+- [Estrutura do Repositório](#-estrutura-do-repositório)
+- [Como Executar](#-como-executar)
+- [Sprints](#-sprints)
+- [Backlog do Produto](#-backlog-do-produto)
+- [Equipe](#-equipe)
 
-> ## 🏗️ Arquitetura
-
-- Frontend: React
-- Backend: Java
-- Banco de Dados: MySQL
-- Comunicação: API REST
 ---
-*Diagramas Autim*
-[DiagramasAUTIMM.pdf](https://github.com/user-attachments/files/27103746/DiagramasAUTIMM.pdf)
 
->**▶️ Como executar**
+## 💡 Sobre o Projeto
 
-bash
-**Clone o repositório**
-git clone https://github.com/seu-repo
+O **Autim** é uma plataforma de comunicação assistiva voltada para pessoas com **Transtorno do Espectro Autista (TEA) não verbal**. Utilizando **Inteligência Artificial**, a plataforma se adapta de forma personalizada ao perfil de cada usuário, facilitando a comunicação e promovendo maior autonomia e inclusão.
 
-**Entre na pasta**
-cd autim
+> 📌 **Status do projeto:** 🟡 Em desenvolvimento
 
-**Instale dependências (frontend)**
-npm install
+---
 
-**Rode o projeto**
-npm start
+## 🛠 Tecnologias
 
+As seguintes tecnologias foram utilizadas no desenvolvimento do projeto:
 
-Para Backend e Frontend
+<p align="left">
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React"/>
+  <img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java"/>
+  <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL"/>
+  <img src="https://img.shields.io/badge/REST%20API-005571?style=for-the-badge&logo=fastapi&logoColor=white" alt="REST API"/>
+</p>
 
->**📸 6. Adicione imagens do sistema**
+| Camada | Tecnologia |
+|---|---|
+| Frontend | React |
+| Backend | Java |
+| Banco de Dados | MySQL |
+| Comunicação | API REST |
 
-md
-📷 Demonstração
+---
 
-![Tela 1](link)
-![Tela 2](link)
+## 📁 Estrutura do Repositório
 
->**🔒 Segurança**
+```
+PI-2ams/
+│
+├── autim/                  # Código principal do sistema
+│   ├── BD/                 # Scripts e modelos do banco de dados
+│   ├── backend/            # Lógica de servidor
+│   ├── public/             # Arquivos públicos estáticos
+│   └── src/                # Código-fonte principal
+│
+├── backend/                # Configurações do backend
+│   ├── config/             # Configurações da aplicação
+│   ├── routes/             # Rotas da API
+│   ├── .env.example        # Exemplo de variáveis de ambiente
+│   └── .gitignore
+│
+├── utilitarios-backend/    # Utilitários de suporte ao backend
+│   └── response.php
+│
+├── docs/                   # Documentação, diagramas e imagens
+│
+└── README.md
+```
 
-O sistema segue princípios da LGPD, garantindo:
-- Criptografia de dados sensíveis
-- Controle de acesso por perfil
-- Proteção de informações dos usuários
+---
 
-### 🚀 Tecnologias Utilizadas
+## ⚙️ Como Executar
 
-<div align="center">
-      <img src="https://img.shields.io/badge/Java-green?style=for-the-badge&logo=openjdk&logoColor=white" height="22" />
-      <img src="https://img.shields.io/badge/React-blue?style=for-the-badge&logo=react&logoColor=white" height="22" />
-      <img src="https://img.shields.io/badge/MySQL-yellow?style=for-the-badge&logo=mysql&logoColor=white" height="22" />
-      <img src="https://img.shields.io/badge/GitHub-red?style=for-the-badge&logo=github&logoColor=white" height="22" />
-      <img src="https://img.shields.io/badge/VS_Code-blue?style=for-the-badge&logo=visual-studio-code&logoColor=white" height="22" />
+> Siga as instruções detalhadas no arquivo [`autim/INSTRUCOES.txt`](autim/) para configurar e executar o projeto localmente.
 
-## 📅 Planejamento de Entregas  
+**Requisitos básicos:**
+- Node.js instalado (para o frontend React)
+- Java JDK instalado (para o backend)
+- MySQL configurado e rodando
 
-- ✅ Sprint 1 – Base do sistema
-- 🔄 Sprint 2 – IA adaptativa
-- ⏳ Sprint 3 – Dashboards
-- ⏳ Sprint 4 – Integrações
-- ⏳ Sprint 5 – Finalização
+**Passo a passo resumido:**
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/gijandira/PI-2ams.git
+   ```
+2. Configure as variáveis de ambiente copiando o `.env.example`:
+   ```bash
+   cp backend/.env.example backend/.env
+   ```
+3. Siga as instruções do arquivo `INSTRUCOES.txt` para subir o banco e os serviços.
 
-  
-## 🌟 Diferenciais
+---
 
-- Interface pensada para evitar sobrecarga sensorial
-- Uso de IA para personalização real do aprendizado
-- Foco em inclusão e neurodiversidade
+## 📅 Sprints
 
-  
-<div align="center">
-  <sub><i>"A tecnologia move o mundo, mas a empatia move a inclusão."</i></sub>
-  <br>
-  <b>FATEC TAUBATÉ - 2026</b>
-</div>
+| Sprint | Descrição | Período | Status |
+|---|---|---|---|
+| 🔖 Sprint 1 | Estrutura Base e Identidade Visual | 24/03/2026 – 24/04/2026 | ✅ Concluída |
+| 🔖 Sprint 2 | Gerenciamento de Acessos e Perfis | 01/05/2026 – 31/05/2026 | ✅ Concluída |
+| 🔖 Sprint 3 | Novas Interfaces e Infraestrutura | 01/06/2026 – 30/06/2026 | 🔄 Em andamento |
+| 🔖 Sprint 4 | Integrações | A definir | ⏳ Aguardando |
+| 🔖 Sprint 5 | Finalização | A definir | ⏳ Aguardando |
+
+---
+
+## 📌 Backlog do Produto
+
+### Requisitos Funcionais
+
+| ID | Descrição |
+|---|---|
+| RF-01 | O sistema deve permitir cadastro e login de usuários (responsáveis e terapeutas) |
+| RF-02 | O sistema deve oferecer comunicação por símbolos visuais (pictogramas) |
+| RF-03 | A IA deve adaptar os painéis de comunicação conforme o perfil do usuário |
+| RF-04 | O sistema deve permitir o gerenciamento de perfis de usuários com TEA |
+| RF-05 | O sistema deve disponibilizar painéis de controle para responsáveis e terapeutas |
+| RF-06 | O sistema deve integrar as diferentes funcionalidades em uma plataforma unificada |
+
+### Requisitos Não Funcionais
+
+| ID | Descrição |
+|---|---|
+| RNF-01 | Interface acessível e intuitiva, adequada ao público-alvo |
+| RNF-02 | Sistema responsivo (web e mobile) |
+| RNF-03 | Autenticação segura com controle de acesso por perfil |
+| RNF-04 | Tempo de resposta adequado para uso em tempo real |
+| RNF-05 | Documentação técnica e manual do usuário disponíveis |
+
+---
+
+## 👥 Equipe
+
+### 🎯 Gestão
+
+| Nome | Função | GitHub | LinkedIn |
+|---|---|---|---|
+| Giovanna Yasmin | Product Owner | — | — |
+| Giovana Levindo | Scrum Master | — | — |
+
+### 💻 Frontend
+
+| Nome | Função | GitHub | LinkedIn |
+|---|---|---|---|
+| Iran Freitas ⭐ | Dev Frontend / Porta-voz | — | — |
+| Flávio Augusto | Dev Frontend | — | — |
+| Rodrigo Cunha | Dev Frontend | — | — |
+
+### ⚙️ Backend
+
+| Nome | Função | GitHub | LinkedIn |
+|---|---|---|---|
+| Lucas Lica ⭐ | Dev Backend / Porta-voz | — | — |
+| Vitor Gouvea | Dev Backend | — | — |
+| Vinicius Gouvea | Dev Backend | — | — |
+| João Vitor da Mota | Dev Backend | — | — |
+| Daniel Moreira | Dev Backend | — | — |
+| Gustavo Duran | Dev Backend | — | — |
+
+### 🏗️ Infraestrutura
+
+| Nome | Função | GitHub | LinkedIn |
+|---|---|---|---|
+| Giovana Jandira ⭐ | Infraestrutura / Porta-voz | — | — |
+| Felipe Caitano | Infraestrutura | — | — |
+| Glenda Lopes | Infraestrutura | — | — |
+| João Vitor Alvarenga | Infraestrutura | — | — |
+| Alex Sander | Infraestrutura | — | — |
+
+> ⭐ Porta-voz do time
+
+---
+
+<p align="center">
+  Desenvolvido com 💙 pela turma 2AMS — Análise e Desenvolvimento de Sistemas
+</p>
