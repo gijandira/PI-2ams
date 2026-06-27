@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="autim/src/assets/logo-icone.png" alt="Autim Logo" width="160"/>
+  <img src="https://raw.githubusercontent.com/gijandira/PI-2ams/refs/heads/main/autimm/src/assets/logo-icone.png" alt="Autim Logo" width="160"/>
 
   # 🧩 Autim | Inclusão Inteligente
 
