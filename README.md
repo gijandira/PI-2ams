@@ -116,7 +116,7 @@ npm install
 npm start
 ```
 
-> Para instruções detalhadas de backend e configuração do banco de dados, consulte o arquivo [`INSTRUCOES.txt`](autim/) dentro da pasta `autim/`.
+> Para instruções detalhadas de backend e configuração do banco de dados, consulte o arquivo [`Funcionar o projeto.txt`](autim/) dentro da pasta `autim/`.
 
 ---
 
