@@ -4,7 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
-const notificationScheduler = require('./services/notificationScheduler');
+//const notificationScheduler = require('./services/notificationScheduler');
 const emailService = require('./services/emailService');
 
 const app = express();
@@ -73,7 +73,7 @@ app.listen(3001, async () => {
   
   if (emailOk) {
     // Iniciar agendador de notificações
-    notificationScheduler.iniciarAgendadorNotificacoes();
+    //notificationScheduler.iniciarAgendadorNotificacoes();
     console.log('✅ Sistema de notificações ativo!');
   } else {
     console.warn('⚠️ Email não está configurado corretamente. Configure as variáveis no .env');

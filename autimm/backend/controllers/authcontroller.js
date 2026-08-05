@@ -288,6 +288,75 @@ exports.perfilUsuario = async (req, res) => {
   }
 };
 
+exports.atualizarPerfilUsuario = async (req, res) => {
+  try {
+    const { nomeAluno, dataNascimento, nomeResponsavel, telefone } = req.body;
+    const usuarioId = req.userId;
+    const fotoAluno = req.file ? `/uploads/${req.file.filename}` : null;
+
+    if (!usuarioId) {
+      return res.status(401).json({ erro: 'Usuário não autorizado.' });
+    }
+
+    if (!nomeResponsavel && !telefone && !nomeAluno && !dataNascimento && !fotoAluno) {
+      return res.status(400).json({ erro: 'Nenhum dado para atualizar.' });
+    }
+
+    const [usuarios] = await pool.query(
+      'SELECT USU_ID FROM USUARIO WHERE USU_ID = ?',
+      [usuarioId]
+    );
+
+    if (usuarios.length === 0) {
+      return res.status(404).json({ erro: 'Usuário não encontrado.' });
+    }
+
+    await pool.query(
+      'UPDATE USUARIO SET USU_NOME = ?, USU_TELEFONE = ? WHERE USU_ID = ?',
+      [nomeResponsavel || usuarios[0].USU_NOME, telefone || null, usuarioId]
+    );
+
+    const [alunos] = await pool.query(
+      `SELECT a.ALU_ID FROM ALUNO a
+       INNER JOIN ALUNO_USUARIO au ON a.ALU_ID = au.ALU_ID
+       WHERE au.USU_ID = ? LIMIT 1`,
+      [usuarioId]
+    );
+
+    if (alunos.length > 0) {
+      const alunoId = alunos[0].ALU_ID;
+      const fields = [];
+      const values = [];
+
+      if (nomeAluno !== undefined) {
+        fields.push('ALU_NOME = ?');
+        values.push(nomeAluno || null);
+      }
+      if (dataNascimento !== undefined) {
+        fields.push('ALU_DTNASC = ?');
+        values.push(dataNascimento || null);
+      }
+      if (fotoAluno) {
+        fields.push('ALU_URLAVATAR = ?');
+        values.push(fotoAluno);
+      }
+
+      if (fields.length > 0) {
+        values.push(alunoId);
+        await pool.query(
+          `UPDATE ALUNO SET ${fields.join(', ')} WHERE ALU_ID = ?`,
+          values
+        );
+      }
+    }
+
+    return res.json({ mensagem: 'Perfil atualizado com sucesso.' });
+  } catch (error) {
+    console.error('Erro em atualizarPerfilUsuario:', error);
+    return res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
+};
+
 // ─── RECUPERAÇÃO DE SENHA ─────────────────────────────────────────────────────
 exports.recuperarSenha = async (req, res) => {
   try {

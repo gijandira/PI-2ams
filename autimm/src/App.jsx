@@ -11,14 +11,18 @@ import PageComunicacao from './pages/PageComunicacao';
 import PageAgenda from './pages/PageAgenda';
 import PageRecuperarSenha from './pages/PageRecuperarSenha';
 import PageResetarSenha from './pages/PageResetarSenha';
+// 1. IMPORTAÇÕES ADICIONADAS:
+import PagePerfil from './pages/PagePerfil';
+import PageEditarPerfil from './pages/PageEditarPerfil';
 
 export default function App() {
   var [page, setPage] = useState(() => {
     try {
       const params = new URLSearchParams(window.location.search);
+      // 2. ALTERADO TEMPORARIAMENTE PARA 'perfil' PARA VOCÊ VER A TELA DIRETO NO NAVEGADOR
       return params.get('reset_token') ? 'resetar-senha' : 'index';
     } catch (e) {
-      return 'index';
+      return 'perfil';
     }
   });
   var navigate = function(p) { setPage(p); };
@@ -38,6 +42,9 @@ export default function App() {
       {page === 'home-instituicao'     && <PageHomeInstituicao      navigate={navigate} />}
       {page === 'comunicacao'          && <PageComunicacao          navigate={navigate} />}
       {page === 'agenda'               && <PageAgenda               navigate={navigate} />}
+      {/* 3. ROTAS DAS NOVAS TELAS ADICIONADAS AQUI: */}
+      {page === 'perfil'               && <PagePerfil               navigate={navigate} />}
+      {page === 'editar-perfil'        && <PageEditarPerfil         navigate={navigate} />}
     </>
   );
 }
