@@ -1,6 +1,7 @@
   import { useState, useEffect } from 'react';
   import logoIcone from '../assets/logo-icone.png';
   import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings } from '../components/icons';
+  import SidebarUser from '../components/SidebarUser';
 
   // Dados de fallback usados caso o backend não esteja disponível
   const CATEGORIES_FALLBACK = [
@@ -364,8 +365,8 @@
               );
             })}
             <div className="sidebar-spacer"></div>
-            <div className="sidebar-nav-item"><IconPerson />Perfil</div>
-            <div className="sidebar-nav-item"><IconSettings />Configurações</div>
+            <div className="sidebar-nav-item" onClick={() => navigate('perfil')}><IconPerson />Perfil</div>
+            <div className="sidebar-nav-item" onClick={() => navigate('config')}><IconSettings />Configurações</div>
             <div
     className="sidebar-nav-item"
     onClick={handleLogout}
@@ -376,19 +377,7 @@
   >
     🚪 Sair
   </div>
-            <div className="sidebar-user">
-              <div className="sidebar-avatar">
-                {usuario?.USU_NOME?.charAt(0)}
-              </div>
-              <div>
-                <div className="sidebar-user-name">
-                  {usuario?.USU_NOME}
-                </div>
-                <div className="sidebar-user-role">
-                  {usuario?.USU_CARGO}
-                </div>
-            </div>
-            </div>
+            <SidebarUser />
           </nav>
 
           <div className="main-content">

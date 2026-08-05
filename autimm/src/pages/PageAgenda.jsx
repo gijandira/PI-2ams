@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import logoIcone from '../assets/logo-icone.png';
 import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings } from '../components/icons';
+import SidebarUser from '../components/SidebarUser';
 
 // Função para gerar dias da semana (segunda a domingo)
 function generateWeekDays(weekOffset = 0) {
@@ -408,85 +409,97 @@ export default function PageAgenda({ navigate }) {
   const [userName, setUserName] = useState('Usuário');
   const [alunoId, setAlunoId] = useState(null);
 
-  // Carregar eventos e dados do usuário
+  // Carregar eventos e dados do usuário com trava de segurança
   useEffect(() => {
+    const token = localStorage.getItem('token');
     const userData = JSON.parse(localStorage.getItem('userData') || '{}');
     const aluId = localStorage.getItem('alunoId');
+    
+    // Se o usuário não estiver autenticado, limpa resíduos e barra o acesso
+    if (!token || !aluId) {
+      localStorage.clear();
+      navigate('login');
+      return;
+    }
     
     if (userData.nome) {
       setUserName(userData.nome);
     }
-    if (aluId) {
-      setAlunoId(parseInt(aluId));
-      carregarEventos(aluId);
-    } else {
-      setLoading(false);
-    }
-  }, []);
+    
+    setAlunoId(parseInt(aluId));
+    carregarEventos(aluId, token);
+  }, [navigate]);
 
-  const carregarEventos = async (alunoId) => {
+  const carregarEventos = async (alunoId, token) => {
     try {
-      const response = await fetch(`http://localhost:3001/evento/listar?alunoId=${alunoId}`);
-      if (response.ok) {
-        const data = await response.json();
-        
-        // Converte eventos do banco para o formato visual
-        const eventosFormatados = data.eventos.map(ev => {
-          const dataInicio = new Date(ev.EVE_DT_INICIO);
-          const dayIndex = dataInicio.getDay() === 0 ? 6 : dataInicio.getDay() - 1;
-          const hour = String(dataInicio.getHours()).padStart(2, '0');
-          const min = String(dataInicio.getMinutes()).padStart(2, '0');
+      // Adicionado o cabeçalho de Authorization com o Token para proteger a rota da API
+      const response = await fetch(`http://localhost:3001/evento/listar?alunoId=${alunoId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
 
-          const tagColors = {
-            licao: { bg:'#edfaf3', color:'#48c378', icon:'🎓' },
-            terapia: { bg:'#e8f4ff', color:'#38a7fb', icon:'🏥' },
-            saude: { bg:'#fff8e1', color:'#e0a000', icon:'💊' },
-            esporte: { bg:'#f5eeec', color:'#a1887f', icon:'🏃' },
-            lazer: { bg:'#fff0f7', color:'#e9589a', icon:'🎨' }
-          };
-          
-          const tag = tagColors[ev.EVE_ETIQUETA] || tagColors.licao;
-
-          return {
-            EVE_ID: ev.EVE_ID,
-            dayIndex,
-            hour,
-            min,
-            icon: tag.icon,
-            iconBg: tag.bg,
-            title: ev.EVE_TITULO,
-            sub: ev.EVE_DESCRICAO || '(sem descrição)',
-            tag: ev.EVE_ETIQUETA.charAt(0).toUpperCase() + ev.EVE_ETIQUETA.slice(1),
-            tagBg: tag.bg,
-            tagColor: tag.color,
-            accent: tag.color
-          };
-        });
-        
-        setDatabaseEvents(eventosFormatados);
+      if (!response.ok) {
+        throw new Error('Sessão expirada ou erro no servidor');
       }
+
+      const data = await response.json();
+      
+      // Converte eventos do banco para o formato visual
+      const eventosFormatados = data.eventos.map(ev => {
+        const dataInicio = new Date(ev.EVE_DT_INICIO);
+        const dayIndex = dataInicio.getDay() === 0 ? 6 : dataInicio.getDay() - 1;
+        const hour = String(dataInicio.getHours()).padStart(2, '0');
+        const min = String(dataInicio.getMinutes()).padStart(2, '0');
+
+        const tagColors = {
+          licao: { bg:'#edfaf3', color:'#48c378', icon:'🎓' },
+          terapia: { bg:'#e8f4ff', color:'#38a7fb', icon:'🏥' },
+          saude: { bg:'#fff8e1', color:'#e0a000', icon:'💊' },
+          esporte: { bg:'#f5eeec', color:'#a1887f', icon:'🏃' },
+          lazer: { bg:'#fff0f7', color:'#e9589a', icon:'🎨' }
+        };
+        
+        const tag = tagColors[ev.EVE_ETIQUETA] || tagColors.licao;
+
+        return {
+          EVE_ID: ev.EVE_ID,
+          dayIndex,
+          hour,
+          min,
+          icon: tag.icon,
+          iconBg: tag.bg,
+          title: ev.EVE_TITULO,
+          sub: ev.EVE_DESCRICAO || '(sem descrição)',
+          tag: ev.EVE_ETIQUETA.charAt(0).toUpperCase() + ev.EVE_ETIQUETA.slice(1),
+          tagBg: tag.bg,
+          tagColor: tag.color,
+          accent: tag.color
+        };
+      });
+      
+      setDatabaseEvents(eventosFormatados);
     } catch (error) {
       console.error('Erro ao carregar eventos:', error);
+      // Se a sessão caiu ou a API rejeitou a requisição, desloga por segurança
+      localStorage.clear();
+      navigate('login');
     } finally {
       setLoading(false);
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('usuario');
-    localStorage.removeItem('userData');
-    localStorage.removeItem('alunoId');
+    localStorage.clear(); // Limpa todas as chaves de segurança de uma vez só
     navigate('login');
   };
 
   const allEvents = [...ALL_EVENTS, ...databaseEvents];
 
-  // Lógica de filtragem de eventos
+  // Lógica de filtragem de eventos (continua idêntica)
   let eventsToday, eventsTomorrow, dayName, dayDate, dayMonth, tomorrowName, tomorrowDate, tomorrowMonth, showTomorrow;
 
   if (!userClicked) {
-    // Modo padrão (primeira vez): segunda + terça
     eventsToday = allEvents.filter(ev => ev.dayIndex === 0).sort((a, b) => {
       const timeA = parseInt(a.hour) * 60 + parseInt(a.min);
       const timeB = parseInt(b.hour) * 60 + parseInt(b.min);
@@ -505,7 +518,6 @@ export default function PageAgenda({ navigate }) {
     tomorrowMonth = DAYS[1].month.toUpperCase();
     showTomorrow = true;
   } else {
-    // Modo customizado: só o dia clicado
     eventsToday = allEvents.filter(ev => ev.dayIndex === activeDay).sort((a, b) => {
       const timeA = parseInt(a.hour) * 60 + parseInt(a.min);
       const timeB = parseInt(b.hour) * 60 + parseInt(b.min);
@@ -527,11 +539,9 @@ export default function PageAgenda({ navigate }) {
   }
 
   const handleNewEvent = (eventData) => {
-    // Recarrega os eventos do banco de dados
     if (alunoId) {
-      carregarEventos(alunoId);
+      carregarEventos(alunoId, localStorage.getItem('token'));
     }
-    // Navega automaticamente para o dia do novo evento
     const dataInicio = new Date(eventData.EVE_DT_INICIO);
     const dayIndex = dataInicio.getDay() === 0 ? 6 : dataInicio.getDay() - 1;
     setActiveDay(dayIndex);
@@ -681,7 +691,7 @@ export default function PageAgenda({ navigate }) {
           <div className="nav-item" onClick={() => navigate('comunicacao')}><div className="nav-icon"><IconChat /></div><div className="nav-label">Comunicar</div></div>
           <div className="nav-item"><div className="nav-icon"><IconSchool /></div><div className="nav-label">Lições</div></div>
           <div className="nav-item active"><div className="nav-icon active"><IconCalendar /></div><div className="nav-label">Agenda</div></div>
-          <div className="nav-item"><div className="nav-icon"><IconPerson /></div><div className="nav-label">Perfil</div></div>
+          <div className="nav-item" onClick={() => navigate('perfil')}><div className="nav-icon"><IconPerson /></div><div className="nav-label">Perfil</div></div>
         </nav>
       </div>
 
@@ -703,15 +713,12 @@ export default function PageAgenda({ navigate }) {
             </div>
           ))}
           <div className="sidebar-spacer"></div>
-          <div className="sidebar-nav-item"><IconPerson />Perfil</div>
-          <div className="sidebar-nav-item"><IconSettings />Configurações</div>
+          <div className="sidebar-nav-item" onClick={() => navigate('perfil')}><IconPerson />Perfil</div>
+          <div className="sidebar-nav-item" onClick={() => navigate('config')}><IconSettings />Configurações</div>
           <div className="sidebar-nav-item" onClick={handleLogout} style={{ cursor:'pointer', color:'#e94542' }}>
             🚪 Sair
           </div>
-          <div className="sidebar-user">
-            <div className="sidebar-avatar">{userName.charAt(0).toUpperCase()}</div>
-            <div><div className="sidebar-user-name">{userName}</div><div className="sidebar-user-role">Responsável</div></div>
-          </div>
+          <SidebarUser />
         </nav>
 
         <div className="main-content">

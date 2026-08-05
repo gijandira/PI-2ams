@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import logoIcone from '../assets/logo-icone.png';
 import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings } from '../components/icons';
+import SidebarUser from '../components/SidebarUser';
 
 function Toggle({ on, onChange }) {
   return (
@@ -159,10 +160,7 @@ export default function PageConfig({ navigate }) {
           <div className="sidebar-spacer"></div>
           <div className="sidebar-nav-item" onClick={() => navigate('perfil')}><IconPerson />Perfil</div>
           <div className="sidebar-nav-item active"><IconSettings />Configurações</div>
-          <div className="sidebar-user">
-            <div className="sidebar-avatar">J</div>
-            <div><div className="sidebar-user-name">João Pedro</div><div className="sidebar-user-role">Responsável</div></div>
-          </div>
+          <SidebarUser />
         </nav>
 
         <div className="main-content">

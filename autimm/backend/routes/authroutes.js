@@ -33,6 +33,13 @@ router.get(
   authController.perfilUsuario
 );
 
+router.put(
+  '/perfil-usuario',
+  verificarToken,
+  upload.single('fotoAluno'),
+  authController.atualizarPerfilUsuario
+);
+
 router.post(
   '/recuperar-senha',
   authController.recuperarSenha
