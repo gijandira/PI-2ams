@@ -23,10 +23,12 @@ app.use('/uploads', express.static('uploads'));
 const authRoutes         = require('./routes/authroutes');
 const comunicacaoRoutes  = require('./routes/comunicacaoroutes');
 const eventoRoutes       = require('./routes/eventoroutes');
+const iaRoutes           = require('./routes/iaroutes');
 
 app.use('/auth',         authRoutes);
 app.use('/comunicacao',  comunicacaoRoutes);
 app.use('/evento',       eventoRoutes);
+app.use('/ia',           iaRoutes);
 
 app.get('/', (req, res) => {
   res.send('API funcionando');

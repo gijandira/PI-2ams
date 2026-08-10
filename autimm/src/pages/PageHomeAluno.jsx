@@ -73,7 +73,7 @@ export default function PageHomeAluno({ navigate }) {
     { href: 'agenda',      icon: '📅', label: 'Agenda',       color: 'card-pink' },
     { href: 'perfil',      icon: '👤', label: 'Perfil',       color: 'card-red' },
     { href: 'config',      icon: '⚙️', label: 'Configurações', color: 'card-yellow' },
-    { href: 'ia',          icon: '🤖', label: 'Assistente IA', color: 'card-dark' },
+    { href: 'assistente-ia', icon: '🤖', label: 'Assistente IA', color: 'card-dark' },
   ];
 
   if (loading) {
@@ -181,6 +181,7 @@ export default function PageHomeAluno({ navigate }) {
           </div>
 
           <button
+            onClick={() => navigate('assistente-ia')}
             style={{
               width: 46,
               height: 46,
@@ -302,7 +303,7 @@ export default function PageHomeAluno({ navigate }) {
             { icon: <IconChat />,    label: 'Comunicação',   active: false, page: 'comunicacao' },
             { icon: <IconSchool />,  label: 'Lições',        active: false },
             { icon: <IconCalendar />, label: 'Agenda',        active: false, page: 'agenda' },
-            { icon: <IconRobot />,    label: 'Assistente IA', active: false },
+            { icon: <IconRobot />,    label: 'Assistente IA', active: false, page: 'assistente-ia' },
           ].map((item, i) => (
             <div
               key={i}
@@ -375,6 +376,7 @@ export default function PageHomeAluno({ navigate }) {
 
               <button
                 className="ia-btn-desktop"
+                onClick={() => navigate('assistente-ia')}
                 style={{
                   display: 'flex',
                   alignItems: 'center',

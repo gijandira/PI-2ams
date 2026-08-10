@@ -14,6 +14,7 @@ import PageResetarSenha from './pages/PageResetarSenha';
 // 1. IMPORTAÇÕES ADICIONADAS:
 import PagePerfil from './pages/PagePerfil';
 import PageEditarPerfil from './pages/PageEditarPerfil';
+import PageAssistenteIA from './pages/PageAssistenteIA';
 
 export default function App() {
   var [page, setPage] = useState(() => {
@@ -45,6 +46,7 @@ export default function App() {
       {/* 3. ROTAS DAS NOVAS TELAS ADICIONADAS AQUI: */}
       {page === 'perfil'               && <PagePerfil               navigate={navigate} />}
       {page === 'editar-perfil'        && <PageEditarPerfil         navigate={navigate} />}
+      {page === 'assistente-ia'        && <PageAssistenteIA         navigate={navigate} />}
     </>
   );
 }
