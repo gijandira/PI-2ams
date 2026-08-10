@@ -1,27 +1,99 @@
-1∞ No https://downgit.github.io/#/home
-2∞ Cole o link do diretÛrio
-3∞ Descompacte a pasta em Documentos do PC
-4∞ Liga o Apache e o MySQL do XAMPP
-5∞ Crie o banco autim (CREATE DATABASE autim;)
+1. Baixe e descompacte a pasta do projeto em Documents do PC.
+2. Abra a pasta no VS Code.
+3. Ligue o Apache e o MySQL no XAMPP.
+4. Crie o banco de dados:
+   CREATE DATABASE autim;
 
-6∞Abra o projeto no VS Code
-7∞Execute o npm install
-8∞npm install react
-9∞npm install vite
-10∞npm install electron
-11∞ cd backend
-12∞npm install cors
-13∞npm install mysql2
-14∞npm install dotenv
-15∞npm install bcryptjs
-16∞npm install jsonwebtoken
-17∞ cd ..
-18∞ Na pasta raiz npm run dev
+5. Importe o arquivo SQL do projeto para o banco:
+   - autimm/autim.sql
+   - ou o arquivo equivalente dentro da pasta do projeto
 
-19∞Abra o terminal do prompt do windows cd C:\Users\User\Documents\autimm\backend
-20∞node server.js
+6. Abra o terminal na pasta raiz do projeto:
+   cd C:\Users\SeuUsuario\Documents\PI-2ams-mainOK\autimm
 
+7. Instale as depend√™ncias do frontend:
+   npm install
 
-INSERT INTO midia (MID_TIPO, MID_URL, MID_ROTULO, MID_EMOJI, MID_BG_COLOR, MID_SHADOW_COLOR, CAT_ID)
-VALUES ('audio', 'speech:Ansioso', 'Ansioso', '??', '#9c27b0', 'rgba(156,39,176,.45)', 1);
-Para adicionar um  novo bot„o de ·udio, basta adicionar no banco de dados e a tela comunicaÁ„o puxa.
+8. Instale as depend√™ncias do backend:
+   cd backend
+   npm install
+
+9. Depend√™ncias atuais do backend instaladas:
+   npm install cors
+   npm install mysql2
+   npm install dotenv
+   npm install bcryptjs
+   npm install jsonwebtoken
+   npm install multer
+   npm install nodemailer
+   npm install node-cron
+   npm install express
+   npm install ollama
+
+10. Depend√™ncias do frontend/React/Vite j√° utilizadas no projeto:
+    npm install react
+    npm install react-dom
+    npm install vite
+    npm install @vitejs/plugin-react
+
+11. Para rodar a aplica√ß√£o frontend:
+    cd ..
+    npm run dev
+
+12. Para rodar o backend local:
+    cd backend
+    node server.js
+
+13. Ou em modo de desenvolvimento:
+    npm run dev
+
+14. O backend fica na porta:
+    http://localhost:3001
+
+15. O frontend fica normalmente em:
+    http://localhost:5173
+
+16. Antes de testar a IA, o Ollama precisa estar rodando localmente:
+    ollama serve
+
+17. Se o modelo n√£o estiver baixado:
+    ollama pull qwen2.5:0.5b
+
+18. A IA do projeto usa o modelo:
+    qwen2.5:0.5b
+
+19. Rota da IA do backend:
+    POST http://localhost:3001/ia/perguntar
+
+20. Exemplo de requisi√ß√£o:
+    {
+      "mensagem": "Onde fica a p√°gina de Comunica√ß√£o?"
+    }
+
+21. O backend da IA responde em JSON e o frontend l√™ essa resposta para mostrar a conversa no chat.
+
+22. Observa√ß√£o importante:
+    Se o backend n√£o estiver rodando na pasta correta, o frontend receber√° HTML/erro em vez de JSON e aparecer√° o erro:
+    "Token inesperado '<', "<!DOCTYPE ..." n√£o √© JSON v√°lido"
+
+23. Para adicionar um novo bot√£o de √°udio na tela de comunica√ß√£o:
+    INSERT INTO midia (MID_TIPO, MID_URL, MID_ROTULO, MID_EMOJI, MID_BG_COLOR, MID_SHADOW_COLOR, CAT_ID)
+    VALUES ('audio', 'speech:Ansioso', 'Ansioso', 'ü§ç', '#9c27b0', 'rgba(156,39,176,.45)', 1);
+
+24. A tela de Comunica√ß√£o puxa os itens do banco automaticamente.
+
+25. Resumo r√°pido para rodar o projeto:
+    - XAMPP: Apache + MySQL ligados
+    - Banco criado e importado
+    - cd autimm
+    - npm install
+    - cd backend
+    - npm install
+    - (na pasta do Ollama) ollama serve
+    - ollama pull qwen2.5:0.5b
+    - cd ..
+    - npm run dev
+    - cd backend
+    - node server.js
+
+26. Se o projeto estiver funcionando com esse fluxo, pode seguir normalmente com as instru√ß√µes acima sem alterar o setup b√°sico.
