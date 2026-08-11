@@ -1,0 +1,21 @@
+LICENÇA DE USO — AUTIM
+
+Copyright (c) 2026 — Equipe AUTIM | FATEC Taubaté — 2º AMS
+
+Este projeto foi desenvolvido como trabalho acadêmico no curso de 
+Análise e Desenvolvimento de Sistemas da FATEC Taubaté.
+
+É PERMITIDO:
+- Visualizar e estudar o código para fins educacionais
+- Referenciar o projeto em trabalhos acadêmicos com devida citação
+
+NÃO É PERMITIDO:
+- Copiar, distribuir ou utilizar o código para fins comerciais
+- Modificar e redistribuir o projeto sem autorização dos autores
+- Utilizar o nome AUTIM ou identidade visual sem autorização
+
+Este projeto é de uso estritamente acadêmico e os direitos pertencem
+aos seus desenvolvedores e à FATEC Taubaté.
+
+Para autorizações, entre em contato com a equipe pelo repositório:
+https://github.com/gijandira/PI-2ams
