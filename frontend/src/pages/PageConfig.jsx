@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import logoIcone from '../assets/logo-icone.png';
-import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings } from '../components/icons';
+import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings, IconRobot } from '../components/icons';
 import SidebarUser from '../components/SidebarUser';
+import { speakText } from '../hooks/voiceUtils';
 
 const SETTINGS_KEY = 'autim.user-settings';
 
@@ -61,49 +62,8 @@ export default function PageConfig({ navigate }) {
   const faqs = [
     { q:'Como funciona o sistema de lições?', a:'As lições são divididas em categorias e fases. Cada fase apresenta uma palavra ou frase para o aluno aprender. O responsável avalia o desempenho após cada fase.' },
     { q:'Como afiliar a uma instituição?',    a:'Vá em Perfil → Afiliação e insira o código fornecido pela sua instituição. Após aprovação, os profissionais poderão acompanhar o progresso do aluno.' },
-    { q:'Como entrar em contato com o suporte?', a:'Envie um e-mail para suporte@autimm.com.br ou acesse nosso chat de atendimento de segunda a sexta, das 8h às 18h.' },
+    { q:'Como entrar em contato com o suporte?', a:'Envie um e-mail para suporte@autim.com.br ou acesse nosso chat de atendimento de segunda a sexta, das 8h às 18h.' },
   ];
-
-  const getPortugueseVoices = () => {
-    if (!('speechSynthesis' in window)) return [];
-
-    const voices = window.speechSynthesis.getVoices();
-    return voices.filter(v => {
-      const lang = (v.lang || '').toLowerCase();
-      return lang.startsWith('pt') || lang.includes('portuguese');
-    });
-  };
-
-  const resolveVoiceForPreference = () => {
-    if (!('speechSynthesis' in window)) return null;
-
-    const voices = getPortugueseVoices();
-    if (!voices.length) return null;
-
-    const profile = voice || 'Feminina';
-
-    const namesToSelect = {
-      'Feminina': ['female', 'feminina', 'samantha', 'zira', 'maria', 'paula', 'ana', 'beatriz', 'leticia', 'renata'],
-      'Masculina': ['male', 'masculina', 'bruno', 'joao', 'dani', 'marcos', 'heitor', 'lucas', 'ricardo'],
-      'Infantil': ['infantil', 'kid', 'crianca', 'child', 'baby', 'bebê', 'bebe', 'infanto']
-    };
-
-    const preferred = namesToSelect[profile] || namesToSelect.Feminina;
-
-    const selected = voices.find(v => {
-      const name = (v.name || '').toLowerCase();
-      const score = preferred.some(token => name.includes(token));
-      return score;
-    }) || voices.find(v => {
-      const name = (v.name || '').toLowerCase();
-      return name.includes('portuguese') || name.includes('br') || name.includes('pt') || name.includes('brazil');
-    }) || voices.find(v => {
-      const name = (v.name || '').toLowerCase();
-      return name.includes('female') || name.includes('samantha') || name.includes('zira') || name.includes('maria');
-    }) || voices[0];
-
-    return selected;
-  };
 
   const triggerVibration = () => {
     if (vibration && 'vibrate' in navigator) {
@@ -116,27 +76,14 @@ export default function PageConfig({ navigate }) {
       setNarrator(true);
     }
 
-    if (!('speechSynthesis' in window)) {
-      return;
-    }
+    const frasesExemplo = {
+      Feminina: 'Olá! Sou a voz feminina do narrador do Autim.',
+      Masculina: 'Olá! Sou a voz masculina do narrador do Autim.',
+      Infantil: 'Olá amiguinho! Sou a voz infantil do Autim!'
+    };
 
-    const preferredVoice = resolveVoiceForPreference();
-
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance('Teste da voz do narrador Autim.');
-    utterance.lang = 'pt-BR';
-    const speedBase = Number(speed) || 50;
-    utterance.rate = voice === 'Infantil'
-      ? 0.62 + (speedBase / 100) * 0.14
-      : 0.55 + (speedBase / 100) * 0.75;
-    utterance.volume = 0.96;
-    utterance.pitch = voice === 'Masculina' ? 0.82 : voice === 'Infantil' ? 1.38 : 1.05;
-
-    if (preferredVoice) {
-      utterance.voice = preferredVoice;
-    }
-
-    window.speechSynthesis.speak(utterance);
+    const frase = frasesExemplo[voice] || 'Teste da voz do narrador Autim.';
+    speakText(frase, { narrator: true, speed, voice });
   };
 
   const SectionLabel = ({ children }) => (
@@ -167,14 +114,19 @@ export default function PageConfig({ navigate }) {
       <div style={{ background:'var(--white)', borderRadius:16, padding:'15px 18px', boxShadow:'0 3px 10px rgba(0,0,0,.06)', display:'flex', alignItems:'center', gap:14 }}>
         <div style={{ width:40, height:40, borderRadius:12, background:'#fff8e1', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, flexShrink:0 }}>🐢</div>
         <div style={{ flex:1 }}>
-          <div style={{ fontSize:14, fontWeight:800, color:'var(--dark)', marginBottom:8 }}>Velocidade da voz</div>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
+            <div style={{ fontSize:14, fontWeight:800, color:'var(--dark)' }}>Velocidade da voz</div>
+            <div style={{ fontSize:12, fontWeight:800, color:'var(--blue)' }}>
+              {speed <= 50 ? `${Math.round(85 + (speed / 50) * 15)}%` : `${Math.round(100 + ((speed - 50) / 50) * 30)}%`}
+            </div>
+          </div>
           <input type="range" min="0" max="100" value={speed} onChange={e => setSpeed(+e.target.value)}
             style={{ width:'100%', accentColor:'var(--blue)', height:6, borderRadius:99, outline:'none', cursor:'pointer' }} />
           <div style={{ display:'flex', justifyContent:'space-between', fontSize:10, fontWeight:700, color:'var(--text-muted)', marginTop:4 }}>
-            <span>Lento</span><span>Normal</span><span>Rápido</span>
+            <span>Mais lento</span><span>Normal</span><span>Mais rápido</span>
           </div>
-          <button onClick={testVoice} style={{ marginTop:10, border:'none', borderRadius:999, background:'var(--blue)', color:'#fff', padding:'8px 14px', fontWeight:900, fontSize:11, cursor:'pointer' }}>
-            ▶ Testar voz
+          <button onClick={testVoice} style={{ marginTop:10, border:'none', borderRadius:999, background:'var(--blue)', color:'#fff', padding:'8px 16px', fontWeight:900, fontSize:12, cursor:'pointer', display:'flex', alignItems:'center', gap:6 }}>
+            <span>▶</span> Testar voz atual
           </button>
         </div>
       </div>
@@ -184,17 +136,30 @@ export default function PageConfig({ navigate }) {
           <div style={{ width:40, height:40, borderRadius:12, background:'#fff8e1', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, flexShrink:0 }}>🎙️</div>
           <div>
             <div style={{ fontSize:14, fontWeight:800, color:'var(--dark)' }}>Tipo de voz</div>
-            <div style={{ fontSize:12, color:'var(--text-muted)', fontWeight:600, marginTop:2 }}>Escolha a voz do narrador</div>
+            <div style={{ fontSize:12, color:'var(--text-muted)', fontWeight:600, marginTop:2 }}>Escolha o estilo da voz</div>
           </div>
         </div>
         <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-          {['Feminina','Masculina','Infantil'].map(v => (
-            <div key={v} onClick={() => setVoice(v)} style={{
-              padding:'6px 14px', borderRadius:20, fontSize:12, fontWeight:800, cursor:'pointer', transition:'all .2s',
-              background: voice===v ? 'var(--blue)' : 'var(--input-bg)',
-              color:       voice===v ? '#fff'         : 'var(--text-muted)',
-              border:      voice===v ? '2px solid var(--blue)' : '2px solid var(--border)',
-            }}>{v}</div>
+          {[
+            { key: 'Feminina', label: '👩 Feminina', desc: 'Natural' },
+            { key: 'Masculina', label: '👨 Masculina', desc: 'Normal' },
+            { key: 'Infantil', label: '👧 Infantil', desc: 'Alegre' }
+          ].map(v => (
+            <div key={v.key} onClick={() => {
+              setVoice(v.key);
+              triggerVibration();
+              const frases = {
+                Feminina: 'Olá! Sou a voz feminina do narrador do Autim.',
+                Masculina: 'Olá! Sou a voz masculina do narrador do Autim.',
+                Infantil: 'Olá amiguinho! Sou a voz infantil do Autim, vamos aprender juntos!'
+              };
+              speakText(frases[v.key], { narrator: true, speed, voice: v.key });
+            }} style={{
+              padding:'8px 16px', borderRadius:20, fontSize:13, fontWeight:800, cursor:'pointer', transition:'all .2s',
+              background: voice===v.key ? 'var(--blue)' : 'var(--input-bg)',
+              color:       voice===v.key ? '#fff'         : 'var(--text-muted)',
+              border:      voice===v.key ? '2px solid var(--blue)' : '2px solid var(--border)',
+            }}>{v.label}</div>
           ))}
         </div>
       </div>
@@ -296,6 +261,7 @@ export default function PageConfig({ navigate }) {
             { icon:<IconChat/>,     label:'Comunicação', active:false, page:'comunicacao' },
             { icon:<IconSchool/>,   label:'Lições',      active:false, page:null          },
             { icon:<IconCalendar/>, label:'Agenda',      active:false, page:'agenda'      },
+            { icon:<IconRobot/>,    label:'Assistente IA', active:false, page:'ia' },
           ].map((item,i) => (
             <div key={i} className={`sidebar-nav-item ${item.active?'active':''}`} onClick={() => item.page && navigate(item.page)}>{item.icon}{item.label}</div>
           ))}

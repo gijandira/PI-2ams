@@ -181,6 +181,7 @@ export default function PageHomeAluno({ navigate }) {
           </div>
 
           <button
+            onClick={() => navigate('ia')}
             style={{
               width: 46,
               height: 46,
@@ -356,6 +357,7 @@ export default function PageHomeAluno({ navigate }) {
 
               <button
                 className="ia-btn-desktop"
+                onClick={() => navigate('ia')}
                 style={{
                   display: 'flex',
                   alignItems: 'center',

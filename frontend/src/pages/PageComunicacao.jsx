@@ -1,7 +1,8 @@
   import { useState, useEffect } from 'react';
   import logoIcone from '../assets/logo-icone.png';
-  import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings } from '../components/icons';
+  import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings, IconRobot } from '../components/icons';
   import SidebarUser from '../components/SidebarUser';
+  import { speakText } from '../hooks/voiceUtils';
 
   // Dados de fallback usados caso o backend não esteja disponível
   const CATEGORIES_FALLBACK = [
@@ -45,53 +46,12 @@
     function handleClick() {
       const settings = getSettings();
 
-      if (!settings.narrator || !window.speechSynthesis) return;
-
-      const speed = Number(settings.speed) || 50;
-      const rate = settings.voice === 'Infantil'
-        ? 0.62 + (speed / 100) * 0.14
-        : 0.55 + (speed / 100) * 0.75;
-
-      const voices = window.speechSynthesis.getVoices();
-      const ptVoices = voices.filter(v => {
-        const lang = (v.lang || '').toLowerCase();
-        return lang.startsWith('pt') || lang.includes('portuguese');
-      });
-
-      const profile = settings.voice || 'Feminina';
-      const fallbackNames = {
-        'Feminina': ['female', 'feminina', 'samantha', 'zira', 'maria', 'paula', 'ana', 'beatriz', 'leticia', 'renata'],
-        'Masculina': ['male', 'masculina', 'bruno', 'joao', 'dani', 'marcos', 'heitor', 'lucas', 'ricardo'],
-        'Infantil': ['infantil', 'kid', 'crianca', 'child', 'baby', 'bebê', 'bebe', 'infanto']
-      };
-
-      const preferredNames = fallbackNames[profile] || fallbackNames['Feminina'];
-      const selectedVoice = ptVoices.find(v => {
-        const name = (v.name || '').toLowerCase();
-        return preferredNames.some(token => name.includes(token));
-      }) || ptVoices.find(v => {
-        const name = (v.name || '').toLowerCase();
-        return name.includes('portuguese') || name.includes('br') || name.includes('pt') || name.includes('brazil');
-      }) || ptVoices.find(v => {
-        const name = (v.name || '').toLowerCase();
-        return name.includes('female') || name.includes('samantha') || name.includes('zira') || name.includes('maria');
-      }) || ptVoices[0] || voices[0] || null;
+      if (!settings.narrator) return;
 
       setFalando(true);
-      window.speechSynthesis.cancel();
-
-      var fala = new SpeechSynthesisUtterance(card.label);
-      fala.lang   = 'pt-BR';
-      fala.rate   = rate;
-      fala.pitch  = settings.voice === 'Masculina' ? 0.78 : settings.voice === 'Infantil' ? 1.38 : 1.05;
-      fala.volume = 0.96;
-      fala.onend  = function () { setFalando(false); };
-
-      if (selectedVoice) {
-        fala.voice = selectedVoice;
-      }
-
-      window.speechSynthesis.speak(fala);
+      speakText(card.label, settings, function() {
+        setFalando(false);
+      });
     }
 
     return (
@@ -395,6 +355,7 @@
               { icon:<IconChat/>,     label:'Comunicação', active:true,  page:'comunicacao' },
               { icon:<IconSchool/>,   label:'Lições',      active:false, page:null          },
               { icon:<IconCalendar/>, label:'Agenda',      active:false, page:'agenda'      },
+              { icon:<IconRobot/>,    label:'Assistente IA', active:false, page:'ia' },
             ].map(function (item, i) {
               return (
                 <div key={i} className={'sidebar-nav-item' + (item.active ? ' active' : '')} onClick={function () { if (item.page) navigate(item.page); }}>
