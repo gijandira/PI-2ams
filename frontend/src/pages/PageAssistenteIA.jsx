@@ -430,9 +430,9 @@ export default function PageAssistenteIA({ navigate }) {
           display: none;
         }
 
-        @media (min-width: 768px) { .ai-mobile { display: none !important; } }
+        @media (min-width: 1024px) { .ai-mobile { display: none !important; } }
         .ai-desktop { display: none; }
-        @media (min-width: 768px) { .ai-desktop { display: block !important; } }
+        @media (min-width: 1024px) { .ai-desktop { display: block !important; } }
       `}</style>
 
       {/* ─────────────────────────────────────────────────────────────

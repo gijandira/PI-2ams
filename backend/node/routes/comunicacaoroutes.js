@@ -4,5 +4,6 @@ const comunicacaoController = require('../controllers/comunicacaocontroller');
 
 router.get('/categorias', comunicacaoController.getCategorias);
 router.get('/cards', comunicacaoController.getCards);
+router.post('/voz', comunicacaoController.textToSpeech);
 
 module.exports = router;

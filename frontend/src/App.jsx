@@ -17,6 +17,12 @@ import PagePerfil from './pages/PagePerfil';
 import PageEditarPerfil from './pages/PageEditarPerfil';
 import PageConfig from './pages/PageConfig';
 import PageAssistenteIA from './pages/PageAssistenteIA';
+import PageProgressoAluno from './pages/PageProgressoAluno';
+import PageProgressoInst from './pages/PageProgressoInst';
+import PageAfiliacao from './pages/PageAfiliacao';
+import PageSolicitacoesInst from './pages/PageSolicitacoesInst';
+import PagePerfilInst from './pages/PagePerfilInst';
+import PageConfigInst from './pages/PageConfigInst';
 
 export default function App() {
   var [page, setPage] = useState(() => {
@@ -59,6 +65,7 @@ export default function App() {
 
       {page === 'index'                && <PageIndex                navigate={navigate} />}
       {page === 'login'                && <PageLogin                navigate={navigate} />}
+      {page === 'login-instituicao'    && <PageLogin                navigate={navigate} initialTab="instituicao" />}
       {page === 'recuperar-senha'      && <PageRecuperarSenha       navigate={navigate} />}
       {page === 'resetar-senha'        && <PageResetarSenha         navigate={navigate} />}
       {page === 'cadastro-escolha'     && <PageCadastroEscolha      navigate={navigate} />}
@@ -72,6 +79,12 @@ export default function App() {
       {page === 'editar-perfil'        && <PageEditarPerfil         navigate={navigate} />}
       {page === 'config'               && <PageConfig               navigate={navigate} />}
       {page === 'ia'                   && <PageAssistenteIA         navigate={navigate} />}
+      {page === 'afiliacao'            && <PageAfiliacao             navigate={navigate} />}
+      {page === 'solicitacoes-inst'    && <PageSolicitacoesInst       navigate={navigate} />}
+      {page === 'perfil-inst'          && <PagePerfilInst              navigate={navigate} />}
+      {page === 'config-inst'          && <PageConfigInst              navigate={navigate} />}
+      {page === 'progresso-aluno'     && <PageProgressoAluno           navigate={navigate} />}
+      {page === 'progresso-inst'      && <PageProgressoInst            navigate={navigate} />}
     </>
   );
 }

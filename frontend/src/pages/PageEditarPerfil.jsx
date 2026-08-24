@@ -190,15 +190,15 @@ export default function PageEditarPerfil({ navigate }) {
   return (
     <>
       <style>{`
-        @media (min-width: 768px) { .ep-mobile { display: none !important; } }
+        @media (min-width: 1024px) { .ep-mobile { display: none !important; } }
         .ep-desktop { display: none; }
-        @media (min-width: 768px) { .ep-desktop { display: block !important; } }
+        @media (min-width: 1024px) { .ep-desktop { display: block !important; } }
       `}</style>
 
       {/* ── MOBILE ── */}
       <div className="ep-mobile" style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column', paddingTop: 'calc(env(safe-area-inset-top, 12px) + 5px)' }}>
         <div style={{ background:'var(--blue)', padding:'calc(env(safe-area-inset-top, 12px) + 8px) 20px 12px', display:'flex', alignItems:'center', gap:12, flexShrink:0 }}>
-          <button onClick={() => navigate('perfil')} style={{ background:'rgba(255,255,255,.2)', border:'none', width:36, height:36, borderRadius:'50%', cursor:'pointer', fontSize:18, color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>‹</button>
+          <button className="autim-close-button" onClick={() => navigate('perfil')} aria-label="Fechar">×</button>
           <div style={{ fontSize:19, fontWeight:900, color:'#fff', flex:1, textAlign:'center' }}>Editar Perfil</div>
           <button onClick={handleSave} disabled={isSaving || loading} style={{ background:'rgba(255,255,255,.2)', border:'2px solid rgba(255,255,255,.5)', borderRadius:20, padding:'6px 14px', fontFamily:'Nunito,sans-serif', fontSize:12, fontWeight:800, color:'#fff', cursor:'pointer', whiteSpace:'nowrap' }}>{isSaving ? 'Salvando...' : 'Salvar'}</button>
         </div>
@@ -238,7 +238,7 @@ export default function PageEditarPerfil({ navigate }) {
           <div className="page-wrapper" style={{ maxWidth:600 }}>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:28 }}>
               <div style={{ display:'flex', alignItems:'center', gap:16 }}>
-                <button onClick={() => navigate('perfil')} style={{ width:40, height:40, borderRadius:'50%', background:'#fff', border:'1.5px solid var(--border)', cursor:'pointer', fontSize:20, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'var(--shadow-card)', flexShrink:0 }}>‹</button>
+                <button className="autim-close-button" onClick={() => navigate('perfil')} aria-label="Fechar">×</button>
                 <div>
                   <div style={{ fontSize:28, fontWeight:900, color:'var(--dark)' }}>Editar Perfil</div>
                   <div style={{ fontSize:14, color:'#888', fontWeight:600, marginTop:4 }}>Atualize suas informações</div>

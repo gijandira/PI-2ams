@@ -2,7 +2,7 @@
   import logoIcone from '../assets/logo-icone.png';
   import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings, IconRobot } from '../components/icons';
   import SidebarUser from '../components/SidebarUser';
-  import { speakText } from '../hooks/voiceUtils';
+  import { preloadSpeech, speakText } from '../hooks/voiceUtils';
 
   // Dados de fallback usados caso o backend não esteja disponível
   const CATEGORIES_FALLBACK = [
@@ -56,6 +56,8 @@
 
     return (
       <div
+        onPointerEnter={function () { preloadSpeech(card.label, getSettings()); }}
+        onTouchStart={function () { preloadSpeech(card.label, getSettings()); }}
         onClick={handleClick}
         onMouseDown={function () { setPressed(true); }}
         onMouseUp={function ()   { setPressed(false); }}
@@ -262,9 +264,9 @@
             from { transform: scaleY(0.5); }
             to   { transform: scaleY(1.5); }
           }
-          @media (min-width: 768px) { .com-mobile  { display: none !important; } }
+          @media (min-width: 1024px) { .com-mobile  { display: none !important; } }
           .com-desktop { display: none; }
-          @media (min-width: 768px) { .com-desktop { display: block !important; } }
+          @media (min-width: 1024px) { .com-desktop { display: block !important; } }
           .cat-tabs-scroll { display:flex; gap:8px; overflow-x:auto; }
           .cat-tabs-scroll::-webkit-scrollbar { display:none; }
           .cat-pill { padding:7px 16px; border-radius:20px; background:#fff; border:2px solid #e0e8f0; font-size:12px; font-weight:800; color:#888; white-space:nowrap; cursor:pointer; transition:all .2s; flex-shrink:0; font-family:'Nunito',sans-serif; }
@@ -287,9 +289,9 @@
         )}
 
         {/* ── MOBILE ── */}
-        <div className="com-mobile" style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column', paddingTop:60 }}>
+        <div className="com-mobile" style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column' }}>
 
-          <div style={{ marginTop:-55, background:'var(--blue)', padding:'6px 20px 16px', display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
+          <div style={{ background:'var(--blue)', padding:'6px 20px 16px', display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
             <div style={{ width:56, height:56, borderRadius:'50%', background:'#fff', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 3px 12px rgba(0,0,0,.2)', overflow:'hidden' }}>
               <img src={logoIcone} alt="Autim" style={{ width:46, height:46, objectFit:'contain' }} />
             </div>

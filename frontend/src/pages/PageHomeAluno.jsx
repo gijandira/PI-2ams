@@ -96,7 +96,7 @@ export default function PageHomeAluno({ navigate }) {
   return (
     <>
       <style>{`
-        @media (min-width: 768px) {
+        @media (min-width: 1024px) {
           .ha-mobile {
             display: none !important;
           }
@@ -106,7 +106,7 @@ export default function PageHomeAluno({ navigate }) {
           display: none;
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 1024px) {
           .ha-desktop {
             display: block !important;
           }
