@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import logoIcone from '../assets/logo-icone.png';
 import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings, IconRobot } from '../components/icons';
 import SidebarUser from '../components/SidebarUser';
-import { speakText } from '../hooks/voiceUtils';
+import { getSpeechRate, speakText } from '../hooks/voiceUtils';
 
 const SETTINGS_KEY = 'autim.user-settings';
 
@@ -29,13 +29,18 @@ function Toggle({ on, onChange }) {
   return (
     <div onClick={onChange} style={{
       width:48, height:26, borderRadius:99, flexShrink:0, cursor:'pointer', position:'relative',
-      background: on ? 'var(--green)' : '#e0e8f0', transition:'background .2s',
+      background: on ? 'var(--green)' : '#f87171', transition:'background .2s',
     }}>
       <div style={{
         position:'absolute', top:3, left: on ? 25 : 3, width:20, height:20,
         borderRadius:'50%', background:'#fff', boxShadow:'0 1px 4px rgba(0,0,0,.2)',
-        transition:'left .2s',
-      }} />
+        transition:'left .2s', display:'flex', alignItems:'center', justifyContent:'center',
+      }}>
+        {on
+          ? <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#48c378" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          : <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="#f87171" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        }
+      </div>
     </div>
   );
 }
@@ -49,6 +54,14 @@ export default function PageConfig({ navigate }) {
   const [speed, setSpeed]         = useState(initialSettings.speed);
   const [voice, setVoice]         = useState(initialSettings.voice);
   const [openFaq, setOpenFaq]     = useState(null);
+
+  const sair = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('userData');
+    localStorage.removeItem('alunoId');
+    navigate('login');
+  };
 
   useEffect(() => {
     const settings = { narrator, darkMode, vibration, notifications: notifs, speed, voice };
@@ -78,8 +91,7 @@ export default function PageConfig({ navigate }) {
 
     const frasesExemplo = {
       Feminina: 'Olá! Sou a voz feminina do narrador do Autim.',
-      Masculina: 'Olá! Sou a voz masculina do narrador do Autim.',
-      Infantil: 'Olá amiguinho! Sou a voz infantil do Autim!'
+      Masculina: 'Olá! Sou a voz masculina do narrador do Autim.'
     };
 
     const frase = frasesExemplo[voice] || 'Teste da voz do narrador Autim.';
@@ -117,7 +129,7 @@ export default function PageConfig({ navigate }) {
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
             <div style={{ fontSize:14, fontWeight:800, color:'var(--dark)' }}>Velocidade da voz</div>
             <div style={{ fontSize:12, fontWeight:800, color:'var(--blue)' }}>
-              {speed <= 50 ? `${Math.round(85 + (speed / 50) * 15)}%` : `${Math.round(100 + ((speed - 50) / 50) * 30)}%`}
+              {`${Math.round(getSpeechRate(speed) * 100)}%`}
             </div>
           </div>
           <input type="range" min="0" max="100" value={speed} onChange={e => setSpeed(+e.target.value)}
@@ -142,16 +154,14 @@ export default function PageConfig({ navigate }) {
         <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
           {[
             { key: 'Feminina', label: '👩 Feminina', desc: 'Natural' },
-            { key: 'Masculina', label: '👨 Masculina', desc: 'Normal' },
-            { key: 'Infantil', label: '👧 Infantil', desc: 'Alegre' }
+            { key: 'Masculina', label: '👨 Masculina', desc: 'Normal' }
           ].map(v => (
             <div key={v.key} onClick={() => {
               setVoice(v.key);
               triggerVibration();
               const frases = {
                 Feminina: 'Olá! Sou a voz feminina do narrador do Autim.',
-                Masculina: 'Olá! Sou a voz masculina do narrador do Autim.',
-                Infantil: 'Olá amiguinho! Sou a voz infantil do Autim, vamos aprender juntos!'
+                Masculina: 'Olá! Sou a voz masculina do narrador do Autim.'
               };
               speakText(frases[v.key], { narrator: true, speed, voice: v.key });
             }} style={{
@@ -206,9 +216,9 @@ export default function PageConfig({ navigate }) {
   return (
     <>
       <style>{`
-        @media (min-width: 768px) { .cfg-mobile { display: none !important; } }
+        @media (min-width: 1024px) { .cfg-mobile { display: none !important; } }
         .cfg-desktop { display: none; }
-        @media (min-width: 768px) { .cfg-desktop { display: block !important; } }
+        @media (min-width: 1024px) { .cfg-desktop { display: block !important; } }
 
         .cfg-close-x {
           background: #ff5b50 !important;
@@ -229,7 +239,7 @@ export default function PageConfig({ navigate }) {
       `}</style>
 
       {/* ── MOBILE ── */}
-      <div className="cfg-mobile" style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column', paddingTop:60 }}>
+      <div className="cfg-mobile" style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column' }}>
         <div style={{ background:'var(--blue)', padding:'4px 20px 20px', display:'flex', alignItems:'center', gap:12, flexShrink:0 }}>
           <button className="cfg-close-x" onClick={() => navigate('perfil')}>×</button>
           <div style={{ fontSize:19, fontWeight:900, color:'#fff', flex:1, textAlign:'center' }}>Configurações</div>
@@ -268,6 +278,7 @@ export default function PageConfig({ navigate }) {
           <div className="sidebar-spacer"></div>
           <div className="sidebar-nav-item" onClick={() => navigate('perfil')}><IconPerson />Perfil</div>
           <div className="sidebar-nav-item active"><IconSettings />Configurações</div>
+          <div className="sidebar-nav-item" onClick={sair} style={{ cursor:'pointer', color:'var(--red)' }}>🚪 Sair</div>
           <SidebarUser />
         </nav>
 

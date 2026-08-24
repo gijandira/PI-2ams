@@ -24,11 +24,15 @@ const authRoutes         = require('./routes/authroutes');
 const comunicacaoRoutes  = require('./routes/comunicacaoroutes');
 const eventoRoutes       = require('./routes/eventoroutes');
 const iaRoutes           = require('./routes/iaroutes');
+const afiliacaoRoutes    = require('./routes/afiliacaoroutes');
+const dashboardRoutes    = require('./routes/dashboardroutes');
 
 app.use('/auth',         authRoutes);
 app.use('/comunicacao',  comunicacaoRoutes);
 app.use('/evento',       eventoRoutes);
 app.use('/ia',            iaRoutes);
+app.use('/afiliacao',     afiliacaoRoutes);
+app.use('/dashboard',     dashboardRoutes);
 
 app.get('/', (req, res) => {
   res.send('API funcionando');

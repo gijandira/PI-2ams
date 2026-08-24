@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import logoIcone from '../assets/logo-icone.png';
 import logoIconeBranco from '../assets/logo-icone-branco.png';
 
-export default function PageLogin({ navigate }) {
-  const [tab, setTab] = useState('responsavel');
+export default function PageLogin({ navigate, initialTab = 'responsavel' }) {
+  const [tab, setTab] = useState(initialTab);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
@@ -45,6 +45,7 @@ export default function PageLogin({ navigate }) {
 
       if (response.ok) {
         localStorage.setItem('token', data.token);
+        localStorage.removeItem('instituicao');
         localStorage.setItem('usuario', JSON.stringify(data.usuario));
         localStorage.setItem('userData', JSON.stringify(data.usuario));
         if (data.usuario.alunoId) {
@@ -89,6 +90,9 @@ export default function PageLogin({ navigate }) {
 
       if (response.ok) {
         localStorage.setItem('token', data.token);
+        localStorage.removeItem('usuario');
+        localStorage.removeItem('userData');
+        localStorage.removeItem('alunoId');
         localStorage.setItem('instituicao', JSON.stringify(data.instituicao));
         navigate('home-instituicao');
       } else {
@@ -103,14 +107,15 @@ export default function PageLogin({ navigate }) {
   return (
     <>
       <style>{`
-        @media (min-width: 768px) { .login-mobile-wrap { display: none !important; } }
+        @media (min-width: 1024px) { .login-mobile-wrap { display: none !important; } }
         .login-desktop-wrap { display: none; }
-        @media (min-width: 768px) { .login-desktop-wrap { display: flex !important; } }
+        @media (min-width: 1024px) { .login-desktop-wrap { display: flex !important; } }
         .social-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .input-icon-wrap { position: relative; display: flex; flex-direction: column; gap: 6px; }
         .input-icon-wrap .input-group { position: relative; width: 100%; }
         .input-icon-wrap .input-group input { width: 100%; padding-right: 48px; }
-        .input-icon-wrap .field-icon { position:absolute; right:14px; top:72%; transform:translateY(-50%); width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; color:#aaa; user-select:none; }
+        .input-icon-wrap .field-icon { position:absolute; right:14px; top:70%; transform:translateY(-50%); width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; color:#aaa; user-select:none; }
+        .input-icon-wrap .input-group .field-icon { top:50%; }
         .input-icon-wrap .field-icon:hover { color: var(--blue); }
         .login-input-focus:focus { border-color: var(--blue)!important; box-shadow: 0 0 0 3px rgba(56,167,251,.12)!important; }
         .forgot-link { font-size:12px; color:var(--blue); font-weight:800; cursor:pointer; text-align:right; }
@@ -152,7 +157,7 @@ export default function PageLogin({ navigate }) {
       )}
 
       {/* MOBILE */}
-      <div className="login-mobile-wrap" style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column', paddingTop:60 }}>
+      <div className="login-mobile-wrap" style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column' }}>
         <div style={{ display:'flex', flexDirection:'column', alignItems:'center', padding:'8px 28px 0' }}>
           <img src={logoIcone} alt="Autim" style={{ width:52, height:52, objectFit:'contain' }} />
           <div style={{ fontSize:20, fontWeight:900, letterSpacing:4, color:'var(--dark)', textTransform:'uppercase', marginTop:2 }}>Autim</div>

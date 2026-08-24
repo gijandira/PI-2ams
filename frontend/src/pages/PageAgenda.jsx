@@ -155,7 +155,8 @@ function NewEventModal({ onClose, onSaveEvent, alunoId }) {
       const response = await fetch('http://localhost:3001/evento/criar', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({
           alunoId: alunoId,
@@ -522,9 +523,9 @@ export default function PageAgenda({ navigate }) {
   return (
     <>
       <style>{`
-        @media (min-width: 768px) { .ag-mobile { display: none !important; } }
+        @media (min-width: 1024px) { .ag-mobile { display: none !important; } }
         .ag-desktop { display: none; }
-        @media (min-width: 768px) { .ag-desktop { display: block !important; } }
+        @media (min-width: 1024px) { .ag-desktop { display: block !important; } }
 
         .day-pill { display:flex; flex-direction:column; align-items:center; gap:3px; padding:8px 12px; border-radius:16px; cursor:pointer; transition:all .2s; flex-shrink:0; border:1px solid rgba(255,255,255,.55); background:rgba(255,255,255,.06); }
         .day-pill.active { background:#fff; border-color:#fff; box-shadow:0 0 0 2px rgba(255,255,255,.38) inset; }

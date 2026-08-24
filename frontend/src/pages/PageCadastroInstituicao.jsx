@@ -144,7 +144,7 @@ const handleCadastroInstituicao = async () => {
         mensagens: ['Você será redirecionado para o login em breve']
       });
 
-      setTimeout(() => navigate('login'), 2000);
+      setTimeout(() => navigate('login-instituicao'), 2000);
 
     } else {
 
@@ -178,14 +178,15 @@ const handleCadastroInstituicao = async () => {
   return (
     <>
       <style>{`
-        @media (min-width: 768px) { .cadi-mobile { display: none !important; } }
+        @media (min-width: 1024px) { .cadi-mobile { display: none !important; } }
         .cadi-desktop { display: none; }
-        @media (min-width: 768px) { .cadi-desktop { display: flex !important; } }
+        @media (min-width: 1024px) { .cadi-desktop { display: flex !important; } }
         .cadi-desktop .field input:focus { border-color: var(--green) !important; box-shadow: 0 0 0 3px rgba(72,195,120,.12) !important; }
         .code-input input { letter-spacing: 3px; font-size: 16px; font-weight: 800; text-align: center; border-color: var(--green) !important; background: #edfaf3 !important; }
         .input-icon-wrap { position: relative; }
         .input-icon-wrap input { padding-right: 44px; }
         .input-icon-wrap .field-icon { position:absolute; right:14px; top:70%; transform:translateY(-50%); font-size:16px; cursor:pointer; color:#aaa; user-select:none; }
+        .input-icon-wrap .input-group .field-icon { top:50%; }
         
         @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes slideOut { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-20px); opacity: 0; } }
@@ -240,7 +241,7 @@ const handleCadastroInstituicao = async () => {
       )}
 
       {/* MOBILE */}
-      <div className="cadi-mobile" style={{ minHeight:'100vh', background:'var(--white)', display:'flex', flexDirection:'column', paddingTop:60 }}>
+      <div className="cadi-mobile" style={{ minHeight:'100vh', background:'var(--white)', display:'flex', flexDirection:'column' }}>
         <div style={{ padding:'4px 24px 0' }}>
           <div style={{ fontSize:19, fontWeight:900, color:'var(--dark)', textAlign:'center', textTransform:'uppercase', letterSpacing:1, paddingBottom:10 }}>Cadastro da Instituição</div>
           <div className="steps" style={{ paddingBottom:12 }}>
@@ -267,8 +268,8 @@ const handleCadastroInstituicao = async () => {
           <div style={{ fontSize:11, color:'var(--green)', fontWeight:700, textAlign:'center', marginTop:-4 }}>🔑 Este código será usado pelos responsáveis para se afiliar à sua instituição</div>
         </div>
         <div style={{ padding:'10px 24px 28px' }}>
-          <button onClick={handleCadastroInstituicao}>Cadastrar Instituição</button>
-          <div className="footer-link mt-12">Já tem conta? <span className="link" style={{ color:'var(--green)' }} onClick={() => navigate('login')}>Fazer login</span></div>
+          <button className="btn btn-green" style={{ width:'100%', padding:'14px 18px', fontSize:14, fontWeight:900, borderRadius:14 }} onClick={handleCadastroInstituicao}>Cadastrar Instituição</button>
+          <div className="footer-link mt-12">Já tem conta? <span className="link" style={{ color:'var(--green)' }} onClick={() => navigate('login-instituicao')}>Fazer login</span></div>
         </div>
       </div>
 
@@ -351,7 +352,7 @@ const handleCadastroInstituicao = async () => {
                   <button className="btn btn-green" style={{ fontSize:15, padding:16 }} onClick={handleCadastroInstituicao}>Cadastrar Instituição</button>
                 </div>
                 <div className="col-span-2">
-                  <div className="footer-link">Já tem conta? <span className="link" style={{ color:'var(--green)' }} onClick={() => navigate('login')}>Fazer login</span></div>
+                  <div className="footer-link">Já tem conta? <span className="link" style={{ color:'var(--green)' }} onClick={() => navigate('login-instituicao')}>Fazer login</span></div>
                 </div>
               </div>
             </div>

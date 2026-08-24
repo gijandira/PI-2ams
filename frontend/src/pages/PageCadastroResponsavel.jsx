@@ -193,14 +193,15 @@ const handleCadastro = async () => {
   return (
     <>  
       <style>{`
-        @media (min-width: 768px) { .cadr-mobile { display: none !important; } }
+        @media (min-width: 1024px) { .cadr-mobile { display: none !important; } }
         .cadr-desktop { display: none; }
-        @media (min-width: 768px) { .cadr-desktop { display: flex !important; } }
+        @media (min-width: 1024px) { .cadr-desktop { display: flex !important; } }
         .cadr-desktop .field input:focus { border-color: var(--blue) !important; box-shadow: 0 0 0 3px rgba(56,167,251,.12) !important; }
         .input-icon-wrap { position: relative; display: flex; flex-direction: column; gap: 6px; }
         .input-icon-wrap .input-group { position: relative; width: 100%; }
         .input-icon-wrap .input-group input { width: 100%; padding-right: 48px; }
         .input-icon-wrap .field-icon { position:absolute; right:14px; top:70%; transform:translateY(-50%); width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; color:#aaa; user-select:none; }
+        .input-icon-wrap .input-group .field-icon { top:50%; }
         .input-icon-wrap .field-icon:hover { color: var(--blue); }
         .step-circle { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:900; flex-shrink:0; }
         .step-connector { width:32px; height:3px; border-radius:99px; }
@@ -258,7 +259,7 @@ const handleCadastro = async () => {
       )}
 
       {/* MOBILE */}
-      <div className="cadr-mobile" style={{ minHeight:'100vh', background:'var(--white)', display:'flex', flexDirection:'column', paddingTop:60 }}>
+      <div className="cadr-mobile" style={{ minHeight:'100vh', background:'var(--white)', display:'flex', flexDirection:'column' }}>
         <div style={{ padding:'4px 24px 0' }}>
           <div style={{ fontSize:19, fontWeight:900, color:'var(--dark)', textAlign:'center', textTransform:'uppercase', letterSpacing:1, paddingBottom:10 }}>Cadastro do Responsável</div>
           <div className="steps" style={{ paddingBottom:12 }}>
@@ -302,7 +303,7 @@ const handleCadastro = async () => {
           </div>
         </div>
         <div style={{ padding:'10px 24px 28px' }}>
-          <button onClick={handleCadastro}>Criar Conta</button>
+          <button className="btn btn-blue" style={{ width:'100%', padding:'14px 18px', fontSize:14, fontWeight:900, borderRadius:14 }} onClick={handleCadastro}>Criar Conta</button>
           <div className="footer-link mt-12">Já tem conta? <span className="link" onClick={() => navigate('login')}>Fazer login</span></div>
         </div>
       </div>

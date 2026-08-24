@@ -18,6 +18,8 @@ module.exports = (req, res, next) => {
     );
 
     req.userId = decoded.id;
+    req.userTipo = decoded.tipo;
+    req.userCargo = decoded.cargo;
 
     next();
   } catch {

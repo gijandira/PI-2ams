@@ -12,7 +12,7 @@ O AUTIM é composto por 6 módulos principais:
 2. 💬 Comunicação: Prancha com cartões ilustrados (PECS) divididos em categorias (Sentimentos, Necessidades, Ações, Lugares, Pessoas). Ao tocar em um cartão, o sistema fala a palavra em voz alta.
 3. 📅 Agenda: Calendário semanal para organizar a rotina da criança (Lições, Terapias, Saúde, Esporte, Lazer). É possível criar novos eventos no botão "+".
 4. 👤 Perfil: Mostra os dados do aluno, progresso e o botão "✏️ Editar perfil" para mudar foto e informações.
-5. ⚙️ Configurações: Onde você ativa/desativa o narrador, escolhe a voz (Feminina, Masculina, Infantil), velocidade e ativa o Modo Escuro.
+5. ⚙️ Configurações: Onde você ativa/desativa o narrador, escolhe a voz (Feminina, Masculina), velocidade e ativa o Modo Escuro.
 6. 🤖 Assistente IA (Timi): Espaço de conversa para tirar dúvidas do site, rotina e autismo.
 
 COMO NAVEGAR NO CELULAR VS COMPUTADOR:
@@ -24,7 +24,7 @@ PASSO A PASSO PARA CADA DÚVIDA DE NAVEGAÇÃO:
 1. Como ir para Configurações e mudar a voz:
    - No celular: Toque no card "Configurações" (⚙️) na tela Início, ou vá em "Perfil" > "Configurações".
    - No computador: Clique em "Configurações" (⚙️) no menu lateral esquerdo.
-   - Na página: Vá na seção "Voz do Narrador", selecione "Feminina", "Masculina" ou "Infantil", ajuste a velocidade e clique em "▶ Testar voz".
+   - Na página: Vá na seção "Voz do Narrador", selecione "Feminina" ou "Masculina", ajuste a velocidade e clique em "▶ Testar voz".
 
 2. Como usar a Comunicação (cartões PECS):
    - Acesse "Comunicar" na barra de navegação ou clique no card "Comunicação".

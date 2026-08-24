@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
 const emailService = require('../services/emailService');
@@ -94,10 +95,14 @@ if (!senhaForte.test(senha)) {
 // ─── CADASTRO DE INSTITUIÇÃO ──────────────────────────────────────────────────
 exports.cadastroInstituicao = async (req, res) => {
   try {
-    const { nome, telefone, email, senha } = req.body;
+    const { nome, telefone, email, senha, codigo } = req.body;
 
     if (!nome || !email || !senha) {
       return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
+    }
+    const codAcesso = String(codigo || '').trim().toUpperCase();
+    if (!codAcesso) {
+      return res.status(400).json({ erro: 'Informe um código de acesso.' });
     }
 
     const [existente] = await pool.query(
@@ -108,10 +113,15 @@ exports.cadastroInstituicao = async (req, res) => {
       return res.status(409).json({ erro: 'E-mail já cadastrado.' });
     }
 
-    const senhaCriptografada = await bcrypt.hash(senha, 10);
+    const [codigoExistente] = await pool.query(
+      'SELECT INS_ID FROM INSTITUICAO WHERE BINARY INS_COD_ACESSO = ? LIMIT 1',
+      [codAcesso]
+    );
+    if (codigoExistente.length > 0) {
+      return res.status(409).json({ erro: 'Código de acesso já cadastrado.' });
+    }
 
-    // Gerar código de acesso único
-    const codAcesso = 'INS-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const senhaCriptografada = await bcrypt.hash(senha, 10);
 
     const [result] = await pool.query(
       `INSERT INTO INSTITUICAO (INS_NOME, INS_TELEFONE, INS_EMAIL, INS_SENHA, INS_COD_ACESSO)
@@ -237,6 +247,106 @@ exports.loginInstituicao = async (req, res) => {
   } catch (error) {
     console.error('Erro em loginInstituicao:', error);
     return res.status(500).json({ erro: 'Erro interno do servidor.' });
+  }
+};
+
+exports.perfilInstituicao = async (req, res) => {
+  try {
+    if (req.userTipo !== 'instituicao') {
+      return res.status(403).json({ erro: 'Acesso exclusivo para instituições.' });
+    }
+
+    const [instituicoes] = await pool.query(
+      `SELECT INS_ID AS id, INS_NOME AS nome, INS_TELEFONE AS telefone,
+              INS_EMAIL AS email, INS_COD_ACESSO AS codAcesso, INS_DTCAD AS dataCadastro
+       FROM INSTITUICAO WHERE INS_ID = ? LIMIT 1`,
+      [req.userId]
+    );
+    if (instituicoes.length === 0) return res.status(404).json({ erro: 'Instituição não encontrada.' });
+
+    const [estatisticas] = await pool.query(
+            `SELECT COUNT(DISTINCT CASE WHEN s.SOL_STATUS = 'aceito' THEN s.ALU_ID END) AS alunos,
+              COUNT(DISTINCT CASE WHEN s.SOL_STATUS = 'pendente' THEN s.SOL_ID END) AS pendentes,
+              COALESCE((SELECT SUM(a2.ALU_XP_TOTAL) FROM ALUNO a2
+            INNER JOIN SOLICITACAO_AFILIACAO s2 ON s2.ALU_ID = a2.ALU_ID
+            WHERE s2.INS_ID = ? AND s2.SOL_STATUS = 'aceito'), 0) AS xpTotal,
+              COALESCE(SUM(CASE WHEN s.SOL_STATUS = 'aceito' THEN sa.SES_ACERTOS ELSE 0 END), 0) AS acertos,
+              COALESCE(SUM(CASE WHEN s.SOL_STATUS = 'aceito' THEN sa.SES_TOTALPERGUNTAS ELSE 0 END), 0) AS perguntas
+             FROM SOLICITACAO_AFILIACAO s
+             LEFT JOIN SESSAO_ATIVIDADE sa ON sa.ALU_ID = s.ALU_ID
+             WHERE s.INS_ID = ?`,
+            [req.userId, req.userId]
+    );
+    const stats = estatisticas[0];
+    res.json({
+      instituicao: instituicoes[0],
+      estatisticas: {
+        alunos: Number(stats.alunos),
+        pendentes: Number(stats.pendentes),
+        xpTotal: Number(stats.xpTotal),
+        taxaAcerto: Number(stats.perguntas) ? Math.round((Number(stats.acertos) / Number(stats.perguntas)) * 100) : 0
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao carregar perfil da instituição:', error);
+    res.status(500).json({ erro: 'Erro ao carregar perfil da instituição.' });
+  }
+};
+
+exports.atualizarPerfilInstituicao = async (req, res) => {
+  try {
+    if (req.userTipo !== 'instituicao') {
+      return res.status(403).json({ erro: 'Acesso exclusivo para instituições.' });
+    }
+    const nome = String(req.body.nome || '').trim();
+    const telefone = String(req.body.telefone || '').trim();
+    const email = String(req.body.email || '').trim();
+    if (!nome || !email) return res.status(400).json({ erro: 'Nome e e-mail são obrigatórios.' });
+
+    const [emailExistente] = await pool.query(
+      'SELECT INS_ID FROM INSTITUICAO WHERE BINARY INS_EMAIL = ? AND INS_ID <> ? LIMIT 1',
+      [email, req.userId]
+    );
+    if (emailExistente.length > 0) return res.status(409).json({ erro: 'E-mail já cadastrado.' });
+
+    const [resultado] = await pool.query(
+      `UPDATE INSTITUICAO SET INS_NOME = ?, INS_TELEFONE = ?, INS_EMAIL = ? WHERE INS_ID = ?`,
+      [nome, telefone, email, req.userId]
+    );
+    if (resultado.affectedRows === 0) return res.status(404).json({ erro: 'Instituição não encontrada.' });
+    res.json({ sucesso: true, mensagem: 'Perfil atualizado com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao atualizar perfil da instituição:', error);
+    res.status(500).json({ erro: 'Erro ao atualizar perfil da instituição.' });
+  }
+};
+
+exports.gerarCodigoInstituicao = async (req, res) => {
+  try {
+    if (req.userTipo !== 'instituicao') {
+      return res.status(403).json({ erro: 'Acesso exclusivo para instituições.' });
+    }
+
+    let codAcesso;
+    let existente;
+    do {
+      codAcesso = `INS-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+      [existente] = await pool.query(
+        'SELECT INS_ID FROM INSTITUICAO WHERE BINARY INS_COD_ACESSO = ? LIMIT 1',
+        [codAcesso]
+      );
+    } while (existente.length > 0);
+
+    const [resultado] = await pool.query(
+      'UPDATE INSTITUICAO SET INS_COD_ACESSO = ? WHERE INS_ID = ?',
+      [codAcesso, req.userId]
+    );
+    if (resultado.affectedRows === 0) return res.status(404).json({ erro: 'Instituição não encontrada.' });
+
+    res.json({ sucesso: true, codAcesso, mensagem: 'Novo código gerado com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao gerar código da instituição:', error);
+    res.status(500).json({ erro: 'Erro ao gerar novo código.' });
   }
 };
 

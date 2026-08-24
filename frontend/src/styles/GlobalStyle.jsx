@@ -23,26 +23,38 @@ const GlobalStyle = () => (
     }
 
     body.autim-dark-theme {
-      --blue: #59baff;
-      --green: #79d88d;
-      --yellow: #ffc94a;
-      --red: #fb746a;
-      --pink: #f07dc3;
-      --dark: #eef7ff;
-      --bg: #0b0d10;
-      --white: #161a20;
-      --border: #2d343a;
-      --text-muted: #b2bfcc;
-      --input-bg: #202830;
-      --shadow-card: 0 4px 20px rgba(0,0,0,.38);
+      --blue: #58a6ff;
+      --green: #56d364;
+      --yellow: #e3b341;
+      --red: #f85149;
+      --pink: #db61a2;
+      --dark: #e6edf3;
+      --bg: #0d1117;
+      --white: #161b22;
+      --border: #21262d;
+      --text-muted: #8b949e;
+      --input-bg: #0d1117;
+      --shadow-card: 0 4px 24px rgba(0,0,0,.45);
+      --gradient-top: linear-gradient(90deg, #58a6ff 0%, #56d364 33%, #e3b341 66%, #f85149 100%);
       color: var(--dark);
       background: var(--bg);
     }
 
-    body.autim-dark-theme .bottom-nav,
-    body.autim-dark-theme .desktop-sidebar,
+    body.autim-dark-theme .bottom-nav {
+      background: #161b22;
+      border-color: #21262d;
+    }
+
+    body.autim-dark-theme .desktop-sidebar {
+      background: #0d1117;
+      border-color: #21262d;
+    }
+
     body.autim-dark-theme .main-content,
-    body.autim-dark-theme .page-wrapper,
+    body.autim-dark-theme .page-wrapper {
+      background: #0d1117;
+    }
+
     body.autim-dark-theme .module-card,
     body.autim-dark-theme .card,
     body.autim-dark-theme .form-card {
@@ -51,23 +63,53 @@ const GlobalStyle = () => (
     }
 
     body.autim-dark-theme .nav-label,
-    body.autim-dark-theme .sidebar-nav-item,
     body.autim-dark-theme .footer-link,
     body.autim-dark-theme .text-muted,
     body.autim-dark-theme .menu-label,
     body.autim-dark-theme .page-subtitle,
-    body.autim-dark-theme .page-title,
-    body.autim-dark-theme .auth-sub,
-    body.autim-dark-theme .auth-title {
+    body.autim-dark-theme .auth-sub {
       color: var(--text-muted);
     }
 
+    body.autim-dark-theme .page-title,
+    body.autim-dark-theme .auth-title {
+      color: var(--dark);
+    }
+
+    body.autim-dark-theme .sidebar-nav-item {
+      color: #8b949e;
+      border-left-color: transparent;
+    }
+
+    body.autim-dark-theme .sidebar-nav-item:hover {
+      background: rgba(88,166,255,.08);
+      color: var(--dark);
+    }
+
+    body.autim-dark-theme .sidebar-nav-item.active {
+      background: rgba(88,166,255,.12);
+      color: var(--blue);
+      border-left-color: var(--blue);
+    }
+
+    body.autim-dark-theme .sidebar-logo-name {
+      color: var(--dark);
+    }
+
     body.autim-dark-theme .nav-icon {
-      background: #2a343a;
+      background: #21262d;
     }
 
     body.autim-dark-theme .nav-icon svg {
-      fill: #dcecf5;
+      fill: #8b949e;
+    }
+
+    body.autim-dark-theme .nav-item.active .nav-icon {
+      background: var(--blue);
+    }
+
+    body.autim-dark-theme .nav-item.active .nav-icon svg {
+      fill: #fff;
     }
 
     body.autim-dark-theme .nav-item.active .nav-label {
@@ -83,6 +125,10 @@ const GlobalStyle = () => (
       border-color: var(--border);
     }
 
+    body.autim-dark-theme input::placeholder {
+      color: #484f58;
+    }
+
     body.autim-dark-theme .pf-stat-card,
     body.autim-dark-theme .pf-menu-item,
     body.autim-dark-theme .cfg-desktop .page-wrapper,
@@ -93,7 +139,7 @@ const GlobalStyle = () => (
 
     body.autim-dark-theme .module-card {
       border: 1px solid var(--border);
-      background: linear-gradient(180deg, var(--white), #222b31);
+      background: linear-gradient(180deg, #161b22, #1c2128);
       color: var(--dark);
     }
 
@@ -112,7 +158,7 @@ const GlobalStyle = () => (
     }
 
     body.autim-dark-theme .module-card:hover {
-      box-shadow: 0 0 0 2px rgba(255,255,255,0.1), 0 12px 30px rgba(0,0,0,.45);
+      box-shadow: 0 0 0 1px rgba(88,166,255,.2), 0 12px 30px rgba(0,0,0,.55);
     }
 
     body.autim-dark-theme .btn,
@@ -120,12 +166,86 @@ const GlobalStyle = () => (
       border-color: transparent;
     }
 
+    body.autim-dark-theme .btn-google {
+      background: #21262d;
+      color: var(--dark);
+      border-color: var(--border);
+    }
+
+    body.autim-dark-theme .profile-tabs {
+      background: #21262d;
+    }
+
+    body.autim-dark-theme .tab-btn {
+      color: #8b949e;
+    }
+
+    body.autim-dark-theme .tab-btn.active {
+      background: #30363d;
+      color: var(--dark);
+      box-shadow: 0 2px 8px rgba(0,0,0,.3);
+    }
+
+    body.autim-dark-theme .sidebar-user {
+      border-color: #21262d;
+    }
+
+    body.autim-dark-theme .sidebar-user-name {
+      color: var(--dark);
+    }
+
+    body.autim-dark-theme .sidebar-user-role {
+      color: #8b949e;
+    }
+
+    body.autim-dark-theme .sidebar-logo {
+      border-color: #21262d;
+    }
+
     body.autim-dark-theme .btn:focus,
     body.autim-dark-theme button:focus,
     body.autim-dark-theme .nav-item:focus,
     body.autim-dark-theme .sidebar-nav-item:focus {
-      outline: 3px solid rgba(255,255,255,.36);
-      outline-offset: 3px;
+      outline: 2px solid rgba(88,166,255,.5);
+      outline-offset: 2px;
+    }
+
+    body.autim-dark-theme .autim-loading-layer {
+      background: rgba(13, 17, 23, 0.92);
+    }
+
+    body.autim-dark-theme .autim-loading-orb {
+      background: linear-gradient(135deg, #161b22, #1c2128);
+      border-color: var(--blue);
+    }
+
+    body.autim-dark-theme .autim-loading-bar {
+      background: #21262d;
+    }
+
+    body.autim-dark-theme ::-webkit-scrollbar-thumb {
+      background: #30363d;
+    }
+
+    body.autim-dark-theme ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    body.autim-dark-theme .auth-right {
+      background: #0d1117;
+    }
+
+    body.autim-dark-theme .field label {
+      color: #8b949e;
+    }
+
+    body.autim-dark-theme .divider-row span {
+      color: #484f58;
+    }
+
+    body.autim-dark-theme .divider-row::before,
+    body.autim-dark-theme .divider-row::after {
+      background: #21262d;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -143,6 +263,25 @@ const GlobalStyle = () => (
     body { font-family: 'Nunito', sans-serif; background: var(--bg); min-height: 100vh; color: var(--dark); overflow-x: hidden; }
 
     .accent-bar { height: 5px; background: var(--gradient-top); position: fixed; top: 0; left: 0; right: 0; width: 100%; z-index: 1000; }
+
+    .autim-close-button {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 50%;
+      background: #ff5b50;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .autim-close-button:hover { background: #e3372e; }
 
     .autim-loading-layer {
       position: fixed;
@@ -313,7 +452,7 @@ const GlobalStyle = () => (
     @keyframes blob { 0%,100%{border-radius:60% 40% 30% 70%/60% 30% 70% 40%} 50%{border-radius:30% 60% 70% 40%/50% 60% 30% 60%} }
 
     /* ══ DESKTOP ══ */
-    @media (min-width: 768px) {
+    @media (min-width: 1024px) {
       .bottom-nav { display: none; }
       .desktop-sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 0 16px; z-index: 100; }
       .sidebar-logo { display: flex; align-items: center; gap: 12px; padding: 0 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
