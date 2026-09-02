@@ -1,88 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import logoIcone from '../assets/logo-icone.png';
 import { IconHome, IconPerson, IconSettings } from '../components/icons';
 
 const IconMsg = () => <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>;
 const IconCfg = () => <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/></svg>;
 
+const INITIAL = [
+  { id:1, emoji:'👦', bg:'linear-gradient(135deg,#fff8e1,#ffe082)', name:'Matheus Alves',   resp:'Fernanda Alves',    tel:'(11) 98888-1111', email:'fernanda@email.com', time:'Hoje 08:45',   age:'8 anos', diag:'TEA Nível 2', code:'INCLUSÃO-2024', status:'pending'  },
+  { id:2, emoji:'👧', bg:'linear-gradient(135deg,#e8f4ff,#bee3ff)', name:'Sofia Rodrigues', resp:'Marcelo Rodrigues', tel:'(11) 97777-2222', email:'marcelo@email.com',  time:'Ontem 15:30',  age:'6 anos', diag:'TEA Nível 1', code:'INCLUSÃO-2024', status:'pending'  },
+  { id:3, emoji:'👦', bg:'linear-gradient(135deg,#edfaf3,#b2f0d4)', name:'Gabriel Costa',  resp:'Ana Costa',         tel:'(11) 96666-3333', email:'',                    time:'Seg 10:00',    age:'7 anos', diag:'TEA Nível 1', code:'INCLUSÃO-2024', status:'accepted' },
+];
+
 const FILTERS = ['Todas','⏳ Pendentes','✅ Aceitas','❌ Recusadas'];
 
 export default function PageSolicitacoesInst({ navigate }) {
-  const [reqs, setReqs]       = useState([]);
-  const [instituicao, setInstituicao] = useState(null);
+  const [reqs, setReqs]       = useState(INITIAL);
   const [filter, setFilter]   = useState('Todas');
-  const [loading, setLoading] = useState(true);
-  const [feedback, setFeedback] = useState(null);
 
-  const sair = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('instituicao');
-    navigate('login');
-  };
-
-  const carregarSolicitacoes = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('login');
-      return;
-    }
-    try {
-      const response = await fetch('http://localhost:3001/afiliacao/instituicao', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.erro || 'Não foi possível carregar as solicitações.');
-      setReqs((data.solicitacoes || []).map(item => ({
-        ...item,
-        status: item.status === 'aceito' ? 'accepted' : item.status === 'recusado' ? 'rejected' : 'pending',
-        name: item.alunoNome,
-        resp: item.responsavelNome,
-        tel: item.responsavelTelefone,
-        email: item.responsavelEmail,
-        time: new Date(item.dataSolicitacao).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }),
-        emoji: '👤',
-        bg: '#e8f4ff'
-      })));
-    } catch (error) {
-      setFeedback(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const carregarInstituicao = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-    try {
-      const response = await fetch('http://localhost:3001/auth/perfil-instituicao', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await response.json();
-      if (response.ok) setInstituicao(data.instituicao);
-    } catch (error) {
-      console.error('Erro ao carregar instituição:', error);
-    }
-  };
-
-  useEffect(() => {
-    carregarSolicitacoes();
-    carregarInstituicao();
-  }, []);
-
-  const handle = async (id, action) => {
-    try {
-      const response = await fetch(`http://localhost:3001/afiliacao/instituicao/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
-        body: JSON.stringify({ status: action === 'accepted' ? 'aceito' : 'recusado' })
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.erro || 'Não foi possível responder à solicitação.');
-      setReqs(prev => prev.map(r => r.id === id ? { ...r, status: action } : r));
-    } catch (error) {
-      setFeedback(error.message);
-    }
-  };
+  const handle = (id, action) => setReqs(prev => prev.map(r => r.id===id ? {...r, status:action} : r));
 
   const visible = reqs.filter(r => {
     if (filter === 'Todas') return true;
@@ -136,20 +71,17 @@ export default function PageSolicitacoesInst({ navigate }) {
   return (
     <>
       <style>{`
-        @media (min-width: 1024px) { .si-mobile { display: none !important; } }
+        @media (min-width: 768px) { .si-mobile { display: none !important; } }
         .si-desktop { display: none; }
-        @media (min-width: 1024px) { .si-desktop { display: block !important; } }
+        @media (min-width: 768px) { .si-desktop { display: block !important; } }
         .filter-pill-si { padding:7px 16px; border-radius:20px; background:#fff; border:2px solid #e0e8f0; font-size:12px; font-weight:800; color:#888; cursor:pointer; transition:all .2s; white-space:nowrap; flex-shrink:0; }
         .filter-pill-si.active { background:var(--green); border-color:var(--green); color:#fff; }
-        @media (min-width:768px) and (max-width:1023px) {
-          .si-mobile { max-width:760px; margin:0 auto; box-shadow:0 0 28px rgba(0,0,0,.12); }
-        }
       `}</style>
 
       {/* ── MOBILE ── */}
-      <div className="si-mobile" style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column' }}>
+      <div className="si-mobile" style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column', paddingTop:60 }}>
         <div style={{ background:'var(--green)', padding:'4px 20px 20px', display:'flex', alignItems:'center', gap:12, flexShrink:0 }}>
-          <button className="autim-close-button" onClick={() => navigate('home-instituicao')} aria-label="Fechar">×</button>
+          <button onClick={() => navigate('home-instituicao')} style={{ background:'rgba(255,255,255,.2)', border:'none', width:36, height:36, borderRadius:'50%', cursor:'pointer', fontSize:18, color:'#fff', display:'flex', alignItems:'center', justifyContent:'center' }}>‹</button>
           <div style={{ flex:1, textAlign:'center' }}>
             <div style={{ fontSize:19, fontWeight:900, color:'#fff' }}>Solicitações</div>
             <div style={{ fontSize:12, color:'rgba(255,255,255,.8)', fontWeight:600, marginTop:2 }}>{pending} aguardando aprovação</div>
@@ -161,11 +93,8 @@ export default function PageSolicitacoesInst({ navigate }) {
           {FILTERS.map(f => <div key={f} className={`filter-pill-si ${filter===f?'active':''}`} onClick={() => setFilter(f)}>{f}</div>)}
         </div>
 
-        {feedback && <div style={{ margin:'8px 16px', color:'var(--red)', fontWeight:800, fontSize:12 }}>{feedback}</div>}
         <div style={{ flex:1, overflowY:'auto', padding:'10px 16px 88px', display:'flex', flexDirection:'column', gap:12 }}>
-          {loading && <div style={{ textAlign:'center', color:'#888', fontWeight:700 }}>Carregando solicitações...</div>}
           {visible.map(r => <Card key={r.id} r={r} />)}
-          {!loading && visible.length === 0 && <div style={{ textAlign:'center', color:'#888', fontWeight:700 }}>Nenhuma solicitação encontrada.</div>}
         </div>
 
         <nav className="bottom-nav">
@@ -183,7 +112,7 @@ export default function PageSolicitacoesInst({ navigate }) {
             <span className="sidebar-logo-name">Autim</span>
           </div>
           {[
-            { icon:<IconHome/>, label:'Início',       active:false, page:'home-instituicao'   },
+            { icon:<IconHome/>, label:'Dashboard',    active:false, page:'home-instituicao'   },
             { icon:<IconMsg/>,  label:'Solicitações', active:true,  page:'solicitacoes-inst'  },
           ].map((item,i) => (
             <div key={i} className={`sidebar-nav-item ${item.active?'active':''}`} onClick={() => item.page && navigate(item.page)}>{item.icon}{item.label}</div>
@@ -191,10 +120,9 @@ export default function PageSolicitacoesInst({ navigate }) {
           <div className="sidebar-spacer"></div>
           <div className="sidebar-nav-item" onClick={() => navigate('perfil-inst')}><IconPerson />Perfil</div>
           <div className="sidebar-nav-item" onClick={() => navigate('config-inst')}><IconCfg />Configurações</div>
-          <div className="sidebar-nav-item" onClick={sair} style={{ cursor:'pointer', color:'var(--red)' }}>🚪 Sair</div>
           <div className="sidebar-user">
             <div className="sidebar-avatar" style={{ background:'var(--green)' }}>E</div>
-            <div><div className="sidebar-user-name">{instituicao?.nome || 'Instituição'}</div><div className="sidebar-user-role">Instituição</div></div>
+            <div><div className="sidebar-user-name">Escola Inclusiva</div><div className="sidebar-user-role">Instituição</div></div>
           </div>
         </nav>
         <div className="main-content">
@@ -208,11 +136,8 @@ export default function PageSolicitacoesInst({ navigate }) {
             <div style={{ display:'flex', gap:8, marginBottom:20, flexWrap:'wrap' }}>
               {FILTERS.map(f => <div key={f} className={`filter-pill-si ${filter===f?'active':''}`} onClick={() => setFilter(f)}>{f}</div>)}
             </div>
-            {feedback && <div style={{ marginBottom:12, color:'var(--red)', fontWeight:800, fontSize:13 }}>{feedback}</div>}
             <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
-              {loading && <div style={{ textAlign:'center', color:'#888', fontWeight:700 }}>Carregando solicitações...</div>}
               {visible.map(r => <Card key={r.id} r={r} />)}
-              {!loading && visible.length === 0 && <div style={{ textAlign:'center', color:'#888', fontWeight:700 }}>Nenhuma solicitação encontrada.</div>}
             </div>
           </div>
         </div>

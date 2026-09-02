@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import logoIcone from '../assets/logo-icone.png';
 import { IconHome, IconPerson } from '../components/icons';
 
@@ -7,19 +7,13 @@ const IconCfg = () => <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.
 
 function Toggle({ on, onChange }) {
   return (
-    <div onClick={onChange} style={{ width:48, height:26, borderRadius:99, flexShrink:0, cursor:'pointer', position:'relative', background: on ? 'var(--green)' : '#f87171', transition:'background .2s' }}>
-      <div style={{ position:'absolute', top:3, left: on ? 25 : 3, width:20, height:20, borderRadius:'50%', background:'#fff', boxShadow:'0 1px 4px rgba(0,0,0,.2)', transition:'left .2s', display:'flex', alignItems:'center', justifyContent:'center' }}>
-        {on
-          ? <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#48c378" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          : <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="#f87171" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-        }
-      </div>
+    <div onClick={onChange} style={{ width:48, height:26, borderRadius:99, flexShrink:0, cursor:'pointer', position:'relative', background: on ? 'var(--green)' : '#e0e8f0', transition:'background .2s' }}>
+      <div style={{ position:'absolute', top:3, left: on ? 25 : 3, width:20, height:20, borderRadius:'50%', background:'#fff', boxShadow:'0 1px 4px rgba(0,0,0,.2)', transition:'left .2s' }} />
     </div>
   );
 }
 
 export default function PageConfigInst({ navigate }) {
-  const [perfil, setPerfil] = useState(null);
   const [notifReq,     setNotifReq]     = useState(true);
   const [notifWeekly,  setNotifWeekly]  = useState(true);
   const [notifInactive,setNotifInactive]= useState(true);
@@ -27,69 +21,6 @@ export default function PageConfigInst({ navigate }) {
   const [permAuto,     setPermAuto]     = useState(false);
   const [openFaq,      setOpenFaq]      = useState(null);
   const [copied,       setCopied]       = useState(false);
-  const [gerandoCodigo, setGerandoCodigo] = useState(false);
-  const [feedback, setFeedback] = useState(null);
-
-  const sair = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('instituicao');
-    navigate('login');
-  };
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) { navigate('login'); return; }
-    fetch('http://localhost:3001/auth/perfil-instituicao', { headers:{ Authorization:`Bearer ${token}` } })
-      .then(response => response.json().then(data => ({ response, data })))
-      .then(({ response, data }) => {
-        if (!response.ok) throw new Error(data.erro || 'Não foi possível carregar a instituição.');
-        setPerfil(data.instituicao);
-      })
-      .catch(error => console.error('Erro ao carregar configurações:', error));
-  }, [navigate]);
-
-  const gerarNovoCodigo = async () => {
-    setGerandoCodigo(true);
-    setFeedback(null);
-    try {
-      const response = await fetch('http://localhost:3001/auth/gerar-codigo-instituicao', {
-        method:'POST',
-        headers:{ Authorization:`Bearer ${localStorage.getItem('token')}` }
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.erro || 'Não foi possível gerar um novo código.');
-      setPerfil(prev => ({ ...prev, codAcesso:data.codAcesso }));
-      setFeedback({ type:'success', text:data.mensagem });
-    } catch (error) {
-      setFeedback({ type:'error', text:error.message });
-    } finally {
-      setGerandoCodigo(false);
-    }
-  };
-
-  const copiarCodigo = async () => {
-    const codigo = perfil?.codAcesso;
-    if (!codigo) return;
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(codigo);
-      } else {
-        const campo = document.createElement('textarea');
-        campo.value = codigo;
-        campo.style.position = 'fixed';
-        campo.style.opacity = '0';
-        document.body.appendChild(campo);
-        campo.focus();
-        campo.select();
-        document.execCommand('copy');
-        campo.remove();
-      }
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      setFeedback({ type:'error', text:'Não foi possível copiar o código.' });
-    }
-  };
 
   const faqs = [
     { q:'Como gerenciar o acesso dos alunos?', a:'Vá na aba "Solicitações" para aceitar ou recusar alunos. Você pode remover um aluno a qualquer momento acessando o dashboard individual.' },
@@ -117,11 +48,11 @@ export default function PageConfigInst({ navigate }) {
       <div style={{ background:'#fff', borderRadius:20, padding:16, boxShadow:'0 4px 14px rgba(0,0,0,.08)', display:'flex', flexDirection:'column', gap:10 }}>
         <div style={{ fontSize:12, color:'#888', fontWeight:600 }}>Este código permite que responsáveis se afiliem à sua instituição:</div>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', background:'#edfaf3', borderRadius:14, padding:'14px 16px', border:'2px solid var(--green)' }}>
-          <div style={{ fontSize:18, fontWeight:900, color:'var(--dark)', letterSpacing:3 }}>{perfil?.codAcesso || 'Carregando...'}</div>
-          <button onClick={copiarCodigo} style={{ background:'var(--green)', color:'#fff', border:'none', borderRadius:10, padding:'7px 14px', fontFamily:'Nunito,sans-serif', fontSize:12, fontWeight:800, cursor:'pointer' }}>{copied ? '✅ Copiado!' : '📋 Copiar'}</button>
+          <div style={{ fontSize:18, fontWeight:900, color:'var(--dark)', letterSpacing:3 }}>INCLUSÃO-2024</div>
+          <button onClick={() => { setCopied(true); setTimeout(() => setCopied(false), 2000); }} style={{ background:'var(--green)', color:'#fff', border:'none', borderRadius:10, padding:'7px 14px', fontFamily:'Nunito,sans-serif', fontSize:12, fontWeight:800, cursor:'pointer' }}>{copied ? '✅ Copiado!' : '📋 Copiar'}</button>
         </div>
         <div style={{ fontSize:12, color:'#888', fontWeight:600 }}>💡 Compartilhe este código com os responsáveis dos alunos.</div>
-          <button onClick={gerarNovoCodigo} disabled={gerandoCodigo} style={{ background:'#fff', color:'var(--green)', border:'2px solid var(--green)', borderRadius:12, padding:10, fontFamily:'Nunito,sans-serif', fontSize:13, fontWeight:800, cursor:gerandoCodigo ? 'wait' : 'pointer', opacity:gerandoCodigo ? .6 : 1 }}>{gerandoCodigo ? '⏳ Gerando...' : '🔄 Gerar novo código'}</button>
+        <button style={{ background:'#fff', color:'var(--green)', border:'2px solid var(--green)', borderRadius:12, padding:10, fontFamily:'Nunito,sans-serif', fontSize:13, fontWeight:800, cursor:'pointer' }}>🔄 Gerar novo código</button>
       </div>
 
       <SectionLabel>🔔 Notificações</SectionLabel>
@@ -134,8 +65,8 @@ export default function PageConfigInst({ navigate }) {
       <ConfigItem icon="✏️" bg="#edfaf3" title="Auto-aprovação de alunos"      desc="Aceitar solicitações automaticamente"       right={<Toggle on={permAuto}    onChange={() => setPermAuto(v=>!v)} />} />
 
       <SectionLabel>🏫 Dados da instituição</SectionLabel>
-      <ConfigItem icon="🏫" bg="#edfaf3" title={perfil?.nome || 'Instituição'} desc="Nome, logo e informações" right={<div style={{ fontSize:18, color:'#ccc' }}>›</div>} />
-      <ConfigItem icon="📧" bg="#e8f4ff" title="E-mail institucional" desc={perfil?.email || 'Carregando...'} right={<div style={{ fontSize:18, color:'#ccc' }}>›</div>} />
+      <ConfigItem icon="🏫" bg="#edfaf3" title="Instituto Inclusão"      desc="Nome, logo e informações"          right={<div style={{ fontSize:18, color:'#ccc' }}>›</div>} />
+      <ConfigItem icon="📧" bg="#e8f4ff" title="E-mail institucional"    desc="contato@inclusao.com.br"           right={<div style={{ fontSize:18, color:'#ccc' }}>›</div>} />
 
       <SectionLabel>🆘 Suporte</SectionLabel>
       {faqs.map((faq,i) => (
@@ -163,18 +94,15 @@ export default function PageConfigInst({ navigate }) {
   return (
     <>
       <style>{`
-        @media (min-width: 1024px) { .ci-mobile { display: none !important; } }
+        @media (min-width: 768px) { .ci-mobile { display: none !important; } }
         .ci-desktop { display: none; }
-        @media (min-width: 1024px) { .ci-desktop { display: block !important; } }
-        @media (min-width:768px) and (max-width:1023px) {
-          .ci-mobile { max-width:760px; margin:0 auto; box-shadow:0 0 28px rgba(0,0,0,.12); }
-        }
+        @media (min-width: 768px) { .ci-desktop { display: block !important; } }
       `}</style>
 
       {/* ── MOBILE ── */}
-      <div className="ci-mobile" style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column' }}>
+      <div className="ci-mobile" style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column', paddingTop:60 }}>
         <div style={{ background:'var(--green)', padding:'4px 20px 20px', display:'flex', alignItems:'center', gap:12, flexShrink:0 }}>
-          <button className="autim-close-button" onClick={() => navigate('perfil-inst')} aria-label="Fechar">×</button>
+          <button onClick={() => navigate('perfil-inst')} style={{ background:'rgba(255,255,255,.2)', border:'none', width:36, height:36, borderRadius:'50%', cursor:'pointer', fontSize:18, color:'#fff', display:'flex', alignItems:'center', justifyContent:'center' }}>‹</button>
           <div style={{ fontSize:19, fontWeight:900, color:'#fff', flex:1, textAlign:'center' }}>Configurações</div>
           <div style={{ width:36 }}></div>
         </div>
@@ -196,7 +124,7 @@ export default function PageConfigInst({ navigate }) {
             <span className="sidebar-logo-name">Autim</span>
           </div>
           {[
-            { icon:<IconHome/>, label:'Início',       active:false, page:'home-instituicao'  },
+            { icon:<IconHome/>, label:'Dashboard',    active:false, page:'home-instituicao'  },
             { icon:<IconMsg/>,  label:'Solicitações', active:false, page:'solicitacoes-inst' },
           ].map((item,i) => (
             <div key={i} className={`sidebar-nav-item ${item.active?'active':''}`} onClick={() => item.page && navigate(item.page)}>{item.icon}{item.label}</div>
@@ -204,16 +132,15 @@ export default function PageConfigInst({ navigate }) {
           <div className="sidebar-spacer"></div>
           <div className="sidebar-nav-item" onClick={() => navigate('perfil-inst')}><IconPerson />Perfil</div>
           <div className="sidebar-nav-item active"><IconCfg />Configurações</div>
-          <div className="sidebar-nav-item" onClick={sair} style={{ cursor:'pointer', color:'var(--red)' }}>🚪 Sair</div>
           <div className="sidebar-user">
             <div className="sidebar-avatar" style={{ background:'var(--green)' }}>E</div>
-            <div><div className="sidebar-user-name">{perfil?.nome || 'Instituição'}</div><div className="sidebar-user-role">Instituição</div></div>
+            <div><div className="sidebar-user-name">Instituto Inclusão</div><div className="sidebar-user-role">Instituição</div></div>
           </div>
         </nav>
         <div className="main-content">
           <div className="page-wrapper" style={{ maxWidth:680 }}>
             <div style={{ display:'flex', alignItems:'center', gap:16, marginBottom:28 }}>
-              <button className="autim-close-button" onClick={() => navigate('perfil-inst')} aria-label="Fechar">×</button>
+              <button onClick={() => navigate('perfil-inst')} style={{ width:40, height:40, borderRadius:'50%', background:'#fff', border:'1.5px solid var(--border)', cursor:'pointer', fontSize:20, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'var(--shadow-card)' }}>‹</button>
               <div>
                 <div style={{ fontSize:28, fontWeight:900, color:'var(--dark)' }}>Configurações</div>
                 <div style={{ fontSize:14, color:'#888', fontWeight:600, marginTop:4 }}>Preferências da instituição</div>
