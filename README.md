@@ -8,7 +8,7 @@
 
 > Plataforma de comunicação assistiva para pessoas com TEA não verbais, utilizando IA para adaptação personalizada.
 
-🚀 **Projeto Integrador** | 2º ADS-AMS - FATEC TAUBATÉ
+🚀 *Projeto Integrador* | 2º ADS-AMS - FATEC TAUBATÉ
 <br>
 Foco: Inclusão, acessibilidade e tecnologia adaptativa
 
@@ -32,54 +32,61 @@ Pessoas autistas não verbais enfrentam dificuldades na comunicação e no apren
 
 ### 🛠️ Engenharia e Escopo
 
-> **Funcionalidades**
+> *Funcionalidades*
 
 - 🗣️ Comunicação por símbolos com reprodução de áudio
 - 🤖 Bot que auxiliará no uso da plataforma e a como lidar com o Autista
 - 📊 Dashboard de acompanhamento de progresso
-- 👤 Sistema de perfis (Admin, Profissional, Aluno)
+- 👤 Sistema de perfis (Responsável/Aluno e Instituição)
 - 🖼️ Biblioteca de mídias personalizadas
 
 ## 🏗️ Arquitetura do Sistema
 
 | Camada | Tecnologias / Ferramentas / Pacotes |
 | :--- | :--- |
-| **Frontend (Web & Desktop)** | React.js, Electron, Vite, HTML5, CSS3, JavaScript |
-| **Mobile** | React Native |
-| **Backend (Node.js)** | Node.js, Express.js, PHP, `path`, `fs` |
-| **Banco de Dados** | MySQL (driver `mysql2`) |
-| **Autenticação & Segurança** | JSON Web Tokens (JWT), Bcrypt.js, CORS, Dotenv, Certificado SSL (HTTPS) |
-| **Comunicação / Protocolo** | API REST (HTTPS / JSON) |
-| **Infraestrutura & Web Server** | NGINX (Reverse Proxy / SSL), VPS Hostgator (Produção), XAMPP (Dev Local) |
-| **Design & UI/UX** | Figma, Adobe Photoshop, Canva |
-| **Ferramentas de Desenvolvimento** | Visual Studio Code, Git, GitHub |
+| *Frontend (Web & Desktop)* | React.js, Electron, Vite, HTML5, CSS3, JavaScript |
+| *Mobile* | React Native |
+| *Backend (Node.js)* | Node.js, Express.js, PHP, path, fs, Multer (upload de fotos), Nodemailer (e-mails), node-cron (agendamento de lembretes) |
+| *Inteligência Artificial* | Ollama (Assistente IA) |
+| *Banco de Dados* | MySQL (driver mysql2) |
+| *Autenticação & Segurança* | JSON Web Tokens (JWT), Bcrypt.js, CORS, Dotenv, Certificado SSL (HTTPS) |
+| *Comunicação / Protocolo* | API REST (HTTPS / JSON) |
+| *Infraestrutura & Web Server* | NGINX (Reverse Proxy / SSL), VPS Hostgator (Produção), XAMPP (Dev Local) |
+| *Design & UI/UX* | Figma, Adobe Photoshop, Canva |
+| *Ferramentas de Desenvolvimento* | Visual Studio Code, Git, GitHub |
 
 ---
 
-*Diagramas Autim*
-[DiagramasAUTIMM.pdf](https://github.com/user-attachments/files/27103746/DiagramasAUTIMM.pdf)
+Diagramas Autim
+[Diagramas atualizados SPRINT 4.pdf](docs/Diagramas%20atualizados%20SPRINT%204.pdf)
 
-> **▶️ Como executar**
+> *▶️ Como executar*
 
-**Pré-requisitos:** Node.js e MySQL instalados.
+*Pré-requisitos:* Node.js e XAMPP (MySQL) instalados.
 
-```bash
-# Clone o repositório
+bash
+# 1. Clone o repositório
 git clone https://github.com/gijandira/PI-2ams
+cd PI-2ams
 
-# Entre na pasta
-cd autim
 
-# Instale dependências (frontend)
+*2. Banco de dados:* inicie o MySQL no XAMPP, crie o banco autim e importe o arquivo database/autim.sql.
+
+bash
+# 3. Backend (em um terminal)
+cd backend
 npm install
+npm run dev
 
-# Rode o projeto
-npm start
-```
+# 4. Frontend (em outro terminal)
+cd frontend
+npm install
+npm run dev
 
-Para instruções detalhadas de backend e configuração do banco de dados, consulte o arquivo [Funcionar o projeto.txt](autimm/Funcionar%20o%20projeto.txt) dentro da pasta `autimm/`.
 
-> **🔒 Segurança**
+Para instruções detalhadas, consulte o arquivo [Funcionar o projeto.txt](frontend/Funcionar%20o%20projeto.txt) dentro da pasta frontend/.
+
+> *🔒 Segurança*
 
 O sistema segue princípios da LGPD, garantindo:
 - Criptografia de dados sensíveis
@@ -105,6 +112,13 @@ O sistema segue princípios da LGPD, garantindo:
 ![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white)
 ![JWT](https://img.shields.io/badge/JSON_Web_Tokens-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white)
+![Multer](https://img.shields.io/badge/Multer-FF6600?style=for-the-badge)
+![Nodemailer](https://img.shields.io/badge/Nodemailer-22B573?style=for-the-badge)
+![node-cron](https://img.shields.io/badge/node--cron-339933?style=for-the-badge&logo=node.js&logoColor=white)
+
+### 🤖 Inteligência Artificial
+
+![Ollama](https://img.shields.io/badge/Ollama-000000?style=for-the-badge&logo=ollama&logoColor=white)
 
 ### 🌐 Servidor & Infraestrutura
 
@@ -127,25 +141,22 @@ O sistema segue princípios da LGPD, garantindo:
 |--------|-----------|---------|--------|
 | Sprint 1 | Base do sistema | 24/03/2026 – 24/04/2026 | ✅ Concluída |
 | Sprint 2 | Testes e Validação | 01/05/2026 – 31/05/2026 | ✅ Concluída |
-| Sprint 3 | Correções e Apresentação | 01/06/2026 – 30/06/2026 | 🔄 Em andamento |
-| Sprint 4 | Integrações | — | ⏳ Pendente |
+| Sprint 3 | Correções e Apresentação | 01/06/2026 – 30/06/2026 | ✅ Concluída |
+| Sprint 4 | Integrações | — | 🔄 Em andamento |
 | Sprint 5 | Finalização | — | ⏳ Pendente |
 
 ## 📁 Estrutura do Repositório
 
+
 PI-2ams/
-├── autim/ # Código principal do sistema
-├── backend/ # Configurações do backend
-├── utilitários de backend/ # Utilitários de suporte ao backend
-├── front-end/ # Código do frontend
-├── banco de dados/ # Documentação do banco de dados
-├── documentos/ # Documentações do projeto
-├── Imagens/ # Imagens utilizadas no README
-├── CHANGELOG.md # Histórico de alterações por Sprint
-├── LICENÇA.txt # Licença de uso do projeto
-├── arquivo package-lock.json # Dependências do projeto
-├── package.json # Configurações do projeto
-└── README.md # Documentação principal
+├── frontend/     # Interface (React + Vite)
+├── backend/      # API Node.js/Express (pasta node/) e rotas PHP
+├── database/     # Script do banco (autim.sql)
+├── docs/         # Documentações e diagramas das sprints
+├── Imagens/      # Imagens usadas no README
+├── LICENÇA.txt   # Licença de uso do projeto
+└── README.md     # Documentação principal
+
 
 ## 👥 Equipe
 
@@ -195,7 +206,7 @@ PI-2ams/
 
 ---
 
-> *"A empatia é ver com os olhos do outro, ouvir com os ouvidos do outro e sentir com o coração do outro."*
+> "A empatia é ver com os olhos do outro, ouvir com os ouvidos do outro e sentir com o coração do outro."
 > — Alfred Adler
 
-**FATEC TAUBATÉ - 2026**
+*FATEC TAUBATÉ - 2026*
