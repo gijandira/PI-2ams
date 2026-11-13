@@ -1,6 +1,21 @@
 const pool = require('../config/db');
 const notificationScheduler = require('../services/notificationScheduler');
 
+const alunoAutorizado = async (req, alunoId) => {
+  const [vinculos] = req.userTipo === 'instituicao'
+    ? await pool.query(
+        `SELECT SOL_ID FROM SOLICITACAO_AFILIACAO
+         WHERE ALU_ID = ? AND INS_ID = ? AND SOL_STATUS = 'aceito' LIMIT 1`,
+        [alunoId, req.userId]
+      )
+    : await pool.query(
+        `SELECT ALU_ID FROM ALUNO_USUARIO
+         WHERE ALU_ID = ? AND USU_ID = ? LIMIT 1`,
+        [alunoId, req.userId]
+      );
+  return vinculos.length > 0;
+};
+
 exports.criarEvento = async (req, res) => {
   try {
     const { alunoId, titulo, descricao, dataInicio, dataFim, etiqueta } = req.body;
@@ -9,6 +24,9 @@ exports.criarEvento = async (req, res) => {
       return res.status(400).json({
         erro: 'Campos obrigatórios faltando'
       });
+    }
+    if (!(await alunoAutorizado(req, alunoId))) {
+      return res.status(403).json({ erro: 'Aluno não autorizado.' });
     }
 
     const [resultado] = await pool.query(
@@ -46,6 +64,9 @@ exports.listarEventos = async (req, res) => {
         erro: 'ID do aluno é obrigatório'
       });
     }
+    if (!(await alunoAutorizado(req, alunoId))) {
+      return res.status(403).json({ erro: 'Aluno não autorizado.' });
+    }
 
     const [eventos] = await pool.query(
       `SELECT EVE_ID, ALU_ID, EVE_TITULO, EVE_DESCRICAO, EVE_ETIQUETA, 
@@ -77,6 +98,12 @@ exports.atualizarEvento = async (req, res) => {
       `SELECT ALU_ID FROM EVENTO_AGENDA WHERE EVE_ID = ?`,
       [eventoId]
     );
+    if (eventoAntigo.length === 0) {
+      return res.status(404).json({ erro: 'Evento não encontrado' });
+    }
+    if (!(await alunoAutorizado(req, eventoAntigo[0].ALU_ID))) {
+      return res.status(403).json({ erro: 'Evento não autorizado.' });
+    }
 
     const [resultado] = await pool.query(
       `UPDATE EVENTO_AGENDA 
@@ -96,14 +123,12 @@ exports.atualizarEvento = async (req, res) => {
     notificationScheduler.cancelarNotificacaoEvento(eventoId);
 
     // Agendar nova notificação 1 hora antes do novo horário
-    if (eventoAntigo.length > 0) {
-      const dataHoraEvento = new Date(dataInicio);
-      notificationScheduler.agendarNotificacaoEventoUmaHoraAntes(
-        eventoId, 
-        dataHoraEvento, 
-        eventoAntigo[0].ALU_ID
-      );
-    }
+    const dataHoraEvento = new Date(dataInicio);
+    notificationScheduler.agendarNotificacaoEventoUmaHoraAntes(
+      eventoId,
+      dataHoraEvento,
+      eventoAntigo[0].ALU_ID
+    );
 
     res.json({
       sucesso: true,
@@ -120,6 +145,16 @@ exports.atualizarEvento = async (req, res) => {
 exports.deletarEvento = async (req, res) => {
   try {
     const { eventoId } = req.params;
+    const [eventos] = await pool.query(
+      'SELECT ALU_ID FROM EVENTO_AGENDA WHERE EVE_ID = ? LIMIT 1',
+      [eventoId]
+    );
+    if (eventos.length === 0) {
+      return res.status(404).json({ erro: 'Evento não encontrado' });
+    }
+    if (!(await alunoAutorizado(req, eventos[0].ALU_ID))) {
+      return res.status(403).json({ erro: 'Evento não autorizado.' });
+    }
 
     const [resultado] = await pool.query(
       `DELETE FROM EVENTO_AGENDA WHERE EVE_ID = ?`,
