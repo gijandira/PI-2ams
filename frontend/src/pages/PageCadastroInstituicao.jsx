@@ -268,7 +268,7 @@ const handleCadastroInstituicao = async () => {
           <div style={{ fontSize:11, color:'var(--green)', fontWeight:700, textAlign:'center', marginTop:-4 }}>🔑 Este código será usado pelos responsáveis para se afiliar à sua instituição</div>
         </div>
         <div style={{ padding:'10px 24px 28px' }}>
-          <button className="btn btn-green" style={{ width:'100%', padding:'14px 18px', fontSize:14, fontWeight:900, borderRadius:14 }} onClick={handleCadastroInstituicao}>Cadastrar Instituição</button>
+          <button className="btn btn-green" style={{ width:'100%', padding:'14px 18px', fontSize:14, fontWeight:900, borderRadius:14 }} onClick={handleCadastroInstituicao} disabled={loading}>{loading ? 'Cadastrando...' : 'Cadastrar Instituição'}</button>
           <div className="footer-link mt-12">Já tem conta? <span className="link" style={{ color:'var(--green)' }} onClick={() => navigate('login-instituicao')}>Fazer login</span></div>
         </div>
       </div>
@@ -349,7 +349,7 @@ const handleCadastroInstituicao = async () => {
                   </div>
                 </div>
                 <div className="col-span-2">
-                  <button className="btn btn-green" style={{ fontSize:15, padding:16 }} onClick={handleCadastroInstituicao}>Cadastrar Instituição</button>
+                  <button className="btn btn-green" style={{ fontSize:15, padding:16 }} onClick={handleCadastroInstituicao} disabled={loading}>{loading ? 'Cadastrando...' : 'Cadastrar Instituição'}</button>
                 </div>
                 <div className="col-span-2">
                   <div className="footer-link">Já tem conta? <span className="link" style={{ color:'var(--green)' }} onClick={() => navigate('login-instituicao')}>Fazer login</span></div>

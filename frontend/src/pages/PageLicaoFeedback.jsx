@@ -9,6 +9,14 @@ const FB_OPTIONS = [
 
 export default function PageLicaoFeedback({ navigate }) {
   const [selected, setSelected] = useState(null);
+  const [xpGanho] = useState(() => Number(localStorage.getItem('ultimoXpGanho') || 20));
+  const [licao] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('licaoSelecionada')) || { label: 'Fase 4', emoji: '😨', categoria: 'Sentimentos' };
+    } catch {
+      return { label: 'Fase 4', emoji: '😨', categoria: 'Sentimentos' };
+    }
+  });
 
   return (
     <>
@@ -26,8 +34,8 @@ export default function PageLicaoFeedback({ navigate }) {
           <div style={{ position:'absolute', top:-20, right:-30, width:100, height:100, background:'rgba(255,255,255,.08)', borderRadius:'50%' }}></div>
           <div style={{ fontSize:64, animation:'bounce-in .6s ease-out', position:'relative', zIndex:1 }}>🎉</div>
           <div style={{ fontSize:22, fontWeight:900, color:'#fff', position:'relative', zIndex:1 }}>Lição concluída!</div>
-          <div style={{ fontSize:14, color:'rgba(255,255,255,.85)', fontWeight:600, textAlign:'center', position:'relative', zIndex:1 }}>Fase 4 de Sentimentos finalizada</div>
-          <div style={{ background:'#fdbe2d', borderRadius:20, padding:'6px 18px', fontSize:14, fontWeight:900, color:'var(--dark)', position:'relative', zIndex:1 }}>+20 XP ⭐</div>
+          <div style={{ fontSize:14, color:'rgba(255,255,255,.85)', fontWeight:600, textAlign:'center', position:'relative', zIndex:1 }}>{licao.label} de {licao.categoria} finalizada</div>
+          <div style={{ background:'#fdbe2d', borderRadius:20, padding:'6px 18px', fontSize:14, fontWeight:900, color:'var(--dark)', position:'relative', zIndex:1 }}>+{xpGanho} XP ⭐</div>
         </div>
 
         {/* feedback card */}

@@ -1,17 +1,11 @@
 import { useState, useEffect } from 'react';
 
 export default function PageResetarSenha({ navigate }) {
-  const [token, setToken] = useState('');
+  const [token] = useState(() => new URLSearchParams(window.location.search).get('reset_token') || '');
   const [senha, setSenha] = useState('');
   const [confirmSenha, setConfirmSenha] = useState('');
   const [mensagem, setMensagem] = useState(null);
   const [enviando, setEnviando] = useState(false);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const t = params.get('reset_token');
-    if (t) setToken(t);
-  }, []);
 
   useEffect(() => {
     if (!mensagem) return;

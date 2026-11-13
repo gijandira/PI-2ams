@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import logoIcone from '../assets/logo-icone.png';
-import { IconHome, IconChat, IconCalendar, IconPerson, IconSettings } from '../components/icons';
+import { IconHome, IconChat, IconPerson, IconSettings } from '../components/icons';
 
 export default function PageHomeInstituicao({ navigate }) {
   const [tabMob, setTabMob] = useState('alunos');

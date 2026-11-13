@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import logoIcone from '../assets/logo-icone.png';
 import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings, IconRobot } from '../components/icons';
 import SidebarUser from '../components/SidebarUser';
@@ -377,32 +377,9 @@ export default function PageAgenda({ navigate }) {
   const [showNewEvent, setShowNewEvent] = useState(false);
   const [userClicked, setUserClicked] = useState(false);
   const [databaseEvents, setDatabaseEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [userName, setUserName] = useState('Usuário');
-  const [alunoId, setAlunoId] = useState(null);
+  const alunoId = Number(localStorage.getItem('alunoId')) || null;
 
-  // Carregar eventos e dados do usuário com trava de segurança
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-    const aluId = localStorage.getItem('alunoId');
-
-    // Se o usuário não estiver autenticado, limpa resíduos e barra o acesso
-    if (!token || !aluId) {
-      localStorage.clear();
-      navigate('login');
-      return;
-    }
-
-    if (userData.nome) {
-      setUserName(userData.nome);
-    }
-
-    setAlunoId(parseInt(aluId));
-    carregarEventos(aluId, token);
-  }, [navigate]);
-
-  const carregarEventos = async (alunoId, token) => {
+  const carregarEventos = useCallback(async (alunoId, token) => {
     try {
       // Adicionado o cabeçalho de Authorization com o Token para proteger a rota da API
       const response = await fetch(`http://localhost:3001/evento/listar?alunoId=${alunoId}`, {
@@ -456,10 +433,24 @@ export default function PageAgenda({ navigate }) {
       // Se a sessão caiu ou a API rejeitou a requisição, desloga por segurança
       localStorage.clear();
       navigate('login');
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const token = localStorage.getItem('token');
+      const aluId = localStorage.getItem('alunoId');
+
+      if (!token || !aluId) {
+        localStorage.clear();
+        navigate('login');
+        return;
+      }
+
+      void carregarEventos(aluId, token);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [carregarEventos, navigate]);
 
   const handleLogout = () => {
     localStorage.clear(); // Limpa todas as chaves de segurança de uma vez só
@@ -659,7 +650,7 @@ export default function PageAgenda({ navigate }) {
         <nav className="bottom-nav">
           <div className="nav-item" onClick={() => navigate('home-aluno')}><div className="nav-icon"><IconHome /></div><div className="nav-label">Início</div></div>
           <div className="nav-item" onClick={() => navigate('comunicacao')}><div className="nav-icon"><IconChat /></div><div className="nav-label">Comunicar</div></div>
-          <div className="nav-item"><div className="nav-icon"><IconSchool /></div><div className="nav-label">Lições</div></div>
+          <div className="nav-item" onClick={() => navigate('licoes')}><div className="nav-icon"><IconSchool /></div><div className="nav-label">Lições</div></div>
           <div className="nav-item active"><div className="nav-icon active"><IconCalendar /></div><div className="nav-label">Agenda</div></div>
           <div className="nav-item" onClick={() => navigate('perfil')}><div className="nav-icon"><IconPerson /></div><div className="nav-label">Perfil</div></div>
         </nav>
@@ -675,7 +666,7 @@ export default function PageAgenda({ navigate }) {
           {[
             { icon: <IconHome />, label: 'Início', active: false, page: 'home-aluno' },
             { icon: <IconChat />, label: 'Comunicação', active: false, page: 'comunicacao' },
-            { icon: <IconSchool />, label: 'Lições', active: false, page: null },
+            { icon: <IconSchool />, label: 'Lições', active: false, page: 'licoes' },
             { icon: <IconCalendar />, label: 'Agenda', active: true, page: 'agenda' },
             { icon: <IconRobot />, label: 'Assistente IA', active: false, page: 'ia' },
           ].map((item, i) => (
