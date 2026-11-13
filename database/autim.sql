@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 16/06/2026 às 15:19
+-- Tempo de geração: 30/09/2026 às 04:12
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -53,7 +53,10 @@ INSERT INTO `aluno` (`ALU_ID`, `ALU_NOME`, `ALU_DTNASC`, `ALU_DIAGNOSTICO`, `ALU
 (6, 'Zidane', NULL, NULL, 0, 0, NULL, NULL, '2026-05-25 23:05:53', '2026-05-25 23:05:53', NULL, NULL),
 (7, 'Zidane', NULL, NULL, 0, 0, NULL, NULL, '2026-05-25 23:12:01', '2026-05-25 23:12:01', NULL, NULL),
 (8, 'Lucas', NULL, NULL, 0, 0, NULL, NULL, '2026-06-15 23:43:22', '2026-06-15 23:43:22', NULL, NULL),
-(9, 'Vinicius', NULL, NULL, 0, 0, NULL, NULL, '2026-06-16 08:22:55', '2026-06-16 08:22:55', NULL, NULL);
+(9, 'Vinicius', NULL, NULL, 0, 0, NULL, NULL, '2026-06-16 08:22:55', '2026-06-16 08:22:55', NULL, NULL),
+(10, 'Lucas', NULL, NULL, 0, 0, NULL, NULL, '2026-08-23 20:17:54', '2026-08-23 20:17:54', NULL, NULL),
+(11, 'Luis', NULL, NULL, 0, 0, NULL, NULL, '2026-09-29 21:38:31', '2026-09-29 21:38:31', NULL, NULL),
+(12, 'Maria', NULL, NULL, 45, 1, NULL, '/uploads/foto-1790732796417-308134361.png', '2026-09-29 22:19:17', '2026-09-29 22:57:49', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -90,7 +93,10 @@ INSERT INTO `aluno_usuario` (`ALU_ID`, `USU_ID`, `ALUS_DTVINCULO`) VALUES
 (6, 9, '2026-05-25 23:05:53'),
 (7, 10, '2026-05-25 23:12:01'),
 (8, 11, '2026-06-15 23:43:22'),
-(9, 12, '2026-06-16 08:22:55');
+(9, 12, '2026-06-16 08:22:55'),
+(10, 13, '2026-08-23 20:17:54'),
+(11, 14, '2026-09-29 21:38:31'),
+(12, 15, '2026-09-29 22:19:17');
 
 -- --------------------------------------------------------
 
@@ -110,6 +116,13 @@ CREATE TABLE `atividade` (
   `ATI_IDAUDIO` int(10) UNSIGNED DEFAULT NULL,
   `ATI_DTCAD` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Despejando dados para a tabela `atividade`
+--
+
+INSERT INTO `atividade` (`ATI_ID`, `ATI_TITULO`, `ATI_DESCRICAO`, `ATI_TIPO`, `SUB_ID`, `ATI_DIFICULDADE`, `ATI_MINPONTOS`, `ATI_IDIMAGEM`, `ATI_IDAUDIO`, `ATI_DTCAD`) VALUES
+(1, 'Sentimentos - Fase 4', 'Atividade inicial de sentimentos.', 'multipla_escolha', 1, 1, 70.00, NULL, NULL, '2026-09-29 22:56:56');
 
 -- --------------------------------------------------------
 
@@ -209,7 +222,8 @@ CREATE TABLE `instituicao` (
 --
 
 INSERT INTO `instituicao` (`INS_ID`, `INS_NOME`, `INS_TELEFONE`, `INS_EMAIL`, `INS_SENHA`, `INS_COD_ACESSO`, `INS_DTCAD`) VALUES
-(1, 'Fatec Taubaté', '12666554433', 'Taubaté@fatec.com.br', '$2b$10$rDfCpqesimaVBDNSP0/INubWlsJ3TGk6IHRGK3QZJ2gZ47dZ9j1hC', 'INS-S24ABU', '2026-06-16 08:36:49');
+(1, 'Fatec Taubaté', '12666554433', 'Taubaté@fatec.com.br', '$2b$10$rDfCpqesimaVBDNSP0/INubWlsJ3TGk6IHRGK3QZJ2gZ47dZ9j1hC', 'INS-S24ABU', '2026-06-16 08:36:49'),
+(2, 'Unitau', '12555332211', 'unitau@unitau.com', '$2b$10$qeXuURRVQyRwFZZkYtoLOur.X/O4P8BQ3SnL8SOApZek1gd64JOae', 'UNI-2026', '2026-09-29 23:02:22');
 
 -- --------------------------------------------------------
 
@@ -326,7 +340,10 @@ INSERT INTO `perfil` (`PER_ID`, `ALU_ID`, `PER_NIVEL`, `PER_DIFICULDADE`, `PER_P
 (4, 6, 'iniciante', NULL, NULL, '2026-05-25 23:05:53'),
 (5, 7, 'iniciante', NULL, NULL, '2026-05-25 23:12:01'),
 (6, 8, 'iniciante', NULL, NULL, '2026-06-15 23:43:22'),
-(7, 9, 'iniciante', NULL, NULL, '2026-06-16 08:22:55');
+(7, 9, 'iniciante', NULL, NULL, '2026-06-16 08:22:55'),
+(8, 10, 'iniciante', NULL, NULL, '2026-08-23 20:17:54'),
+(9, 11, 'iniciante', NULL, NULL, '2026-09-29 21:38:31'),
+(10, 12, 'iniciante', NULL, NULL, '2026-09-29 22:19:17');
 
 -- --------------------------------------------------------
 
@@ -380,6 +397,15 @@ CREATE TABLE `sessao_atividade` (
   `SES_DTTERMINO` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Despejando dados para a tabela `sessao_atividade`
+--
+
+INSERT INTO `sessao_atividade` (`SES_ID`, `ALU_ID`, `ATI_ID`, `USU_ID`, `SES_ACERTOS`, `SES_TOTALPERGUNTAS`, `SES_FEEDBACK_RESPONSAVEL`, `SES_PONTOS`, `SES_DTINICIO`, `SES_DTTERMINO`) VALUES
+(1, 12, 1, 15, 1, 1, NULL, 20.00, '2026-09-29 22:56:56', '2026-09-29 22:56:56'),
+(2, 12, 1, 15, 1, 1, NULL, 20.00, '2026-09-29 22:57:06', '2026-09-29 22:57:06'),
+(3, 12, 1, 15, 0, 1, NULL, 5.00, '2026-09-29 22:57:49', '2026-09-29 22:57:49');
+
 -- --------------------------------------------------------
 
 --
@@ -408,6 +434,13 @@ CREATE TABLE `solicitacao_afiliacao` (
   `SOL_DT_RESPOSTA` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Despejando dados para a tabela `solicitacao_afiliacao`
+--
+
+INSERT INTO `solicitacao_afiliacao` (`SOL_ID`, `ALU_ID`, `INS_ID`, `SOL_STATUS`, `SOL_DT_SOLICITACAO`, `SOL_DT_RESPOSTA`) VALUES
+(1, 12, 2, 'aceito', '2026-09-29 23:02:53', '2026-09-29 23:06:08');
+
 -- --------------------------------------------------------
 
 --
@@ -419,6 +452,13 @@ CREATE TABLE `subcategoria` (
   `CAT_ID` int(10) UNSIGNED NOT NULL,
   `SUB_NOME` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Despejando dados para a tabela `subcategoria`
+--
+
+INSERT INTO `subcategoria` (`SUB_ID`, `CAT_ID`, `SUB_NOME`) VALUES
+(1, 4, 'Atividades iniciais');
 
 -- --------------------------------------------------------
 
@@ -442,14 +482,17 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`USU_ID`, `USU_NOME`, `USU_EMAIL`, `USU_TELEFONE`, `USU_SENHA`, `USU_CARGO`, `USU_DTCAD`, `USU_DTALT`) VALUES
-(5, 'Vitor', 'daniel@gmail.com', '12 988774547', '$2b$10$5ys/KH6MIBv/hbEaZC/FBeMmYS/UewCUa6J5VvU.r1ZSotuGCfYZO', 'responsavel', '2026-05-26 00:58:12', '2026-05-26 00:58:12'),
-(6, 'João', 'lucas@gmail.com', '12 996637203', '$2b$10$TCGPtWYVpzTat39D/.S18O1r627SqyuD8EArLZfJrsyGt2Wv37lSO', 'responsavel', '2026-05-26 00:58:12', '2026-05-26 00:58:12'),
+(5, 'Vitor', 'daniel@gmail.com', '12 98877454', '$2b$10$5ys/KH6MIBv/hbEaZC/FBeMmYS/UewCUa6J5VvU.r1ZSotuGCfYZO', 'responsavel', '2026-05-26 00:58:12', '2026-05-26 00:58:12'),
+(6, 'João', 'lucas@gmail.com', '12 99663720', '$2b$10$TCGPtWYVpzTat39D/.S18O1r627SqyuD8EArLZfJrsyGt2Wv37lSO', 'responsavel', '2026-05-26 00:58:12', '2026-05-26 00:58:12'),
 (7, 'b', 'a@gmail.com', '1', '$2b$10$TOvx63mwxWR4DAzwYB6iA.DFRUDwrjn5lCAw8o8WmNkpMUVSIc3VG', 'responsavel', '2026-05-26 00:58:12', '2026-05-26 00:58:12'),
 (8, 'Pelé', 'l@gmail.com', '12999638520', '$2b$10$3hr61C5e1wOT9/JakmVGf.//7JXi8fVqG3lUNh/O448X2D3cw53sq', 'responsavel', '2026-05-25 22:55:06', '2026-05-25 22:55:06'),
 (9, 'Pelé', 'Zidane@gmail.com', '12999634520', '$2b$10$VG1XUtuxGGAxEW2mnAm.SuQtHAt5eK81y1X8/J7MDEJS80KC2ajga', 'responsavel', '2026-05-25 23:05:53', '2026-05-25 23:05:53'),
 (10, 'Pele', 'Pele@gmail.com', '12996234512', '$2b$10$IuzRKfcsZ83.Y8ujjG2sMeYdQbp32jK3KwG.klHtOyiDUM9msgzYu', 'responsavel', '2026-05-25 23:12:00', '2026-05-25 23:12:00'),
 (11, 'Marcos', 'b@gmail.com', '12999887766', '$2b$10$7hbtGqSHTX9lTuET1W.HauTlGcUWUKfV9nlFCVscr1wOUfKdr7NrG', 'responsavel', '2026-06-15 23:43:22', '2026-06-15 23:43:22'),
-(12, 'Daniel', 'd@gmail.com', '12111223344', '$2b$10$UG7RGu5wMA/C7R1IeENPzuxpACXh16LDLtn8y45/TsX5pJ00y8ghi', 'responsavel', '2026-06-16 08:22:55', '2026-06-16 08:22:55');
+(12, 'Daniel', 'd@gmail.com', '12111223344', '$2b$10$UG7RGu5wMA/C7R1IeENPzuxpACXh16LDLtn8y45/TsX5pJ00y8ghi', 'responsavel', '2026-06-16 08:22:55', '2026-06-16 08:22:55'),
+(13, 'Glenda', 'glenda@gmail.com', '12999887755', '$2b$10$NReVECDT22ZLhW7M5UTWVOcf25epOP2mo.D88tpNOQKcR.OsNCMse', 'responsavel', '2026-08-23 20:17:54', '2026-08-23 20:17:54'),
+(14, 'Marcio', 'luis@gmail.com', '12888774422', '$2b$10$Uw9mZ6UjUvOXQ0Vjm.2EFuXECqgh/2SjiL3e.y6SfguoaCh4SIQoC', 'responsavel', '2026-09-29 21:38:31', '2026-09-29 21:38:31'),
+(15, 'Claudia', 'maria@gmail.com', NULL, '$2b$10$EJo74GqHTCY9GVObf42yE.W7P9vuK.awPBxVdwB7Fx4lKSV5rQPt2', 'responsavel', '2026-09-29 22:19:17', '2026-09-29 22:46:36');
 
 --
 -- Índices para tabelas despejadas
@@ -609,13 +652,13 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de tabela `aluno`
 --
 ALTER TABLE `aluno`
-  MODIFY `ALU_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `ALU_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de tabela `atividade`
 --
 ALTER TABLE `atividade`
-  MODIFY `ATI_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `ATI_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `categoria`
@@ -645,7 +688,7 @@ ALTER TABLE `frase`
 -- AUTO_INCREMENT de tabela `instituicao`
 --
 ALTER TABLE `instituicao`
-  MODIFY `INS_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `INS_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `item_rotina`
@@ -663,7 +706,7 @@ ALTER TABLE `midia`
 -- AUTO_INCREMENT de tabela `perfil`
 --
 ALTER TABLE `perfil`
-  MODIFY `PER_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `PER_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de tabela `relatorio`
@@ -681,7 +724,7 @@ ALTER TABLE `rotina`
 -- AUTO_INCREMENT de tabela `sessao_atividade`
 --
 ALTER TABLE `sessao_atividade`
-  MODIFY `SES_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `SES_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `simbolo_frase`
@@ -693,19 +736,19 @@ ALTER TABLE `simbolo_frase`
 -- AUTO_INCREMENT de tabela `solicitacao_afiliacao`
 --
 ALTER TABLE `solicitacao_afiliacao`
-  MODIFY `SOL_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `SOL_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `subcategoria`
 --
 ALTER TABLE `subcategoria`
-  MODIFY `SUB_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `SUB_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `USU_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `USU_ID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Restrições para tabelas despejadas
@@ -812,6 +855,19 @@ ALTER TABLE `solicitacao_afiliacao`
 --
 ALTER TABLE `subcategoria`
   ADD CONSTRAINT `fk_sub_CATEGORIA` FOREIGN KEY (`CAT_ID`) REFERENCES `categoria` (`CAT_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Estado de acesso às seções de lições
+--
+CREATE TABLE `aluno_secao_acesso` (
+  `ALU_ID` int(10) UNSIGNED NOT NULL,
+  `SEC_SLUG` varchar(50) NOT NULL,
+  `ACA_STATUS` enum('pendente','liberada','recusada') NOT NULL DEFAULT 'pendente',
+  `ACA_DT_SOLICITACAO` datetime NOT NULL DEFAULT current_timestamp(),
+  `ACA_DT_LIBERACAO` datetime DEFAULT NULL,
+  PRIMARY KEY (`ALU_ID`,`SEC_SLUG`),
+  CONSTRAINT `fk_aluno_secao_acesso_aluno` FOREIGN KEY (`ALU_ID`) REFERENCES `aluno` (`ALU_ID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

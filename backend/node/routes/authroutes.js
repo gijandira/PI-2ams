@@ -30,6 +30,7 @@ router.post(
 
 router.get(
   '/perfil-usuario',
+  verificarToken,
   authController.perfilUsuario
 );
 

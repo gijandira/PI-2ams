@@ -11,7 +11,11 @@ const gerarSenhaTemporaria = () => {
 
 // ─── CADASTRO DE USUÁRIO (Responsável) ───────────────────────────────────────
 exports.cadastroUsuario = async (req, res) => {
+  let connection;
+  let transactionComplete = false;
   try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
     const { nomeAluno, nomeResponsavel, telefone, email, senha } = req.body;
     const senhaForte =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#_-])[A-Za-z\d@$!%*?&.#_-]{8,}$/;
@@ -28,7 +32,7 @@ if (!senhaForte.test(senha)) {
     }
 
     // Verificar se email já existe
-    const [existente] = await pool.query(
+    const [existente] = await connection.query(
       'SELECT USU_ID FROM USUARIO WHERE BINARY USU_EMAIL = ?',
       [email]
     );
@@ -39,7 +43,7 @@ if (!senhaForte.test(senha)) {
     const senhaCriptografada = await bcrypt.hash(senha, 10);
 
     // Criar usuário (responsável)
-    const [resultUsuario] = await pool.query(
+    const [resultUsuario] = await connection.query(
       `INSERT INTO USUARIO (USU_NOME, USU_EMAIL, USU_TELEFONE, USU_SENHA, USU_CARGO)
        VALUES (?, ?, ?, ?, 'responsavel')`,
       [nomeResponsavel, email, telefone || null, senhaCriptografada]
@@ -51,24 +55,27 @@ if (!senhaForte.test(senha)) {
     if (nomeAluno) {
       const fotoUrl = req.file ? `/uploads/${req.file.filename}` : null;
       
-      const [resultAluno] = await pool.query(
+      const [resultAluno] = await connection.query(
         `INSERT INTO ALUNO (ALU_NOME, ALU_URLAVATAR) VALUES (?, ?)`,
         [nomeAluno, fotoUrl]
       );
       alunoId = resultAluno.insertId;
 
       // Vincular aluno ao usuário
-      await pool.query(
+      await connection.query(
         `INSERT INTO ALUNO_USUARIO (ALU_ID, USU_ID) VALUES (?, ?)`,
         [alunoId, usuarioId]
       );
 
       // Criar perfil do aluno
-      await pool.query(
+      await connection.query(
         `INSERT INTO PERFIL (ALU_ID) VALUES (?)`,
         [alunoId]
       );
     }
+
+    await connection.commit();
+    transactionComplete = true;
 
     const token = jwt.sign(
       { id: usuarioId, cargo: 'responsavel' },
@@ -81,7 +88,6 @@ if (!senhaForte.test(senha)) {
 });
 
   } catch (error) {
-
   console.error('Erro em perfilUsuario:', error);
 
   return res.status(500).json({
@@ -89,16 +95,23 @@ if (!senhaForte.test(senha)) {
     stack: error.stack
   });
 
-}
+  } finally {
+    if (connection && !transactionComplete) await connection.rollback();
+    if (connection) connection.release();
+  }
 };
 
 // ─── CADASTRO DE INSTITUIÇÃO ──────────────────────────────────────────────────
 exports.cadastroInstituicao = async (req, res) => {
   try {
     const { nome, telefone, email, senha, codigo } = req.body;
+    const senhaForte = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#_-])[A-Za-z\d@$!%*?&.#_-]{8,}$/;
 
     if (!nome || !email || !senha) {
       return res.status(400).json({ erro: 'Preencha todos os campos obrigatórios.' });
+    }
+    if (!senhaForte.test(senha)) {
+      return res.status(400).json({ erro: 'A senha deve ter pelo menos 8 caracteres, letra maiúscula, minúscula, número e símbolo.' });
     }
     const codAcesso = String(codigo || '').trim().toUpperCase();
     if (!codAcesso) {
@@ -538,6 +551,10 @@ exports.resetarSenha = async (req, res) => {
     if (!token || !novaSenha) {
       return res.status(400).json({ erro: 'Token e nova senha são obrigatórios.' });
     }
+    const senhaForte = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#_-])[A-Za-z\d@$!%*?&.#_-]{8,}$/;
+    if (!senhaForte.test(novaSenha)) {
+      return res.status(400).json({ erro: 'A senha deve ter pelo menos 8 caracteres, letra maiúscula, minúscula, número e símbolo.' });
+    }
 
     let payload;
     try {
@@ -552,6 +569,9 @@ exports.resetarSenha = async (req, res) => {
 
     const idValor = payload.id;
     const tabela = payload.tabela;
+    if (!['USUARIO', 'INSTITUICAO'].includes(tabela)) {
+      return res.status(400).json({ erro: 'Token inválido.' });
+    }
 
     const senhaCriptografada = await bcrypt.hash(novaSenha, 10);
 
