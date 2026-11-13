@@ -20,7 +20,7 @@ function getStoredSettings() {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (!raw) return fallback;
     return { ...fallback, ...JSON.parse(raw) };
-  } catch (e) {
+  } catch {
     return fallback;
   }
 }
@@ -41,6 +41,27 @@ function Toggle({ on, onChange }) {
           : <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="#f87171" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
         }
       </div>
+    </div>
+  );
+}
+
+function SectionLabel({ children }) {
+  return (
+    <div style={{ fontSize:11, fontWeight:900, letterSpacing:2, textTransform:'uppercase', color:'#888', padding:'8px 4px 4px' }}>
+      {children}
+    </div>
+  );
+}
+
+function ConfigItem({ icon, bg, title, desc, right }) {
+  return (
+    <div style={{ background:'var(--white)', borderRadius:16, padding:'15px 18px', display:'flex', alignItems:'center', gap:14, boxShadow:'0 3px 10px rgba(0,0,0,.06)' }}>
+      <div style={{ width:40, height:40, borderRadius:12, background:bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, flexShrink:0 }}>{icon}</div>
+      <div style={{ flex:1 }}>
+        <div style={{ fontSize:14, fontWeight:800, color:'var(--dark)' }}>{title}</div>
+        {desc && <div style={{ fontSize:12, color:'var(--text-muted)', fontWeight:600, marginTop:2 }}>{desc}</div>}
+      </div>
+      {right}
     </div>
   );
 }
@@ -97,21 +118,6 @@ export default function PageConfig({ navigate }) {
     const frase = frasesExemplo[voice] || 'Teste da voz do narrador Autim.';
     speakText(frase, { narrator: true, speed, voice });
   };
-
-  const SectionLabel = ({ children }) => (
-    <div style={{ fontSize:11, fontWeight:900, letterSpacing:2, textTransform:'uppercase', color:'#888', padding:'8px 4px 4px' }}>{children}</div>
-  );
-
-  const ConfigItem = ({ icon, bg, title, desc, right }) => (
-    <div style={{ background:'var(--white)', borderRadius:16, padding:'15px 18px', display:'flex', alignItems:'center', gap:14, boxShadow:'0 3px 10px rgba(0,0,0,.06)' }}>
-      <div style={{ width:40, height:40, borderRadius:12, background:bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, flexShrink:0 }}>{icon}</div>
-      <div style={{ flex:1 }}>
-        <div style={{ fontSize:14, fontWeight:800, color:'var(--dark)' }}>{title}</div>
-        {desc && <div style={{ fontSize:12, color:'var(--text-muted)', fontWeight:600, marginTop:2 }}>{desc}</div>}
-      </div>
-      {right}
-    </div>
-  );
 
   const innerContent = (
     <div style={{ display:'flex', flexDirection:'column', gap:6 }}>

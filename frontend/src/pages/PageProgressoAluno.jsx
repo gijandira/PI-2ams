@@ -8,12 +8,17 @@ const feedbackLabels = {
 export default function PageProgressoAluno({ navigate }) {
   const [period, setPeriod] = useState('Semana');
   const [dashboard, setDashboard] = useState(null);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(() => (
+    localStorage.getItem('token') &&
+    (localStorage.getItem('dashboardAlunoId') || localStorage.getItem('alunoId'))
+      ? null
+      : 'Não foi possível identificar o aluno.'
+  ));
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     const alunoId = localStorage.getItem('dashboardAlunoId') || localStorage.getItem('alunoId');
-    if (!token || !alunoId) { setError('Não foi possível identificar o aluno.'); return; }
+    if (!token || !alunoId) return;
     const periodo = period === 'Mês' ? 'mes' : period === 'Total' ? 'total' : 'semana';
     fetch(`http://localhost:3001/dashboard/aluno?alunoId=${alunoId}&periodo=${periodo}`, { headers:{ Authorization:`Bearer ${token}` } })
       .then(response => response.json().then(data => ({ response, data })))

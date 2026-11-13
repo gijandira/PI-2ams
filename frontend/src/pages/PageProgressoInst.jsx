@@ -9,12 +9,16 @@ const feedbackLabels = {
 export default function PageProgressoInst({ navigate }) {
   const [period, setPeriod] = useState('Semana');
   const [dashboard, setDashboard] = useState(null);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(() => (
+    localStorage.getItem('token') && localStorage.getItem('dashboardAlunoId')
+      ? null
+      : 'Não foi possível identificar o aluno.'
+  ));
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     const alunoId = localStorage.getItem('dashboardAlunoId');
-    if (!token || !alunoId) { setError('Não foi possível identificar o aluno.'); return; }
+    if (!token || !alunoId) return;
     const periodo = period === 'Mês' ? 'mes' : period === 'Total' ? 'total' : 'semana';
     fetch(`http://localhost:3001/dashboard/aluno?alunoId=${alunoId}&periodo=${periodo}`, { headers:{ Authorization:`Bearer ${token}` } })
       .then(response => response.json().then(data => ({ response, data })))

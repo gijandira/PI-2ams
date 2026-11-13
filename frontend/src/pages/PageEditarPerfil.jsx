@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import logoIcone from '../assets/logo-icone.png';
-import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings } from '../components/icons';
+import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconRobot, IconSettings } from '../components/icons';
 import SidebarUser from '../components/SidebarUser';
 
 export default function PageEditarPerfil({ navigate }) {
@@ -14,12 +14,19 @@ export default function PageEditarPerfil({ navigate }) {
   });
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState('');
+  const photoInputRef = useRef(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState(null);
 
   const userName = form.nomeResponsavel || 'Responsável';
   const userAvatar = userName ? userName.trim().charAt(0).toUpperCase() : 'R';
+
+  const handleLogout = () => {
+    ['token', 'usuario', 'userData', 'alunoId', 'dashboardAlunoId'].forEach(key => localStorage.removeItem(key));
+    navigate('login');
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -130,17 +137,22 @@ export default function PageEditarPerfil({ navigate }) {
           ) : (
             userAvatar
           )}
-          <div style={{ position:'absolute', bottom:2, right:2, width:26, height:26, borderRadius:'50%', background:'var(--blue)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, border:'2px solid #fff' }}>📷</div>
+          {/*<div style={{ position:'absolute', bottom:2, right:2, width:26, height:26, borderRadius:'50%', background:'var(--blue)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, border:'2px solid #fff' }}>📷</div>*/}
         </div>
-        <label style={{ fontSize:12, fontWeight:700, color:'var(--blue)', cursor:'pointer' }}>
+        <input
+          ref={photoInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/gif,image/webp"
+          onChange={handlePhotoChange}
+          style={{ display:'none' }}
+        />
+        <button
+          type="button"
+          onClick={() => photoInputRef.current?.click()}
+          style={{ padding:0, border:0, background:'transparent', fontSize:12, fontWeight:700, color:'var(--blue)', cursor:'pointer' }}
+        >
           Alterar foto
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handlePhotoChange}
-            style={{ display:'none' }}
-          />
-        </label>
+        </button>
       </div>
 
       {/* dados do aluno */}
@@ -193,14 +205,33 @@ export default function PageEditarPerfil({ navigate }) {
         @media (min-width: 1024px) { .ep-mobile { display: none !important; } }
         .ep-desktop { display: none; }
         @media (min-width: 1024px) { .ep-desktop { display: block !important; } }
+        .ep-mobile-menu { position:absolute; top:calc(100% - 4px); right:12px; z-index:1001; min-width:204px; display:flex; flex-direction:column; gap:4px; padding:8px; background:var(--white); border:1px solid var(--border); border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,.18); }
+        .ep-mobile-menu button { display:flex; align-items:center; gap:10px; width:100%; padding:10px 12px; border:0; border-radius:8px; background:transparent; color:var(--dark); font:800 13px 'Nunito',sans-serif; text-align:left; cursor:pointer; }
+        .ep-mobile-menu button:hover { background:var(--bg); }
+        .ep-mobile-menu svg { width:18px; height:18px; fill:currentColor; }
       `}</style>
 
       {/* ── MOBILE ── */}
       <div className="ep-mobile" style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column', paddingTop: 'calc(env(safe-area-inset-top, 12px) + 5px)' }}>
-        <div style={{ background:'var(--blue)', padding:'calc(env(safe-area-inset-top, 12px) + 8px) 20px 12px', display:'flex', alignItems:'center', gap:12, flexShrink:0 }}>
+        <div style={{ background:'var(--blue)', padding:'calc(env(safe-area-inset-top, 12px) + 8px) 20px 12px', display:'flex', alignItems:'center', gap:10, flexShrink:0, position:'relative', zIndex:20 }}>
           <button className="autim-close-button" onClick={() => navigate('perfil')} aria-label="Fechar">×</button>
-          <div style={{ fontSize:19, fontWeight:900, color:'#fff', flex:1, textAlign:'center' }}>Editar Perfil</div>
+          <button
+            type="button"
+            aria-label="Abrir menu de navegação"
+            aria-expanded={mobileMenuOpen}
+            onClick={() => setMobileMenuOpen(open => !open)}
+            style={{ width:36, height:36, flexShrink:0, border:0, borderRadius:9, background:'rgba(255,255,255,.2)', color:'#fff', fontSize:21, cursor:'pointer' }}
+          >☰</button>
+          <div style={{ fontSize:17, fontWeight:900, color:'#fff', flex:1, minWidth:0, textAlign:'center' }}>Editar Perfil</div>
           <button onClick={handleSave} disabled={isSaving || loading} style={{ background:'rgba(255,255,255,.2)', border:'2px solid rgba(255,255,255,.5)', borderRadius:20, padding:'6px 14px', fontFamily:'Nunito,sans-serif', fontSize:12, fontWeight:800, color:'#fff', cursor:'pointer', whiteSpace:'nowrap' }}>{isSaving ? 'Salvando...' : 'Salvar'}</button>
+          {mobileMenuOpen && (
+            <div className="ep-mobile-menu" role="menu" aria-label="Navegação">
+              <button type="button" role="menuitem" onClick={() => { setMobileMenuOpen(false); navigate('ia'); }}><IconRobot />Assistente IA</button>
+              <button type="button" role="menuitem" onClick={() => { setMobileMenuOpen(false); navigate('perfil'); }}><IconPerson />Perfil</button>
+              <button type="button" role="menuitem" onClick={() => { setMobileMenuOpen(false); navigate('config'); }}><IconSettings />Configurações</button>
+              <button type="button" role="menuitem" onClick={handleLogout} style={{ color:'var(--red)' }}>🚪 Sair</button>
+            </div>
+          )}
         </div>
 
         <div style={{ flex:1, overflowY:'auto', padding:'16px 20px 12px' }}>
@@ -225,12 +256,14 @@ export default function PageEditarPerfil({ navigate }) {
             { icon:<IconChat/>,     label:'Comunicação', active:false, page:'comunicacao' },
             { icon:<IconSchool/>,   label:'Lições',      active:false, page:null          },
             { icon:<IconCalendar/>, label:'Agenda',      active:false, page:'agenda'      },
+            { icon:<IconRobot/>,    label:'Assistente IA', active:false, page:'ia'         },
           ].map((item,i) => (
             <div key={i} className={`sidebar-nav-item ${item.active?'active':''}`} onClick={() => item.page && navigate(item.page)}>{item.icon}{item.label}</div>
           ))}
           <div className="sidebar-spacer"></div>
           <div className="sidebar-nav-item active"><IconPerson />Perfil</div>
-          <div className="sidebar-nav-item" onClick={() => navigate('config')}><IconSettings />Configurações</div>
+          <div className="sidebar-nav-item" onClick={() => navigate('config')} style={{ cursor:'pointer' }}><IconSettings />Configurações</div>
+          <div className="sidebar-nav-item" onClick={handleLogout} style={{ cursor:'pointer', color:'var(--red)' }}>🚪 Sair</div>
           <SidebarUser />
         </nav>
 

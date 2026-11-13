@@ -46,10 +46,13 @@ export default function PageLogin({ navigate, initialTab = 'responsavel' }) {
       if (response.ok) {
         localStorage.setItem('token', data.token);
         localStorage.removeItem('instituicao');
+        localStorage.removeItem('dashboardAlunoId');
         localStorage.setItem('usuario', JSON.stringify(data.usuario));
         localStorage.setItem('userData', JSON.stringify(data.usuario));
         if (data.usuario.alunoId) {
-          localStorage.setItem('alunoId', data.usuario.alunoId);
+          localStorage.setItem('alunoId', String(data.usuario.alunoId));
+        } else {
+          localStorage.removeItem('alunoId');
         }
 
         navigate('home-aluno');
@@ -93,6 +96,7 @@ export default function PageLogin({ navigate, initialTab = 'responsavel' }) {
         localStorage.removeItem('usuario');
         localStorage.removeItem('userData');
         localStorage.removeItem('alunoId');
+        localStorage.removeItem('dashboardAlunoId');
         localStorage.setItem('instituicao', JSON.stringify(data.instituicao));
         navigate('home-instituicao');
       } else {

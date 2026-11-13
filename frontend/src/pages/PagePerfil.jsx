@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import logoIcone from '../assets/logo-icone.png';
-import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings } from '../components/icons';
+import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings, IconRobot } from '../components/icons';
 
 export default function PagePerfil({ navigate }) {
   const [perfil, setPerfil] = useState({ usuario:{}, aluno:{} });
@@ -45,6 +45,7 @@ export default function PagePerfil({ navigate }) {
     { icon:'⚙️', bg:'#f0f0ff',  title:'Configurações',   desc:'Preferências do aplicativo',        page:'config',      danger:false },
     { icon:'🆘', bg:'#f0f0ff',  title:'Suporte',         desc:'Ajuda e dúvidas frequentes',        page:'config',      danger:false },
     { icon:'🚪', bg:'#ffecec',  title:'Sair da conta',   desc:'Fazer logout',                      page:'logout',      danger:true  },
+    { icon:'🤖', bg:'#f0f0ff',  title: 'Assistente IA',  desc: 'Bot de dúvidas',                   page:'ia', danger:false },
   ];
 
   return (
@@ -112,7 +113,7 @@ export default function PagePerfil({ navigate }) {
         <nav className="bottom-nav">
           <div className="nav-item" onClick={() => navigate('home-aluno')}><div className="nav-icon"><IconHome /></div><div className="nav-label">Início</div></div>
           <div className="nav-item" onClick={() => navigate('comunicacao')}><div className="nav-icon"><IconChat /></div><div className="nav-label">Comunicar</div></div>
-          <div className="nav-item"><div className="nav-icon"><IconSchool /></div><div className="nav-label">Lições</div></div>
+          <div className="nav-item" onClick={() => navigate('licoes')}><div className="nav-icon"><IconSchool /></div><div className="nav-label">Lições</div></div>
           <div className="nav-item" onClick={() => navigate('agenda')}><div className="nav-icon"><IconCalendar /></div><div className="nav-label">Agenda</div></div>
           <div className="nav-item active"><div className="nav-icon active"><IconPerson /></div><div className="nav-label">Perfil</div></div>
         </nav>
@@ -128,8 +129,9 @@ export default function PagePerfil({ navigate }) {
           {[
             { icon:<IconHome/>,     label:'Início',      active:false, page:'home-aluno'  },
             { icon:<IconChat/>,     label:'Comunicação', active:false, page:'comunicacao' },
-            { icon:<IconSchool/>,   label:'Lições',      active:false, page:null          },
+            { icon:<IconSchool/>,   label:'Lições',      active:false, page:'licoes'      },
             { icon:<IconCalendar/>, label:'Agenda',      active:false, page:'agenda'      },
+            { icon:<IconRobot/>, label:'Assistente IA', active:false, page:'ia' },
           ].map((item,i) => (
             <div key={i} className={`sidebar-nav-item ${item.active?'active':''}`} onClick={() => item.page && navigate(item.page)}>{item.icon}{item.label}</div>
           ))}

@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import logoIcone from '../assets/logo-icone.png';
 import {
   IconHome,
@@ -29,7 +29,7 @@ function getStoredDarkMode() {
     if (!raw) return false;
     const parsed = JSON.parse(raw);
     return !!parsed.darkMode;
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -50,25 +50,74 @@ function getHoraAtual() {
   return agora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
+function AvatarIA({ size = 32 }) {
+  return (
+    <div
+      className="autim-avatar-ia"
+      style={{
+        width: size,
+        height: size,
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexShrink: 0,
+        overflow: 'hidden',
+        padding: 3
+      }}
+    >
+      <img
+        src={logoIcone}
+        alt="Autim"
+        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+      />
+    </div>
+  );
+}
+
+function AvatarUser({ size = 30 }) {
+  return (
+    <div
+      className="autim-avatar-user"
+      style={{
+        width: size,
+        height: size,
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 14,
+        flexShrink: 0
+      }}
+    >
+      👤
+    </div>
+  );
+}
+
 export default function PageAssistenteIA({ navigate }) {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: 'assistant',
-      text: 'Olá! Sou o assistente do Autim. Posso ajudar com dicas sobre comunicação, sugestões de atividades para a rotina ou tirar dúvidas sobre o app. 😊',
-      time: getHoraAtual()
-    },
-    {
-      id: 2,
-      sender: 'assistant',
-      text: 'Você pode me perguntar sobre manejo de crises, uso dos cartões PECS, eventos da agenda ou direitos no TEA! 🎓',
-      time: getHoraAtual()
-    }
-  ]);
+  const [messages, setMessages] = useState(() => {
+    const time = getHoraAtual();
+    return [
+      {
+        id: 1,
+        sender: 'assistant',
+        text: 'Olá! Sou o assistente do Autim. Posso ajudar com dicas sobre comunicação, sugestões de atividades para a rotina ou tirar dúvidas sobre o app. 😊',
+        time
+      },
+      {
+        id: 2,
+        sender: 'assistant',
+        text: 'Você pode me perguntar sobre manejo de crises, uso dos cartões PECS, eventos da agenda ou direitos no TEA! 🎓',
+        time
+      }
+    ];
+  });
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(getStoredDarkMode);
   const bottomRef = useRef(null);
+  const nextMessageId = useRef(3);
 
   useEffect(() => {
     // Sincroniza a classe do tema no body
@@ -85,7 +134,9 @@ export default function PageAssistenteIA({ navigate }) {
       const settings = raw ? JSON.parse(raw) : {};
       settings.darkMode = novoValor;
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-    } catch (e) {}
+    } catch (error) {
+      console.error('Não foi possível salvar as configurações do tema:', error);
+    }
   };
 
   const handleLogout = () => {
@@ -105,7 +156,7 @@ export default function PageAssistenteIA({ navigate }) {
     if (!mensagem || isLoading) return;
 
     const userMessage = {
-      id: Date.now(),
+      id: nextMessageId.current++,
       sender: 'user',
       text: mensagem,
       time: getHoraAtual()
@@ -132,7 +183,7 @@ export default function PageAssistenteIA({ navigate }) {
       }
 
       const assistantMessage = {
-        id: Date.now() + 1,
+        id: nextMessageId.current++,
         sender: 'assistant',
         text: data.resposta || 'Desculpe, não consegui processar agora. Tente novamente! 💙',
         time: getHoraAtual()
@@ -148,7 +199,7 @@ export default function PageAssistenteIA({ navigate }) {
       }
 
       const assistantMessage = {
-        id: Date.now() + 2,
+        id: nextMessageId.current++,
         sender: 'assistant',
         text: aviso,
         time: getHoraAtual()
@@ -170,57 +221,6 @@ export default function PageAssistenteIA({ navigate }) {
       event.preventDefault();
       handleSend();
     }
-  }
-
-  // ─── Componente do Avatar da IA ───
-  function AvatarIA({ size = 32 }) {
-    return (
-      <div
-        className="autim-avatar-ia"
-        style={{
-          width: size,
-          height: size,
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-          overflow: 'hidden',
-          padding: 3
-        }}
-      >
-        <img
-          src={logoIcone}
-          alt="Autim"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain'
-          }}
-        />
-      </div>
-    );
-  }
-
-  // ─── Componente do Avatar do Usuário ───
-  function AvatarUser({ size = 30 }) {
-    return (
-      <div
-        className="autim-avatar-user"
-        style={{
-          width: size,
-          height: size,
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 14,
-          flexShrink: 0
-        }}
-      >
-        👤
-      </div>
-    );
   }
 
   return (
@@ -717,7 +717,7 @@ export default function PageAssistenteIA({ navigate }) {
           {[
             { icon: <IconHome />, label: 'Início', active: false, page: 'home-aluno' },
             { icon: <IconChat />, label: 'Comunicação', active: false, page: 'comunicacao' },
-            { icon: <IconSchool />, label: 'Lições', active: false, page: null },
+            { icon: <IconSchool />, label: 'Lições', active: false, page: 'licoes' },
             { icon: <IconCalendar />, label: 'Agenda', active: false, page: 'agenda' },
             { icon: <IconRobot />, label: 'Assistente IA', active: true, page: 'ia' }
           ].map((item, i) => (

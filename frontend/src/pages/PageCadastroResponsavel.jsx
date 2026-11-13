@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 export default function PageCadastroResponsavel({ navigate }) {
 
-  const [tipoCadastro, setTipoCadastro] = useState('responsavel');
+  const tipoCadastro = 'responsavel';
   const [notificacao, setNotificacao] = useState(null);
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);

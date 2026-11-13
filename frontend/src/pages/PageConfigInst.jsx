@@ -18,6 +18,27 @@ function Toggle({ on, onChange }) {
   );
 }
 
+function SectionLabel({ children, danger }) {
+  return (
+    <div style={{ fontSize:11, fontWeight:900, letterSpacing:2, textTransform:'uppercase', color: danger ? 'var(--red)' : '#888', padding:'8px 4px 4px' }}>
+      {children}
+    </div>
+  );
+}
+
+function ConfigItem({ icon, bg, title, desc, right }) {
+  return (
+    <div style={{ background:'#fff', borderRadius:16, padding:'14px 16px', display:'flex', alignItems:'center', gap:14, boxShadow:'0 3px 10px rgba(0,0,0,.06)' }}>
+      <div style={{ width:40, height:40, borderRadius:12, background:bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, flexShrink:0 }}>{icon}</div>
+      <div style={{ flex:1 }}>
+        <div style={{ fontSize:14, fontWeight:800, color:'var(--dark)' }}>{title}</div>
+        {desc && <div style={{ fontSize:12, color:'#888', fontWeight:600, marginTop:2 }}>{desc}</div>}
+      </div>
+      {right}
+    </div>
+  );
+}
+
 export default function PageConfigInst({ navigate }) {
   const [perfil, setPerfil] = useState(null);
   const [notifReq,     setNotifReq]     = useState(true);
@@ -86,7 +107,7 @@ export default function PageConfigInst({ navigate }) {
       }
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
+    } catch {
       setFeedback({ type:'error', text:'Não foi possível copiar o código.' });
     }
   };
@@ -96,23 +117,20 @@ export default function PageConfigInst({ navigate }) {
     { q:'Como exportar relatórios?',           a:'Na aba "Relatório" da tela inicial, toque no botão "Exportar PDF" para gerar um relatório completo da turma.' },
   ];
 
-  const SectionLabel = ({ children, danger }) => (
-    <div style={{ fontSize:11, fontWeight:900, letterSpacing:2, textTransform:'uppercase', color: danger ? 'var(--red)' : '#888', padding:'8px 4px 4px' }}>{children}</div>
-  );
-
-  const ConfigItem = ({ icon, bg, title, desc, right }) => (
-    <div style={{ background:'#fff', borderRadius:16, padding:'14px 16px', display:'flex', alignItems:'center', gap:14, boxShadow:'0 3px 10px rgba(0,0,0,.06)' }}>
-      <div style={{ width:40, height:40, borderRadius:12, background:bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, flexShrink:0 }}>{icon}</div>
-      <div style={{ flex:1 }}>
-        <div style={{ fontSize:14, fontWeight:800, color:'var(--dark)' }}>{title}</div>
-        {desc && <div style={{ fontSize:12, color:'#888', fontWeight:600, marginTop:2 }}>{desc}</div>}
-      </div>
-      {right}
-    </div>
-  );
-
   const innerContent = (
     <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+      {feedback && (
+        <div role="alert" style={{
+          padding:'10px 14px',
+          borderRadius:12,
+          color: feedback.type === 'error' ? 'var(--red)' : 'var(--green)',
+          background: feedback.type === 'error' ? '#ffecec' : '#edfaf3',
+          fontWeight:800,
+          fontSize:13
+        }}>
+          {feedback.text}
+        </div>
+      )}
       <SectionLabel>🔑 Código de acesso</SectionLabel>
       <div style={{ background:'#fff', borderRadius:20, padding:16, boxShadow:'0 4px 14px rgba(0,0,0,.08)', display:'flex', flexDirection:'column', gap:10 }}>
         <div style={{ fontSize:12, color:'#888', fontWeight:600 }}>Este código permite que responsáveis se afiliem à sua instituição:</div>

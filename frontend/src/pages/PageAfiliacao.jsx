@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import logoIcone from '../assets/logo-icone.png';
-import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings } from '../components/icons';
+import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings, IconRobot } from '../components/icons';
 import SidebarUser from '../components/SidebarUser';
 
 export default function PageAfiliacao({ navigate }) {
@@ -8,16 +8,22 @@ export default function PageAfiliacao({ navigate }) {
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const token = localStorage.getItem('token');
   const linkedInstitution = solicitacoes.find(item => item.status === 'aceito');
   const pendingInstitution = solicitacoes.find(item => item.status === 'pendente');
 
+  const sair = () => {
+    ['token', 'usuario', 'userData', 'alunoId', 'dashboardAlunoId'].forEach(key => localStorage.removeItem(key));
+    navigate('login');
+  };
+
   const formatDate = date => date
     ? new Date(date).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })
     : '';
 
-  const carregarAfiliacoes = async () => {
+  const carregarAfiliacoes = useCallback(async () => {
     if (!token) {
       navigate('login');
       return;
@@ -34,9 +40,12 @@ export default function PageAfiliacao({ navigate }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate, token]);
 
-  useEffect(() => { carregarAfiliacoes(); }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => { void carregarAfiliacoes(); }, 0);
+    return () => clearTimeout(timer);
+  }, [carregarAfiliacoes]);
 
   const conectar = async () => {
     if (!code.trim()) {
@@ -110,14 +119,32 @@ export default function PageAfiliacao({ navigate }) {
         .af-code-row { display:grid !important; grid-template-columns:minmax(0,1fr) auto; align-items:stretch; }
         .af-mobile .code-input-af { min-width:0; width:100%; }
         .af-mobile .af-info-text { min-width:0; }
+        .af-mobile-menu { position:absolute; top:calc(100% - 4px); right:10px; z-index:1001; min-width:204px; display:flex; flex-direction:column; gap:4px; padding:8px; background:var(--white); border:1px solid var(--border); border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,.18); }
+        .af-mobile-menu button { display:flex; align-items:center; gap:10px; width:100%; padding:10px 12px; border:0; border-radius:8px; background:transparent; color:var(--dark); font:800 13px 'Nunito',sans-serif; text-align:left; cursor:pointer; }
+        .af-mobile-menu button:hover { background:var(--bg); }
+        .af-mobile-menu svg { width:18px; height:18px; fill:currentColor; }
       `}</style>
 
       {/* ── MOBILE ── */}
       <div className="af-mobile" style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column' }}>
-        <div className="af-mobile-header" style={{ background:'var(--green)', padding:'4px 10px 8px', display:'flex', alignItems:'center', gap:12, flexShrink:0 }}>
+        <div className="af-mobile-header" style={{ background:'var(--green)', padding:'4px 10px 8px', display:'flex', alignItems:'center', gap:12, flexShrink:0, position:'relative', zIndex:20 }}>
           <button className="autim-close-button" onClick={() => navigate('perfil')} aria-label="Voltar">‹</button>
           <div style={{ fontSize:14, fontWeight:900, color:'#fff', flex:1, textAlign:'center' }}>Afiliação</div>
-          <div style={{ width:36 }}></div>
+          <button
+            type="button"
+            aria-label="Abrir menu de navegação"
+            aria-expanded={mobileMenuOpen}
+            onClick={() => setMobileMenuOpen(open => !open)}
+            style={{ width:36, height:36, flexShrink:0, border:0, borderRadius:9, background:'rgba(255,255,255,.2)', color:'#fff', fontSize:21, cursor:'pointer' }}
+          >☰</button>
+          {mobileMenuOpen && (
+            <div className="af-mobile-menu" role="menu" aria-label="Navegação">
+              <button type="button" role="menuitem" onClick={() => { setMobileMenuOpen(false); navigate('ia'); }}><IconRobot />Assistente IA</button>
+              <button type="button" role="menuitem" onClick={() => { setMobileMenuOpen(false); navigate('perfil'); }}><IconPerson />Perfil</button>
+              <button type="button" role="menuitem" onClick={() => { setMobileMenuOpen(false); navigate('config'); }}><IconSettings />Configurações</button>
+              <button type="button" role="menuitem" onClick={sair} style={{ color:'var(--red)' }}>🚪 Sair</button>
+            </div>
+          )}
         </div>
 
         <div className="af-mobile-content" style={{ flex:1, overflowY:'auto', padding:'16px 10px 88px', display:'flex', flexDirection:'column', gap:12 }}>
@@ -180,12 +207,14 @@ export default function PageAfiliacao({ navigate }) {
             { icon:<IconChat/>,     label:'Comunicação', page:'comunicacao' },
             { icon:<IconSchool/>,   label:'Lições',      page:null          },
             { icon:<IconCalendar/>, label:'Agenda',      page:'agenda'      },
+            { icon:<IconRobot/>,    label:'Assistente IA', page:'ia'         },
           ].map((item,i) => (
             <div key={i} className="sidebar-nav-item" onClick={() => item.page && navigate(item.page)}>{item.icon}{item.label}</div>
           ))}
           <div className="sidebar-spacer"></div>
           <div className="sidebar-nav-item active"><IconPerson />Perfil</div>
           <div className="sidebar-nav-item" onClick={() => navigate('config')}><IconSettings />Configurações</div>
+          <div className="sidebar-nav-item" onClick={sair} style={{ color:'var(--red)' }}>🚪 Sair</div>
           <SidebarUser />
         </nav>
         <div className="main-content">

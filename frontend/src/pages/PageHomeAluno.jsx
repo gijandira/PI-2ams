@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import logoIcone from '../assets/logo-icone.png';
 
@@ -14,22 +14,18 @@ import {
 import SidebarUser from '../components/SidebarUser';
 
 export default function PageHomeAluno({ navigate }) {
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
     navigate('login');
-  };
+  }, [navigate]);
 
   const [usuario, setUsuario] = useState(null);
   const [aluno, setAluno] = useState(null);
   const [perfil, setPerfil] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    carregarDados();
-  }, []);
-
-  const carregarDados = async () => {
+  const carregarDados = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       
@@ -65,7 +61,12 @@ export default function PageHomeAluno({ navigate }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [handleLogout, navigate]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => { void carregarDados(); }, 0);
+    return () => window.clearTimeout(timer);
+  }, [carregarDados]);
 
   const modules = [
     { href: 'comunicacao', icon: '💬', label: 'Comunicação', color: 'card-blue' },
@@ -239,8 +240,8 @@ export default function PageHomeAluno({ navigate }) {
             </div>
             <div className="nav-label">Comunicar</div>
           </div>
-
-          <div className="nav-item">
+          
+          <div className="nav-item" onClick={() => navigate('licoes')}>
             <div className="nav-icon">
               <IconSchool />
             </div>
@@ -282,7 +283,7 @@ export default function PageHomeAluno({ navigate }) {
           {[
             { icon: <IconHome />,    label: 'Início',        active: true, page: 'home-aluno' },
             { icon: <IconChat />,    label: 'Comunicação',   active: false, page: 'comunicacao' },
-            { icon: <IconSchool />,  label: 'Lições',        active: false, page: null },
+            { icon: <IconSchool />,  label: 'Lições',        active: false, page: 'licoes' },
             { icon: <IconCalendar />, label: 'Agenda',        active: false, page: 'agenda' },
             { icon: <IconRobot />,    label: 'Assistente IA', active: false, page: 'ia' },
           ].map((item, i) => (

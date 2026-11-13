@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import logoIcone from '../assets/logo-icone.png';
 import { IconHome, IconPerson } from '../components/icons';
 
@@ -14,7 +14,7 @@ export default function PagePerfilInst({ navigate }) {
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState(null);
 
-  const carregarPerfil = async () => {
+  const carregarPerfil = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) { navigate('login'); return; }
     try {
@@ -24,14 +24,17 @@ export default function PagePerfilInst({ navigate }) {
       const data = await response.json();
       if (!response.ok) throw new Error(data.erro || 'Não foi possível carregar o perfil.');
       setPerfil(data.instituicao);
-      setEstatisticas(data.estatisticas || estatisticas);
+      setEstatisticas(current => data.estatisticas || current);
       setForm({ nome:data.instituicao.nome, telefone:data.instituicao.telefone || '', email:data.instituicao.email });
     } catch (error) {
       setFeedback({ type:'error', text:error.message });
     } finally { setLoading(false); }
-  };
+  }, [navigate]);
 
-  useEffect(() => { carregarPerfil(); }, []);
+  useEffect(() => {
+    const timer = window.setTimeout(() => { void carregarPerfil(); }, 0);
+    return () => window.clearTimeout(timer);
+  }, [carregarPerfil]);
 
   const salvarPerfil = async event => {
     event.preventDefault();
