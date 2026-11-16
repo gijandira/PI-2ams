@@ -3,6 +3,10 @@ import logoIcone from '../assets/logo-icone.png';
 import logoIconeBranco from '../assets/logo-icone-branco.png';
 
 export default function PageLogin({ navigate, initialTab = 'responsavel' }) {
+  const logoTema = document.body.classList.contains('autim-dark-theme')
+    ? logoIconeBranco
+    : logoIcone;
+
   const [tab, setTab] = useState(initialTab);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -97,6 +101,7 @@ export default function PageLogin({ navigate, initialTab = 'responsavel' }) {
         localStorage.removeItem('userData');
         localStorage.removeItem('alunoId');
         localStorage.removeItem('dashboardAlunoId');
+        localStorage.removeItem('autim.home-instituicao-tab');
         localStorage.setItem('instituicao', JSON.stringify(data.instituicao));
         navigate('home-instituicao');
       } else {
@@ -163,7 +168,7 @@ export default function PageLogin({ navigate, initialTab = 'responsavel' }) {
       {/* MOBILE */}
       <div className="login-mobile-wrap" style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column' }}>
         <div style={{ display:'flex', flexDirection:'column', alignItems:'center', padding:'8px 28px 0' }}>
-          <img src={logoIcone} alt="Autim" style={{ width:52, height:52, objectFit:'contain' }} />
+          <img src={logoTema} alt="Autim" style={{ width:52, height:52, objectFit:'contain' }} />
           <div style={{ fontSize:20, fontWeight:900, letterSpacing:4, color:'var(--dark)', textTransform:'uppercase', marginTop:2 }}>Autim</div>
         </div>
         <div style={{ margin:'14px 24px 0' }}>
@@ -174,7 +179,7 @@ export default function PageLogin({ navigate, initialTab = 'responsavel' }) {
         </div>
         <div style={{ background:'var(--white)', borderRadius:'32px 32px 0 0', flex:1, marginTop:14, padding:'26px 24px 80px', display:'flex', flexDirection:'column', position:'relative' }}>
           <div style={{ position:'absolute', top:0, left:28, right:28, height:3, background:'linear-gradient(90deg,var(--blue),var(--red))', borderRadius:99 }}></div>
-          <div style={{ fontSize:24, fontWeight:900, color:'var(--dark)', textAlign:'center', margin:'10px 0 22px' }}>Login</div>
+          <div style={{ fontSize:24, fontWeight:900, color:'var(--dark)', textAlign:'center', margin:'10px 0 22px' }}>🔐 Login</div>
           {tab === 'responsavel' && (
             <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
               <div style={{ display:'flex', flexDirection:'column', gap:14, marginBottom:22 }}>

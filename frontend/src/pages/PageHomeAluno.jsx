@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import logoIcone from '../assets/logo-icone.png';
+import logoIconeBranco from '../assets/logo-icone-branco.png';
 
 import {
   IconHome,
@@ -14,6 +15,10 @@ import {
 import SidebarUser from '../components/SidebarUser';
 
 export default function PageHomeAluno({ navigate }) {
+  const logoTema = document.body.classList.contains('autim-dark-theme')
+    ? logoIconeBranco
+    : logoIcone;
+
   const handleLogout = useCallback(() => {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
@@ -147,7 +152,7 @@ export default function PageHomeAluno({ navigate }) {
           }}
         >
           <img
-            src={logoIcone}
+            src={logoTema}
             alt="Autim"
             style={{
               width: 42,
@@ -269,7 +274,7 @@ export default function PageHomeAluno({ navigate }) {
         <nav className="desktop-sidebar">
           <div className="sidebar-logo">
             <img
-              src={logoIcone}
+              src={logoTema}
               alt="Autim"
               style={{
                 width: 28,
@@ -404,7 +409,9 @@ export default function PageHomeAluno({ navigate }) {
                   color: 'var(--green)'
                 },
                 {
-                  num: usuario?.USU_CARGO || '',
+                  num: usuario?.USU_CARGO === 'responsavel'
+                    ? 'Responsável'
+                    : usuario?.USU_CARGO || '',
                   label: 'Cargo',
                   color: 'var(--blue)'
                 },

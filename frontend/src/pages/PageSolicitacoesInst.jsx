@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import logoIcone from '../assets/logo-icone.png';
+import logoIconeBranco from '../assets/logo-icone-branco.png';
 import { IconHome, IconPerson } from '../components/icons';
 
 const IconMsg = () => <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>;
@@ -8,6 +9,9 @@ const IconCfg = () => <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.
 const FILTERS = ['Todas','⏳ Pendentes','✅ Aceitas','❌ Recusadas'];
 
 export default function PageSolicitacoesInst({ navigate }) {
+  const logoTema = document.body.classList.contains('autim-dark-theme')
+    ? logoIconeBranco
+    : logoIcone;
   const [reqs, setReqs]       = useState([]);
   const [instituicao, setInstituicao] = useState(null);
   const [filter, setFilter]   = useState('Todas');
@@ -18,6 +22,16 @@ export default function PageSolicitacoesInst({ navigate }) {
     localStorage.removeItem('token');
     localStorage.removeItem('instituicao');
     navigate('login');
+  };
+
+  const abrirAlunos = () => {
+    localStorage.setItem('autim.home-instituicao-tab', 'alunos');
+    navigate('home-instituicao');
+  };
+
+  const abrirInicio = () => {
+    localStorage.setItem('autim.home-instituicao-tab', 'inicio');
+    navigate('home-instituicao');
   };
 
   const carregarSolicitacoes = useCallback(async () => {
@@ -39,6 +53,9 @@ export default function PageSolicitacoesInst({ navigate }) {
         resp: item.responsavelNome,
         tel: item.responsavelTelefone,
         email: item.responsavelEmail,
+        age: item.age == null ? 'Não informado' : `${item.age} anos`,
+        diag: item.diag || 'Não informado',
+        code: item.code || 'Não informado',
         time: new Date(item.dataSolicitacao).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }),
         emoji: '👤',
         bg: '#e8f4ff'
@@ -81,6 +98,10 @@ export default function PageSolicitacoesInst({ navigate }) {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.erro || 'Não foi possível responder à solicitação.');
+      if (action === 'accepted') {
+        abrirAlunos();
+        return;
+      }
       setReqs(prev => prev.map(r => r.id === id ? { ...r, status: action } : r));
     } catch (error) {
       setFeedback(error.message);
@@ -152,9 +173,9 @@ export default function PageSolicitacoesInst({ navigate }) {
       {/* ── MOBILE ── */}
       <div className="si-mobile" style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column' }}>
         <div style={{ background:'var(--green)', padding:'4px 20px 20px', display:'flex', alignItems:'center', gap:12, flexShrink:0 }}>
-          <button className="autim-close-button" onClick={() => navigate('home-instituicao')} aria-label="Fechar">×</button>
+          <button className="autim-close-button" onClick={abrirInicio} aria-label="Fechar">×</button>
           <div style={{ flex:1, textAlign:'center' }}>
-            <div style={{ fontSize:19, fontWeight:900, color:'#fff' }}>Solicitações</div>
+            <div style={{ fontSize:19, fontWeight:900, color:'#fff' }}>📩 Solicitações</div>
             <div style={{ fontSize:12, color:'rgba(255,255,255,.8)', fontWeight:600, marginTop:2 }}>{pending} aguardando aprovação</div>
           </div>
           <div style={{ width:36 }}></div>
@@ -172,7 +193,8 @@ export default function PageSolicitacoesInst({ navigate }) {
         </div>
 
         <nav className="bottom-nav">
-          <div className="nav-item" onClick={() => navigate('home-instituicao')}><div className="nav-icon"><IconHome /></div><div className="nav-label">Início</div></div>
+          <div className="nav-item" onClick={abrirInicio}><div className="nav-icon"><IconHome /></div><div className="nav-label">Início</div></div>
+          <div className="nav-item" onClick={abrirAlunos}><div className="nav-icon"><IconPerson /></div><div className="nav-label">Alunos</div></div>
           <div className="nav-item active"><div className="nav-icon active" style={{ background:'var(--green)' }}><IconMsg /></div><div className="nav-label">Solicitações</div></div>
           <div className="nav-item" onClick={() => navigate('config-inst')}><div className="nav-icon"><IconCfg /></div><div className="nav-label">Config.</div></div>
         </nav>
@@ -182,14 +204,15 @@ export default function PageSolicitacoesInst({ navigate }) {
       <div className="si-desktop" style={{ display:'none' }}>
         <nav className="desktop-sidebar">
           <div className="sidebar-logo">
-            <img src={logoIcone} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
+            <img src={logoTema} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
             <span className="sidebar-logo-name">Autim</span>
           </div>
           {[
             { icon:<IconHome/>, label:'Início',       active:false, page:'home-instituicao'   },
+            { icon:<IconPerson/>, label:'Alunos',     active:false, page:'home-instituicao'   },
             { icon:<IconMsg/>,  label:'Solicitações', active:true,  page:'solicitacoes-inst'  },
           ].map((item,i) => (
-            <div key={i} className={`sidebar-nav-item ${item.active?'active':''}`} onClick={() => item.page && navigate(item.page)}>{item.icon}{item.label}</div>
+            <div key={i} className={`sidebar-nav-item ${item.active?'active':''}`} onClick={() => item.label === 'Alunos' ? abrirAlunos() : item.label === 'Início' ? abrirInicio() : navigate(item.page)}>{item.icon}{item.label}</div>
           ))}
           <div className="sidebar-spacer"></div>
           <div className="sidebar-nav-item" onClick={() => navigate('perfil-inst')}><IconPerson />Perfil</div>
@@ -204,7 +227,7 @@ export default function PageSolicitacoesInst({ navigate }) {
           <div className="page-wrapper" style={{ maxWidth:700 }}>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:24 }}>
               <div>
-                <div style={{ fontSize:28, fontWeight:900, color:'var(--dark)' }}>Solicitações</div>
+                <div style={{ fontSize:28, fontWeight:900, color:'var(--dark)' }}>📩 Solicitações</div>
                 <div style={{ fontSize:14, color:'#888', fontWeight:600, marginTop:4 }}>{pending} aguardando aprovação</div>
               </div>
             </div>

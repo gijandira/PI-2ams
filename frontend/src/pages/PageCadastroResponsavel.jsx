@@ -261,7 +261,7 @@ const handleCadastro = async () => {
       {/* MOBILE */}
       <div className="cadr-mobile" style={{ minHeight:'100vh', background:'var(--white)', display:'flex', flexDirection:'column' }}>
         <div style={{ padding:'4px 24px 0' }}>
-          <div style={{ fontSize:19, fontWeight:900, color:'var(--dark)', textAlign:'center', textTransform:'uppercase', letterSpacing:1, paddingBottom:10 }}>Cadastro do Responsável</div>
+          <div style={{ fontSize:19, fontWeight:900, color:'var(--dark)', textAlign:'center', textTransform:'uppercase', letterSpacing:1, paddingBottom:10 }}>🧑‍💼 Cadastro do Responsável</div>
           <div className="steps" style={{ paddingBottom:12 }}>
             <div className="step-dot done"></div><div className="step-line"></div>
             <div className="step-dot active"></div><div className="step-line"></div>
@@ -353,7 +353,7 @@ const handleCadastro = async () => {
           <div style={{ width:'100%', maxWidth:500 }}>
             <div style={{ marginBottom:28 }}>
               <div style={{ fontSize:13, fontWeight:800, color:'var(--blue)', textTransform:'uppercase', letterSpacing:1.5, marginBottom:8 }}>Passo 2 de 3</div>
-              <h1 style={{ fontSize:32, fontWeight:900, color:'var(--dark)', letterSpacing:-1, marginBottom:6 }}>Criar conta — Responsável</h1>
+              <h1 style={{ fontSize:32, fontWeight:900, color:'var(--dark)', letterSpacing:-1, marginBottom:6 }}>👨‍👩‍👧 Criar conta — Responsável</h1>
               <p style={{ fontSize:14, color:'#888', fontWeight:600 }}>Preencha os dados abaixo para criar sua conta</p>
             </div>
 

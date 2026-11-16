@@ -1,12 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import logoIcone from '../assets/logo-icone.png';
+import logoIconeBranco from '../assets/logo-icone-branco.png';
 import { IconHome, IconChat, IconPerson, IconSettings } from '../components/icons';
 
+const getInitialDashboardTab = () => {
+  const tab = localStorage.getItem('autim.home-instituicao-tab');
+  return ['inicio', 'alunos', 'solicit', 'relatorio'].includes(tab) ? tab : 'inicio';
+};
+
 export default function PageHomeInstituicao({ navigate }) {
-  const [tabMob, setTabMob] = useState('alunos');
-  const [tabDesk, setTabDesk] = useState('alunos');
+  const logoTema = document.body.classList.contains('autim-dark-theme')
+    ? logoIconeBranco
+    : logoIcone;
+
+  const [activeTab, setActiveTab] = useState(getInitialDashboardTab);
+  const [tabLoading, setTabLoading] = useState(false);
+  const tabLoadingTimer = useRef(null);
   const [reqsMob, setReqsMob] = useState([]);
   const [reqsDesk, setReqsDesk] = useState([]);
+  const [studentSearch, setStudentSearch] = useState('');
+  const [dashboardErro, setDashboardErro] = useState('');
   const responderSolicitacao = async (id, action) => {
     const response = await fetch(`http://localhost:3001/afiliacao/instituicao/${id}`, {
       method:'PATCH',
@@ -17,20 +30,6 @@ export default function PageHomeInstituicao({ navigate }) {
     if (!response.ok) throw new Error(data.erro || 'Não foi possível responder à solicitação.');
     return action;
   };
-  const doActionMob = async (id, action) => {
-    try {
-      await responderSolicitacao(id, action);
-      setReqsMob(prev => prev.map(r => r.id === id ? { ...r, status:action } : r));
-      setEstatisticas(prev => ({ ...prev, alunos: action === 'accept' ? prev.alunos + 1 : prev.alunos, pendentes: Math.max(0, prev.pendentes - 1) }));
-    } catch (error) { console.error('Erro ao responder solicitação:', error); }
-  };
-  const doActionDesk = async (id, action) => {
-    try {
-      await responderSolicitacao(id, action);
-      setReqsDesk(prev => prev.map(r => r.id === id ? { ...r, status:action } : r));
-      setEstatisticas(prev => ({ ...prev, alunos: action === 'accept' ? prev.alunos + 1 : prev.alunos, pendentes: Math.max(0, prev.pendentes - 1) }));
-    } catch (error) { console.error('Erro ao responder solicitação:', error); }
-  };
   const [students, setStudents] = useState([]);
   const [instituicao, setInstituicao] = useState(null);
   const [estatisticas, setEstatisticas] = useState({ alunos:0, pendentes:0, taxaAcerto:0 });
@@ -38,7 +37,7 @@ export default function PageHomeInstituicao({ navigate }) {
   const [loading, setLoading] = useState(true);
   const [alunoParaRemover, setAlunoParaRemover] = useState(null);
 
-  useEffect(() => {
+  const carregarDashboard = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) { navigate('login'); return; }
 
@@ -57,13 +56,15 @@ export default function PageHomeInstituicao({ navigate }) {
       return;
     }
 
-    const headers = { Authorization: `Bearer ${token}` };
-    Promise.all([
-      fetch('http://localhost:3001/auth/perfil-instituicao', { headers }),
-      fetch('http://localhost:3001/afiliacao/instituicao', { headers }),
-      fetch('http://localhost:3001/afiliacao/instituicao/alunos', { headers }),
-      fetch('http://localhost:3001/afiliacao/instituicao/relatorio', { headers })
-    ]).then(async ([perfilResponse, solicitacoesResponse, alunosResponse, relatorioResponse]) => {
+    setLoading(true);
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const [perfilResponse, solicitacoesResponse, alunosResponse, relatorioResponse] = await Promise.all([
+        fetch('http://localhost:3001/auth/perfil-instituicao', { headers }),
+        fetch('http://localhost:3001/afiliacao/instituicao', { headers }),
+        fetch('http://localhost:3001/afiliacao/instituicao/alunos', { headers }),
+        fetch('http://localhost:3001/afiliacao/instituicao/relatorio', { headers })
+      ]);
       const [perfilData, solicitacoesData, alunosData, relatorioData] = await Promise.all([
         perfilResponse.json(), solicitacoesResponse.json(), alunosResponse.json(), relatorioResponse.json()
       ]);
@@ -75,7 +76,10 @@ export default function PageHomeInstituicao({ navigate }) {
       const solicitacoes = (solicitacoesData.solicitacoes || []).map(item => ({
         id:item.id, icon:'👤', bg:'#e8f4ff', name:item.alunoNome,
         sub:`Resp.: ${item.responsavelNome || 'Não informado'}`,
-        time:new Date(item.dataSolicitacao).toLocaleDateString('pt-BR'),
+        age:item.age == null ? 'Não informado' : `${item.age} anos`,
+        diag:item.diag || 'Não informado',
+        code:item.code || 'Não informado',
+        time:new Date(item.dataSolicitacao).toLocaleString('pt-BR', { dateStyle:'short', timeStyle:'short' }),
         status:item.status === 'aceito' ? 'accept' : item.status === 'recusado' ? 'reject' : 'pending'
       }));
       const alunos = (alunosData.alunos || []).map(item => ({
@@ -89,8 +93,55 @@ export default function PageHomeInstituicao({ navigate }) {
       setReqsDesk(solicitacoes);
       setStudents(alunos);
       setRelatorio(relatorioData);
-    }).catch(error => console.error('Erro ao carregar dashboard institucional:', error)).finally(() => setLoading(false));
+      setDashboardErro('');
+    } catch (error) {
+      console.error('Erro ao carregar dashboard institucional:', error);
+      setDashboardErro(error.message || 'Não foi possível atualizar o painel.');
+    } finally {
+      setLoading(false);
+    }
   }, [navigate]);
+
+  useEffect(() => {
+    localStorage.removeItem('autim.home-instituicao-tab');
+    const timer = window.setTimeout(() => { void carregarDashboard(); }, 0);
+    return () => window.clearTimeout(timer);
+  }, [carregarDashboard]);
+
+  useEffect(() => () => {
+    window.clearTimeout(tabLoadingTimer.current);
+  }, []);
+
+  const changeTab = nextTab => {
+    if (nextTab === activeTab) return;
+    window.clearTimeout(tabLoadingTimer.current);
+    setTabLoading(true);
+    tabLoadingTimer.current = window.setTimeout(() => {
+      setActiveTab(nextTab);
+      setTabLoading(false);
+      tabLoadingTimer.current = null;
+    }, 400);
+  };
+
+  const doAction = async (id, action, setRequests) => {
+    try {
+      await responderSolicitacao(id, action);
+      setRequests(prev => prev.map(request => request.id === id ? { ...request, status:action } : request));
+      if (action === 'accept') {
+        changeTab('alunos');
+      }
+      await carregarDashboard();
+    } catch (error) {
+      console.error('Erro ao responder solicitação:', error);
+      setDashboardErro(error.message || 'Não foi possível responder à solicitação.');
+    }
+  };
+  const doActionMob = (id, action) => doAction(id, action, setReqsMob);
+  const doActionDesk = (id, action) => doAction(id, action, setReqsDesk);
+
+  const filteredStudents = students.filter(student => (
+    student.name.toLocaleLowerCase().includes(studentSearch.trim().toLocaleLowerCase())
+  ));
 
   const abrirDashboard = alunoId => {
     localStorage.setItem('dashboardAlunoId', alunoId);
@@ -107,10 +158,11 @@ export default function PageHomeInstituicao({ navigate }) {
       const data = await response.json();
       if (!response.ok) throw new Error(data.erro || 'Não foi possível remover o aluno.');
       setStudents(prev => prev.filter(student => student.id !== alunoParaRemover.id));
-      setEstatisticas(prev => ({ ...prev, alunos:Math.max(0, prev.alunos - 1) }));
       setAlunoParaRemover(null);
+      await carregarDashboard();
     } catch (error) {
       console.error('Erro ao remover aluno:', error);
+      setDashboardErro(error.message || 'Não foi possível remover o aluno.');
     }
   };
 
@@ -122,6 +174,18 @@ export default function PageHomeInstituicao({ navigate }) {
 
   return (
     <>
+      {tabLoading && (
+        <div className="autim-loading-layer" role="status" aria-live="polite">
+          <div className="autim-loading-card">
+            <div className="autim-loading-orb">
+              <img src={logoTema} alt="Autim" className="autim-loading-logo" />
+            </div>
+            <div className="autim-loading-title">Carregando...</div>
+            <div className="autim-loading-bar"><span></span></div>
+          </div>
+        </div>
+      )}
+      {dashboardErro && <div role="alert" style={{ position:'fixed', top:16, left:'50%', transform:'translateX(-50%)', zIndex:1001, maxWidth:'90vw', padding:'10px 16px', borderRadius:12, background:'#ffecec', color:'var(--red)', fontWeight:800, fontSize:13 }}>{dashboardErro}</div>}
       {alunoParaRemover && <div style={{ position:'fixed', inset:0, zIndex:50, background:'rgba(0,0,0,.45)', display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}>
         <div style={{ width:'100%', maxWidth:380, background:'#fff', borderRadius:20, padding:24, boxShadow:'0 12px 40px rgba(0,0,0,.25)', textAlign:'center' }}>
           <div style={{ fontSize:34, marginBottom:8 }}>⚠️</div>
@@ -154,7 +218,7 @@ export default function PageHomeInstituicao({ navigate }) {
             <div style={{ fontSize:18, fontWeight:900, color:'#fff' }}>{instituicao?.nome || 'Instituição'}</div>
             <div style={{ fontSize:12, color:'rgba(255,255,255,.8)', fontWeight:600, marginTop:2 }}>{estatisticas.alunos} alunos</div>
           </div>
-          <button onClick={() => navigate('solicitacoes-inst')} style={{ width:42, height:42, borderRadius:'50%', background:'rgba(255,255,255,.2)', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', fontSize:20, position:'relative', flexShrink:0 }}>
+          <button onClick={() => changeTab('solicit')} style={{ width:42, height:42, borderRadius:'50%', background:'rgba(255,255,255,.2)', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', fontSize:20, position:'relative', flexShrink:0 }}>
             🔔{estatisticas.pendentes > 0 && <span style={{ position:'absolute', top:-2, right:-2, width:17, height:17, borderRadius:'50%', background:'var(--red)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, fontWeight:900, color:'#fff' }}>{estatisticas.pendentes}</span>}
           </button>
         </div>
@@ -167,18 +231,19 @@ export default function PageHomeInstituicao({ navigate }) {
           ))}
         </div>
         <div style={{ display:'flex', padding:'0 16px 8px', gap:8 }}>
-          <button className={`tab-btn-green ${tabMob==='alunos'?'active':''}`} onClick={() => setTabMob('alunos')}>👤 Alunos</button>
-          <button className={`tab-btn-green ${tabMob==='solicit'?'active':''}`} onClick={() => setTabMob('solicit')} style={{ position:'relative' }}>📥 Solicitações{estatisticas.pendentes > 0 && <span style={{ position:'absolute', top:-6, right:-6, width:17, height:17, borderRadius:'50%', background:'var(--red)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, fontWeight:900, color:'#fff' }}>{estatisticas.pendentes}</span>}</button>
-          <button className={`tab-btn-green ${tabMob==='relatorio'?'active':''}`} onClick={() => setTabMob('relatorio')}>📊 Relatório</button>
+          <button className={`tab-btn-green ${activeTab==='alunos'?'active':''}`} onClick={() => changeTab('alunos')}>👤 Alunos</button>
+          <button className={`tab-btn-green ${activeTab==='solicit'?'active':''}`} onClick={() => changeTab('solicit')} style={{ position:'relative' }}>📥 Solicitações{estatisticas.pendentes > 0 && <span style={{ position:'absolute', top:-6, right:-6, width:17, height:17, borderRadius:'50%', background:'var(--red)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, fontWeight:900, color:'#fff' }}>{estatisticas.pendentes}</span>}</button>
+          <button className={`tab-btn-green ${activeTab==='relatorio'?'active':''}`} onClick={() => changeTab('relatorio')}>📊 Relatório</button>
         </div>
-        {tabMob === 'alunos' && (
+        {activeTab === 'alunos' && (
           <>
             <div style={{ padding:'0 16px 4px' }}>
-              <input style={{ width:'100%', padding:'11px 16px', border:'1.5px solid var(--border)', borderRadius:14, fontFamily:'Nunito,sans-serif', fontSize:14, color:'var(--dark)', background:'#fff', outline:'none' }} placeholder="Buscar aluno..." />
+              <input value={studentSearch} onChange={event => setStudentSearch(event.target.value)} style={{ width:'100%', padding:'11px 16px', border:'1.5px solid var(--border)', borderRadius:14, fontFamily:'Nunito,sans-serif', fontSize:14, color:'var(--dark)', background:'#fff', outline:'none' }} placeholder="Buscar aluno..." />
             </div>
             <div style={{ flex:1, overflowY:'auto', padding:'8px 16px 80px', display:'flex', flexDirection:'column', gap:10 }}>
               {loading && <div style={{ textAlign:'center', color:'#888', fontWeight:700 }}>Carregando alunos...</div>}
-              {students.map((s,i) => (
+              {!loading && filteredStudents.length === 0 && <div role="status" style={{ textAlign:'center', color:'var(--text-muted)', fontWeight:700 }}>{studentSearch.trim() ? `Nenhum aluno encontrado com o nome "${studentSearch.trim()}".` : 'Nenhum aluno afiliado à instituição.'}</div>}
+              {filteredStudents.map((s,i) => (
                 <div key={i} className="student-card-mob" onClick={() => abrirDashboard(s.id)} style={{ background:'#fff', borderRadius:18, padding:'14px 16px', display:'flex', alignItems:'center', gap:12, boxShadow:'0 3px 12px rgba(0,0,0,.07)', cursor:'pointer', transition:'transform .15s' }}>
                   <div style={{ width:46, height:46, borderRadius:'50%', background:s.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>{s.icon}</div>
                   <div style={{ flex:1 }}>
@@ -195,28 +260,43 @@ export default function PageHomeInstituicao({ navigate }) {
             </div>
           </>
         )}
-        {tabMob === 'solicit' && (
+        {activeTab === 'solicit' && (
           <div style={{ flex:1, overflowY:'auto', padding:'8px 16px 80px', display:'flex', flexDirection:'column', gap:10 }}>
+            {loading && <div role="status" style={{ textAlign:'center', color:'var(--text-muted)', fontWeight:700 }}>Carregando solicitações...</div>}
             {reqsMob.map(r => (
-              <div key={r.id} style={{ background:'#fff', borderRadius:18, padding:'14px 16px', boxShadow:'0 3px 12px rgba(0,0,0,.07)', borderLeft:`4px solid ${r.status==='accept'?'var(--green)':r.status==='reject'?'var(--red)':'var(--yellow)'}`, display:'flex', flexDirection:'column', gap:12, opacity:r.status==='reject'?.5:1 }}>
+              <div key={r.id} style={{ background:'#fff', borderRadius:20, padding:16, boxShadow:'0 4px 14px rgba(0,0,0,.08)', borderLeft:`5px solid ${r.status==='accept'?'var(--green)':r.status==='reject'?'var(--red)':'var(--yellow)'}`, display:'flex', flexDirection:'column', gap:14, opacity:r.status==='reject'?.55:1 }}>
                 <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-                  <div style={{ width:44, height:44, borderRadius:'50%', background:r.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22 }}>{r.icon}</div>
-                  <div style={{ flex:1 }}><div style={{ fontSize:14, fontWeight:900, color:'var(--dark)' }}>{r.name}</div><div style={{ fontSize:12, color:'#888', fontWeight:600 }}>{r.sub}</div></div>
-                  <div style={{ fontSize:11, color:'#aaa', fontWeight:700 }}>{r.time}</div>
+                  <div style={{ width:50, height:50, borderRadius:'50%', background:r.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:26, flexShrink:0, boxShadow:'0 2px 8px rgba(0,0,0,.1)' }}>{r.icon}</div>
+                  <div style={{ flex:1, minWidth:0, textAlign:'center' }}>
+                    <div style={{ fontSize:15, fontWeight:900, color:'var(--dark)' }}>{r.name}</div>
+                    <div style={{ fontSize:12, color:'#555', fontWeight:700, marginTop:2 }}>{r.sub}</div>
+                  </div>
+                  <div style={{ fontSize:11, color:'#aaa', fontWeight:700, textAlign:'right', flexShrink:0 }}>{r.time}</div>
                 </div>
+                {r.status==='pending' && (
+                  <div style={{ background:'#f8fafd', borderRadius:14, padding:'12px 14px', display:'flex', flexDirection:'column', gap:10 }}>
+                    {[['Idade do aluno', r.age],['Diagnóstico', r.diag],['Código usado', r.code]].map(([label, value]) => (
+                      <div key={label} style={{ display:'flex', justifyContent:'space-between', gap:12 }}>
+                        <span style={{ fontSize:12, fontWeight:700, color:'#888' }}>{label}</span>
+                        <span style={{ fontSize:12, fontWeight:800, color:'var(--dark)', textAlign:'right' }}>{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 {r.status==='pending' ? (
                   <div style={{ display:'flex', gap:8 }}>
-                    <button onClick={() => doActionMob(r.id,'accept')} style={{ flex:1, padding:11, background:'var(--green)', color:'#fff', border:'none', borderRadius:12, fontFamily:'Nunito,sans-serif', fontSize:13, fontWeight:800, cursor:'pointer' }}>✅ Aceitar</button>
-                    <button onClick={() => doActionMob(r.id,'reject')} style={{ flex:1, padding:11, background:'#fff', color:'var(--red)', border:'2px solid var(--red)', borderRadius:12, fontFamily:'Nunito,sans-serif', fontSize:13, fontWeight:800, cursor:'pointer' }}>❌ Recusar</button>
+                    <button onClick={() => doActionMob(r.id,'accept')} style={{ flex:1, padding:12, background:'var(--green)', color:'#fff', border:'none', borderRadius:14, fontFamily:'Nunito,sans-serif', fontSize:14, fontWeight:800, cursor:'pointer', boxShadow:'0 4px 12px rgba(72,195,120,.4)' }}>✅ Aceitar</button>
+                    <button onClick={() => doActionMob(r.id,'reject')} style={{ flex:1, padding:12, background:'#fff', color:'var(--red)', border:'2px solid var(--red)', borderRadius:14, fontFamily:'Nunito,sans-serif', fontSize:14, fontWeight:800, cursor:'pointer' }}>❌ Recusar</button>
                   </div>
                 ) : (
                   <div style={{ fontSize:13, fontWeight:900, color:r.status==='accept'?'var(--green)':'var(--red)' }}>{r.status==='accept'?'✅ Aceita!':'❌ Recusada'}</div>
                 )}
               </div>
             ))}
+            {!loading && reqsMob.length === 0 && <div role="status" style={{ textAlign:'center', color:'var(--text-muted)', fontWeight:700 }}>Nenhuma solicitação encontrada.</div>}
           </div>
         )}
-        {tabMob === 'relatorio' && (
+        {activeTab === 'relatorio' && (
           <div style={{ flex:1, overflowY:'auto', padding:'8px 16px 80px' }}>
             <div style={{ background:'#fff', borderRadius:18, padding:'18px 16px', boxShadow:'0 3px 12px rgba(0,0,0,.07)' }}>
               <div style={{ fontSize:14, fontWeight:900, color:'var(--dark)', marginBottom:12 }}>📊 Resumo — {relatorio.periodo}</div>
@@ -232,8 +312,8 @@ export default function PageHomeInstituicao({ navigate }) {
           </div>
         )}
         <nav className="bottom-nav">
-          <div className="nav-item active"><div className="nav-icon active"><IconHome /></div><div className="nav-label">Início</div></div>
-          <div className="nav-item" onClick={() => navigate('solicitacoes-inst')}><div className="nav-icon"><IconChat /></div><div className="nav-label">Solicitações</div></div>
+          <div className={`nav-item ${activeTab==='inicio'?'active':''}`} onClick={() => changeTab('inicio')}><div className={`nav-icon ${activeTab==='inicio'?'active':''}`}><IconHome /></div><div className="nav-label">Início</div></div>
+          <div className={`nav-item ${activeTab==='solicit'?'active':''}`} onClick={() => changeTab('solicit')}><div className={`nav-icon ${activeTab==='solicit'?'active':''}`}><IconChat /></div><div className="nav-label">Solicitações</div></div>
           <div className="nav-item" onClick={() => navigate('perfil-inst')}><div className="nav-icon"><IconPerson /></div><div className="nav-label">Perfil</div></div>
           <div className="nav-item" onClick={() => navigate('config-inst')}><div className="nav-icon"><IconSettings /></div><div className="nav-label">Config.</div></div>
         </nav>
@@ -243,15 +323,15 @@ export default function PageHomeInstituicao({ navigate }) {
       <div className="hi-desktop" style={{ display:'none' }}>
         <nav className="desktop-sidebar">
           <div className="sidebar-logo">
-            <img src={logoIcone} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
+            <img src={logoTema} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
             <span className="sidebar-logo-name">Autim</span>
           </div>
           {[
-            { icon:<IconHome/>,   label:'Início',       active:true,  page:null                },
-            { icon:<IconChat/>,   label:'Solicitações', active:false, page:'solicitacoes-inst' },
-            { icon:<IconPerson/>, label:'Alunos',       active:false, page:null                },
+            { icon:<IconHome/>,   label:'Início',       tab:'inicio'  },
+            { icon:<IconPerson/>, label:'Alunos',       tab:'alunos' },
+            { icon:<IconChat/>,   label:'Solicitações', tab:'solicit' },
           ].map((item,i) => (
-            <div key={i} className={`sidebar-nav-item ${item.active?'active':''}`} onClick={() => item.page && navigate(item.page)}>{item.icon}{item.label}</div>
+            <div key={i} className={`sidebar-nav-item ${activeTab===item.tab?'active':''}`} onClick={() => changeTab(item.tab)}>{item.icon}{item.label}</div>
           ))}
           <div className="sidebar-spacer"></div>
           <div className="sidebar-nav-item" onClick={() => navigate('perfil-inst')}><IconPerson />Perfil</div>
@@ -271,7 +351,7 @@ export default function PageHomeInstituicao({ navigate }) {
                 <div style={{ fontSize:13, opacity:.8, fontWeight:600, marginTop:3 }}>Gerenciamento de alunos e responsáveis</div>
               </div>
               <div style={{ flex:1 }}></div>
-              <button onClick={() => navigate('solicitacoes-inst')} style={{ width:44, height:44, borderRadius:'50%', background:'rgba(255,255,255,.2)', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', fontSize:22, position:'relative' }}>🔔{estatisticas.pendentes > 0 && <span style={{ position:'absolute', top:-2, right:-2, width:16, height:16, borderRadius:'50%', background:'var(--red)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, fontWeight:900, color:'#fff' }}>{estatisticas.pendentes}</span>}</button>
+              <button onClick={() => changeTab('solicit')} style={{ width:44, height:44, borderRadius:'50%', background:'rgba(255,255,255,.2)', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', fontSize:22, position:'relative' }}>🔔{estatisticas.pendentes > 0 && <span style={{ position:'absolute', top:-2, right:-2, width:16, height:16, borderRadius:'50%', background:'var(--red)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, fontWeight:900, color:'#fff' }}>{estatisticas.pendentes}</span>}</button>
             </div>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16, marginBottom:24 }}>
               {[{num:estatisticas.alunos,label:'Alunos',color:'var(--green)'},{num:`${estatisticas.taxaAcerto}%`,label:'Média de acerto',color:'var(--blue)'},{num:estatisticas.pendentes,label:'Solicitações',color:'var(--yellow)'},{num:students.filter(student => student.online).length,label:'Ativos hoje',color:'var(--pink)'}].map((s,i) => (
@@ -283,19 +363,21 @@ export default function PageHomeInstituicao({ navigate }) {
             </div>
             <div style={{ display:'flex', gap:8, marginBottom:16 }}>
               {['alunos','solicit','relatorio'].map(t => (
-                <button key={t} onClick={() => setTabDesk(t)} style={{ padding:'10px 20px', border:'none', borderRadius:14, fontFamily:'Nunito,sans-serif', fontSize:13, fontWeight:800, cursor:'pointer', transition:'all .2s', background:tabDesk===t?'var(--green)':'#e0eaf0', color:tabDesk===t?'#fff':'#888', boxShadow:tabDesk===t?'0 4px 12px rgba(72,195,120,.4)':'none', position:'relative' }}>
+                <button key={t} onClick={() => changeTab(t)} style={{ padding:'10px 20px', border:'none', borderRadius:14, fontFamily:'Nunito,sans-serif', fontSize:13, fontWeight:800, cursor:'pointer', transition:'all .2s', background:activeTab===t?'var(--green)':'#e0eaf0', color:activeTab===t?'#fff':'#888', boxShadow:activeTab===t?'0 4px 12px rgba(72,195,120,.4)':'none', position:'relative' }}>
                   {t==='alunos'?'👤 Alunos':t==='solicit'?'📥 Solicitações':'📊 Relatório'}
                   {t==='solicit' && estatisticas.pendentes > 0 && <span style={{ position:'absolute', top:-6, right:-6, width:17, height:17, borderRadius:'50%', background:'var(--red)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, fontWeight:900, color:'#fff' }}>{estatisticas.pendentes}</span>}
                 </button>
               ))}
             </div>
-            {tabDesk === 'alunos' && (
+            {activeTab === 'alunos' && (
               <>
                 <div style={{ marginBottom:16 }}>
-                  <input style={{ width:'100%', padding:'11px 16px', border:'1.5px solid var(--border)', borderRadius:14, fontFamily:'Nunito,sans-serif', fontSize:14, color:'var(--dark)', background:'#fff', outline:'none' }} placeholder="Buscar aluno..." />
+                  <input value={studentSearch} onChange={event => setStudentSearch(event.target.value)} style={{ width:'100%', padding:'11px 16px', border:'1.5px solid var(--border)', borderRadius:14, fontFamily:'Nunito,sans-serif', fontSize:14, color:'var(--dark)', background:'#fff', outline:'none' }} placeholder="Buscar aluno..." />
                 </div>
                 <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-                  {students.map((s,i) => (
+                  {loading && <div style={{ textAlign:'center', color:'var(--text-muted)', fontWeight:700 }}>Carregando alunos...</div>}
+                  {!loading && filteredStudents.length === 0 && <div role="status" style={{ textAlign:'center', color:'var(--text-muted)', fontWeight:700 }}>{studentSearch.trim() ? `Nenhum aluno encontrado com o nome "${studentSearch.trim()}".` : 'Nenhum aluno afiliado à instituição.'}</div>}
+                  {filteredStudents.map((s,i) => (
                     <div key={i} className="student-card-d" onClick={() => abrirDashboard(s.id)} style={{ background:'#fff', borderRadius:18, padding:'16px 20px', display:'flex', alignItems:'center', gap:14, boxShadow:'var(--shadow-card)', cursor:'pointer', transition:'transform .15s' }}>
                       <div style={{ width:46, height:46, borderRadius:'50%', background:s.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22 }}>{s.icon}</div>
                       <div style={{ flex:1 }}>
@@ -312,25 +394,43 @@ export default function PageHomeInstituicao({ navigate }) {
                 </div>
               </>
             )}
-            {tabDesk === 'solicit' && (
+            {activeTab === 'solicit' && (
               <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                {loading && <div role="status" style={{ textAlign:'center', color:'var(--text-muted)', fontWeight:700 }}>Carregando solicitações...</div>}
                 {reqsDesk.map(r => (
-                  <div key={r.id} style={{ background:'#fff', borderRadius:18, padding:'16px 20px', boxShadow:'var(--shadow-card)', borderLeft:`4px solid ${r.status==='accept'?'var(--green)':r.status==='reject'?'var(--red)':'var(--yellow)'}`, display:'flex', alignItems:'center', gap:14, opacity:r.status==='reject'?.5:1 }}>
-                    <div style={{ width:44, height:44, borderRadius:'50%', background:r.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22 }}>{r.icon}</div>
-                    <div style={{ flex:1 }}><div style={{ fontSize:14, fontWeight:900, color:'var(--dark)' }}>{r.name}</div><div style={{ fontSize:12, color:'#888', fontWeight:600 }}>{r.sub}</div></div>
+                  <div key={r.id} style={{ background:'#fff', borderRadius:20, padding:18, boxShadow:'var(--shadow-card)', borderLeft:`5px solid ${r.status==='accept'?'var(--green)':r.status==='reject'?'var(--red)':'var(--yellow)'}`, display:'flex', flexDirection:'column', gap:14, opacity:r.status==='reject'?.55:1 }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+                      <div style={{ width:54, height:54, borderRadius:'50%', background:r.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:28, flexShrink:0 }}>{r.icon}</div>
+                      <div style={{ flex:1, minWidth:0, textAlign:'center' }}>
+                        <div style={{ fontSize:16, fontWeight:900, color:'var(--dark)' }}>{r.name}</div>
+                        <div style={{ fontSize:13, color:'#555', fontWeight:700, marginTop:3 }}>{r.sub}</div>
+                      </div>
+                      <div style={{ fontSize:12, color:'#aaa', fontWeight:700, textAlign:'right', flexShrink:0 }}>{r.time}</div>
+                    </div>
+                    {r.status==='pending' && (
+                      <div style={{ background:'#f8fafd', borderRadius:14, padding:'14px 16px', display:'flex', flexDirection:'column', gap:10 }}>
+                        {[['Idade do aluno', r.age],['Diagnóstico', r.diag],['Código usado', r.code]].map(([label, value]) => (
+                          <div key={label} style={{ display:'flex', justifyContent:'space-between', gap:16 }}>
+                            <span style={{ fontSize:13, fontWeight:700, color:'#888' }}>{label}</span>
+                            <span style={{ fontSize:13, fontWeight:800, color:'var(--dark)', textAlign:'right' }}>{value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     {r.status==='pending' ? (
-                      <div style={{ display:'flex', gap:8, marginLeft:'auto' }}>
-                        <button onClick={() => doActionDesk(r.id,'accept')} style={{ padding:'10px 20px', background:'var(--green)', color:'#fff', border:'none', borderRadius:12, fontFamily:'Nunito,sans-serif', fontSize:13, fontWeight:800, cursor:'pointer' }}>✅ Aceitar</button>
-                        <button onClick={() => doActionDesk(r.id,'reject')} style={{ padding:'10px 20px', background:'#fff', color:'var(--red)', border:'2px solid var(--red)', borderRadius:12, fontFamily:'Nunito,sans-serif', fontSize:13, fontWeight:800, cursor:'pointer' }}>❌ Recusar</button>
+                      <div style={{ display:'flex', gap:10 }}>
+                        <button onClick={() => doActionDesk(r.id,'accept')} style={{ flex:1, padding:12, background:'var(--green)', color:'#fff', border:'none', borderRadius:14, fontFamily:'Nunito,sans-serif', fontSize:14, fontWeight:800, cursor:'pointer', boxShadow:'0 4px 12px rgba(72,195,120,.4)' }}>✅ Aceitar</button>
+                        <button onClick={() => doActionDesk(r.id,'reject')} style={{ flex:1, padding:12, background:'#fff', color:'var(--red)', border:'2px solid var(--red)', borderRadius:14, fontFamily:'Nunito,sans-serif', fontSize:14, fontWeight:800, cursor:'pointer' }}>❌ Recusar</button>
                       </div>
                     ) : (
-                      <span style={{ fontSize:14, fontWeight:900, color:r.status==='accept'?'var(--green)':'var(--red)', marginLeft:'auto' }}>{r.status==='accept'?'✅ Aceita!':'❌ Recusada'}</span>
+                      <span style={{ fontSize:14, fontWeight:900, color:r.status==='accept'?'var(--green)':'var(--red)' }}>{r.status==='accept'?'✅ Aceita!':'❌ Recusada'}</span>
                     )}
                   </div>
                 ))}
+                {!loading && reqsDesk.length === 0 && <div role="status" style={{ textAlign:'center', color:'var(--text-muted)', fontWeight:700 }}>Nenhuma solicitação encontrada.</div>}
               </div>
             )}
-            {tabDesk === 'relatorio' && (
+            {activeTab === 'relatorio' && (
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 }}>
                 <div style={{ background:'#fff', borderRadius:20, padding:24, boxShadow:'var(--shadow-card)' }}>
                   <div style={{ fontSize:15, fontWeight:900, color:'var(--dark)', marginBottom:16 }}>📊 Resumo — {relatorio.periodo}</div>

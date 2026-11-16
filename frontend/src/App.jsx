@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import logoIcone from './assets/logo-icone.png';
+import logoIconeBranco from './assets/logo-icone-branco.png';
 import GlobalStyle from './styles/GlobalStyle';
 import PageIndex from './pages/PageIndex';
 import PageLogin from './pages/PageLogin';
@@ -80,8 +81,18 @@ function getInitialPage() {
 export default function App() {
   const [page, setPage] = useState(getInitialPage);
   const [loading, setLoading] = useState(false);
+  const loadingLogo = document.body.classList.contains('autim-dark-theme')
+    ? logoIconeBranco
+    : logoIcone;
 
   useEffect(() => {
+    try {
+      const settings = JSON.parse(localStorage.getItem('autim.user-settings') || '{}');
+      document.body.classList.toggle('autim-dark-theme', Boolean(settings.darkMode));
+    } catch (error) {
+      console.error('Não foi possível aplicar o tema salvo:', error);
+    }
+
     const onPopState = () => {
       setPage(getInitialPage());
     };
@@ -90,7 +101,7 @@ export default function App() {
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
-  const navigate = function (nextPage) {
+  const navigate = useCallback(nextPage => {
     const targetPage = normalizePage(nextPage);
     if (targetPage === page) return;
 
@@ -105,7 +116,7 @@ export default function App() {
       setPage(targetPage);
       setLoading(false);
     }, 400);
-  };
+  }, [page]);
 
   return (
     <>
@@ -116,7 +127,7 @@ export default function App() {
         <div className="autim-loading-layer">
           <div className="autim-loading-card">
             <div className="autim-loading-orb">
-              <img src={logoIcone} alt="Autim" className="autim-loading-logo" />
+              <img src={loadingLogo} alt="Autim" className="autim-loading-logo" />
             </div>
             <div className="autim-loading-title">Carregando...</div>
             <div className="autim-loading-bar"><span></span></div>
