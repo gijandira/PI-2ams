@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import logoIcone from '../assets/logo-icone.png';
+import logoIconeBranco from '../assets/logo-icone-branco.png';
 import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconRobot, IconSettings } from '../components/icons';
 import SidebarUser from '../components/SidebarUser';
 
@@ -27,6 +28,17 @@ const CATEGORY_TEMPLATE = [
   },
 ];
 
+function normalizeCategoryName(value = '') {
+  return String(value)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\u2600-\u27BF]/g, '')
+    .replace(/[\u{1F300}-\u{1FAFF}]/gu, '')
+    .replace(/[^a-zA-Z0-9\s]/g, '')
+    .trim()
+    .toLowerCase();
+}
+
 function createCategories(lessons = [], sections = {}) {
   const necessidadesLiberada = Boolean(sections.necessidadesLiberada);
 
@@ -43,10 +55,11 @@ function createCategories(lessons = [], sections = {}) {
 
     if (category.id === 'necessidades' || category.id === 'sentimentos') {
       const categoryLessons = lessons.filter(phase => (
-        phase.categoria.toLowerCase() === category.name.toLowerCase()
+        normalizeCategoryName(phase.categoria) === normalizeCategoryName(category.name)
       ));
       const completed = categoryLessons.filter(phase => phase.concluida).length;
       const nextIndex = categoryLessons.findIndex(phase => !phase.concluida);
+      const fallbackNextIndex = category.id === 'sentimentos' && categoryLessons.length === 0 ? 0 : nextIndex;
       const phases = category.id === 'sentimentos'
         ? category.phases.map((phase, index) => ({
             ...phase,
@@ -61,7 +74,7 @@ function createCategories(lessons = [], sections = {}) {
           ...phase,
           state: category.locked
             ? 'locked'
-            : phase.concluida ? 'done' : index === nextIndex ? 'active' : 'pending'
+            : phase.concluida ? 'done' : index === fallbackNextIndex ? 'active' : 'locked'
         }))
       };
     }
@@ -139,7 +152,7 @@ function PhaseNode({ phase, navigate }) {
         }}
       >
         <span style={{ fontSize:24, lineHeight:1, filter: phase.state === 'locked' ? 'grayscale(1) opacity(.5)' : 'none' }}>{phase.emoji}</span>
-        <span style={{ fontSize:10, fontWeight:900, color: phase.state === 'locked' ? '#aaa' : 'rgba(255,255,255,.85)', letterSpacing:.5 }}>{phase.label}</span>
+        <span style={{ fontSize:10, fontWeight:900, color: phase.state === 'locked' ? 'var(--text-muted)' : 'rgba(255,255,255,.85)', letterSpacing:.5 }}>{phase.label}</span>
         {phase.state === 'done' && (
           <div style={{ position:'absolute', bottom:-6, right:-6, width:20, height:20, background:'#fff', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, boxShadow:'0 1px 4px rgba(0,0,0,.15)' }}>✅</div>
         )}
@@ -188,7 +201,10 @@ function PhaseTrack({ phases, navigate }) {
 }
 
 export default function PageLicoes({ navigate }) {
-  const [expanded, setExpanded] = useState('sentimentos');
+  const logoTema = document.body.classList.contains('autim-dark-theme')
+    ? logoIconeBranco
+    : logoIcone;
+  const [expanded, setExpanded] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [categories, setCategories] = useState(() => createCategories());
   const [alunoId, setAlunoId] = useState(() => localStorage.getItem('alunoId'));
@@ -446,8 +462,8 @@ export default function PageLicoes({ navigate }) {
             border:'1px solid #f2b8b5',
             borderRadius:10,
             padding:'8px 11px',
-            background:desabilitado ? '#f5f5f5' : '#fff',
-            color:desabilitado ? '#aaa' : '#c4453c',
+            background:desabilitado ? 'var(--input-bg)' : 'var(--white)',
+            color:desabilitado ? 'var(--text-muted)' : '#c4453c',
             fontWeight:800,
             cursor:desabilitado ? 'not-allowed' : 'pointer'
           }}
@@ -455,7 +471,7 @@ export default function PageLicoes({ navigate }) {
           {secaoReiniciando === category.id ? 'Reiniciando...' : '↻ Reiniciar atividades'}
         </button>
         {mensagemReinicio?.categoria === category.id && (
-          <div role="status" style={{ marginTop:6, fontSize:12, color:'#555' }}>
+          <div role="status" style={{ marginTop:6, fontSize:12, color:'var(--text-muted)' }}>
             {mensagemReinicio.texto}
           </div>
         )}
@@ -493,7 +509,7 @@ export default function PageLicoes({ navigate }) {
               : 'Solicitar liberação da próxima seção'}
         </button>
         {mensagemSolicitacao && (
-          <div role="status" style={{ marginTop:6, fontSize:12, color:'#555' }}>
+          <div role="status" style={{ marginTop:6, fontSize:12, color:'var(--text-muted)' }}>
             {mensagemSolicitacao}
           </div>
         )}
@@ -507,8 +523,20 @@ export default function PageLicoes({ navigate }) {
         @media (min-width: 768px) { .lic-mobile { display: none !important; } }
         .lic-desktop { display: none; }
         @media (min-width: 768px) { .lic-desktop { display: block !important; } }
-        .cat-card { background:#fff; border-radius:20px; padding:16px; display:flex; align-items:center; gap:14px; box-shadow:0 4px 14px rgba(0,0,0,.07); cursor:pointer; transition:transform .15s; border-left:5px solid transparent; }
+        .cat-card { background:var(--white); color:var(--dark); border-radius:20px; padding:16px; display:flex; align-items:center; gap:14px; box-shadow:0 4px 14px rgba(0,0,0,.07); cursor:pointer; transition:transform .15s; border-left:5px solid transparent; }
         .cat-card:hover { transform:translateY(-2px); }
+        body.autim-dark-theme .cat-card { border-top:1px solid var(--border); border-right:1px solid var(--border); border-bottom:1px solid var(--border); }
+        body.autim-dark-theme .lic-mobile .lic-logo-wrap { background:#161b22 !important; }
+        body.autim-dark-theme .phase-node.locked { --node-bg:#21262d; --node-border:#30363d; --node-glow:rgba(0,0,0,.25); }
+        body.autim-dark-theme .phase-node.locked span { color:#8b949e !important; }
+        body.autim-dark-theme .lic-desktop .phase-track-card { background:var(--white) !important; color:var(--dark); }
+        .lic-category-detail { width:100%; max-width:760px; margin:0 auto; }
+        .lic-back-button {
+          display:inline-flex; align-items:center; gap:8px; min-height:42px; margin-bottom:18px;
+          padding:0 14px; border:1px solid var(--border); border-radius:12px;
+          background:var(--white); color:var(--dark); font:800 14px 'Nunito',sans-serif; cursor:pointer;
+        }
+        .lic-back-button:hover { border-color:var(--blue); color:var(--blue); }
 
         .phase-node {
           width:${NODE}px; height:${NODE}px; border-radius:50%;
@@ -525,6 +553,7 @@ export default function PageLicoes({ navigate }) {
         .lic-mobile-menu button { display:flex; align-items:center; gap:10px; width:100%; padding:10px 12px; border:0; border-radius:8px; background:transparent; color:var(--dark); font:800 13px 'Nunito',sans-serif; text-align:left; cursor:pointer; }
         .lic-mobile-menu button:hover { background:var(--bg); }
         .lic-mobile-menu svg { width:18px; height:18px; fill:currentColor; }
+        .lic-mobile .autim-close-button { position:absolute; top:10px; left:12px; z-index:1; background:rgba(255,255,255,.2); }
 
         .phase-flag {
           position:absolute; top:-34px; left:50%; transform:translateX(-50%);
@@ -603,8 +632,9 @@ export default function PageLicoes({ navigate }) {
               <button type="button" role="menuitem" onClick={handleLogout} style={{ color:'var(--red)' }}>🚪 Sair</button>
             </div>
           )}
-          <div style={{ width:52, height:52, borderRadius:'50%', background:'#fff', display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden', boxShadow:'0 3px 12px rgba(0,0,0,.2)' }}>
-            <img src={logoIcone} alt="Autim" style={{ width:42, height:42, objectFit:'contain' }} />
+          <button type="button" className="autim-close-button" onClick={() => navigate('home-aluno')} aria-label="Fechar lições">×</button>
+          <div className="lic-logo-wrap" style={{ width:52, height:52, borderRadius:'50%', background:'#fff', display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden', boxShadow:'0 3px 12px rgba(0,0,0,.2)' }}>
+            <img src={logoTema} alt="Autim" style={{ width:42, height:42, objectFit:'contain' }} />
           </div>
           <div style={{ fontSize:19, fontWeight:900, color:'#fff' }}>Lições</div>
           <div style={{ display:'flex', alignItems:'center', gap:12, width:'100%' }}>
@@ -617,36 +647,61 @@ export default function PageLicoes({ navigate }) {
         </div>
 
         <div style={{ flex:1, overflowY:'auto', padding:'16px 16px 88px', display:'flex', flexDirection:'column', gap:20 }}>
-          {categories.map(cat => (
-            <div key={cat.id}>
-              <div style={{ fontSize:11, fontWeight:900, letterSpacing:2, textTransform:'uppercase', color:'#888', padding:'0 4px', marginBottom:8 }}>
-                {cat.icon} {cat.name}
-              </div>
-              <div className="cat-card" style={{ borderLeftColor: cat.accent, opacity: cat.locked ? .6 : 1 }}
-                onClick={() => !cat.locked && setExpanded(expanded === cat.id ? null : cat.id)}>
-                <div style={{ width:52, height:52, borderRadius:16, background:cat.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:26, flexShrink:0 }}>{cat.icon}</div>
-                <div style={{ flex:1 }}>
-                  <div style={{ fontSize:15, fontWeight:900, color: cat.locked ? '#aaa' : 'var(--dark)' }}>{cat.name}</div>
-                  <div style={{ fontSize:12, color:'#888', fontWeight:600, marginTop:2 }}>{cat.desc}</div>
-                  <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:6 }}>
-                    <div style={{ flex:1, height:6, background:'#e0e8f0', borderRadius:99, overflow:'hidden' }}>
-                      <div style={{ height:'100%', width:`${(cat.done/cat.total)*100}%`, background:cat.accent, borderRadius:99 }}></div>
+          {expanded ? (
+            (() => {
+              const category = categories.find(cat => cat.id === expanded);
+              if (!category) return null;
+              return (
+                <section className="lic-category-detail">
+                  <button type="button" className="lic-back-button" onClick={() => setExpanded(null)}>← Categorias</button>
+                  <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:16 }}>
+                    <div style={{ width:54, height:54, borderRadius:16, background:category.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:28 }}>{category.icon}</div>
+                    <div>
+                      <div style={{ fontSize:20, fontWeight:900, color:'var(--dark)' }}>{category.name}</div>
+                      <div style={{ fontSize:13, color:'var(--text-muted)', fontWeight:600, marginTop:2 }}>{category.desc}</div>
                     </div>
-                    <div style={{ fontSize:11, fontWeight:800, color:'#888' }}>{cat.done}/{cat.total}</div>
+                    <div style={{ marginLeft:'auto', fontSize:12, color:'var(--text-muted)', fontWeight:800 }}>{category.done}/{category.total}</div>
                   </div>
+                  {renderSolicitarLiberacao(category)}
+                  {renderReiniciarAtividades(category)}
+                  {category.phases.length > 0 ? (
+                    <div style={{ marginTop:20, padding:'24px 12px', borderRadius:24, background:'var(--white)', boxShadow:'var(--shadow-card)' }}>
+                      <PhaseTrack phases={category.phases} navigate={navigate} />
+                    </div>
+                  ) : (
+                    <div role="status" style={{ padding:'24px 16px', borderRadius:18, background:'var(--white)', color:'var(--text-muted)', textAlign:'center', fontWeight:700 }}>
+                      As fases desta categoria ainda não estão disponíveis.
+                    </div>
+                  )}
+                </section>
+              );
+            })()
+          ) : (
+            categories.map(cat => (
+              <div key={cat.id}>
+                <div style={{ fontSize:11, fontWeight:900, letterSpacing:2, textTransform:'uppercase', color:'var(--text-muted)', padding:'0 4px', marginBottom:8 }}>
+                  {cat.icon} {cat.name}
                 </div>
-                <div style={{ fontSize:18, color:'#ccc' }}>{cat.locked ? '🔒' : '›'}</div>
+                <div className="cat-card" style={{ borderLeftColor: cat.accent }}
+                  onClick={() => !cat.locked && setExpanded(cat.id)}>
+                  <div style={{ width:52, height:52, borderRadius:16, background:cat.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:26, flexShrink:0 }}>{cat.icon}</div>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontSize:15, fontWeight:900, color: cat.locked ? 'var(--text-muted)' : 'var(--dark)' }}>{cat.name}</div>
+                    <div style={{ fontSize:12, color:'var(--text-muted)', fontWeight:600, marginTop:2 }}>{cat.desc}</div>
+                    <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:6 }}>
+                      <div style={{ flex:1, height:6, background:'var(--border)', borderRadius:99, overflow:'hidden' }}>
+                        <div style={{ height:'100%', width:`${(cat.done/cat.total)*100}%`, background:cat.accent, borderRadius:99 }}></div>
+                      </div>
+                      <div style={{ fontSize:11, fontWeight:800, color:'var(--text-muted)' }}>{cat.done}/{cat.total}</div>
+                    </div>
+                  </div>
+                  <div style={{ fontSize:18, color:'var(--text-muted)' }}>{cat.locked ? '🔒' : '›'}</div>
+                </div>
+                {renderSolicitarLiberacao(cat)}
+                {renderReiniciarAtividades(cat)}
               </div>
-              {renderSolicitarLiberacao(cat)}
-              {renderReiniciarAtividades(cat)}
-
-              {expanded === cat.id && cat.phases.length > 0 && (
-                <div style={{ marginTop:16 }}>
-                  <PhaseTrack phases={cat.phases} navigate={navigate} />
-                </div>
-              )}
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         <nav className="bottom-nav">
@@ -662,7 +717,7 @@ export default function PageLicoes({ navigate }) {
       <div className="lic-desktop" style={{ display:'none' }}>
         <nav className="desktop-sidebar">
           <div className="sidebar-logo">
-            <img src={logoIcone} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
+            <img src={logoTema} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
             <span className="sidebar-logo-name">Autim</span>
           </div>
           {[
@@ -684,58 +739,79 @@ export default function PageLicoes({ navigate }) {
         <div className="main-content">
           <div className="page-wrapper">
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:28 }}>
-              <div>
-                <div style={{ fontSize:28, fontWeight:900, color:'var(--dark)' }}>Lições</div>
-                <div style={{ fontSize:14, color:'#888', fontWeight:600, marginTop:4 }}>Continue seu progresso</div>
+              <div style={{ display:'flex', alignItems:'center', gap:16 }}>
+                <button type="button" className="autim-close-button" onClick={() => navigate('home-aluno')} aria-label="Fechar lições">×</button>
+                <div>
+                  <div style={{ fontSize:28, fontWeight:900, color:'var(--dark)' }}>🎓 Lições</div>
+                  <div style={{ fontSize:14, color:'var(--text-muted)', fontWeight:600, marginTop:4 }}>Continue seu progresso</div>
+                </div>
               </div>
-              <div style={{ display:'flex', alignItems:'center', gap:12, background:'#fff', borderRadius:16, padding:'12px 20px', boxShadow:'var(--shadow-card)' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:12, background:'var(--white)', color:'var(--dark)', borderRadius:16, padding:'12px 20px', boxShadow:'var(--shadow-card)' }}>
                 <span style={{ fontSize:16 }}>🔥 {dados.diasOfensiva} dias</span>
-                <div style={{ width:120, height:8, background:'#e0e8f0', borderRadius:99, overflow:'hidden' }}>
+                <div style={{ width:120, height:8, background:'var(--border)', borderRadius:99, overflow:'hidden' }}>
                   <div style={{ height:'100%', width: `${Math.min(100, dados.diasOfensiva * 10)}%`, background:'#fdbe2d', borderRadius:99 }}></div>
                 </div>
                 <span style={{ fontSize:14, fontWeight:800, color:'var(--dark)' }}>⭐ {dados.xp} XP</span>
               </div>
             </div>
 
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:24 }}>
-              {/* coluna esquerda: categorias */}
-              <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
-                <div style={{ fontSize:13, fontWeight:900, letterSpacing:2, textTransform:'uppercase', color:'#888' }}>Categorias</div>
+            {expanded ? (
+              (() => {
+                const category = categories.find(cat => cat.id === expanded);
+                if (!category) return null;
+                return (
+                  <section className="lic-category-detail">
+                    <button type="button" className="lic-back-button" onClick={() => setExpanded(null)}>← Categorias</button>
+                    <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:20 }}>
+                      <div style={{ width:56, height:56, borderRadius:16, background:category.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:30 }}>{category.icon}</div>
+                      <div>
+                        <div style={{ fontSize:24, fontWeight:900, color:'var(--dark)' }}>{category.name}</div>
+                        <div style={{ fontSize:14, color:'var(--text-muted)', fontWeight:600, marginTop:2 }}>{category.desc}</div>
+                      </div>
+                      <div style={{ marginLeft:'auto', fontSize:14, color:'var(--text-muted)', fontWeight:800 }}>{category.done}/{category.total}</div>
+                    </div>
+                    {renderSolicitarLiberacao(category)}
+                    {renderReiniciarAtividades(category)}
+                    <div className="phase-track-card" style={{ marginTop:20, background:'var(--white)', borderRadius:24, padding:24, boxShadow:'var(--shadow-card)' }}>
+                      {category.phases.length > 0 ? (
+                        <PhaseTrack phases={category.phases} navigate={navigate} />
+                      ) : (
+                        <div role="status" style={{ textAlign:'center', color:'var(--text-muted)', fontSize:14, fontWeight:600, padding:24 }}>
+                          As fases desta categoria ainda não estão disponíveis.
+                        </div>
+                      )}
+                    </div>
+                  </section>
+                );
+              })()
+            ) : (
+              <div>
+                <div style={{ fontSize:13, fontWeight:900, letterSpacing:2, textTransform:'uppercase', color:'var(--text-muted)', marginBottom:16 }}>Categorias</div>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:16 }}>
                   {categories.map(cat => (
                     <div key={cat.id}>
-                      <div className="cat-card" style={{ borderLeftColor: cat.accent, opacity: cat.locked ? .6 : 1, borderRadius:18 }}
+                      <div className="cat-card" style={{ borderLeftColor:cat.accent, borderRadius:18 }}
                         onClick={() => !cat.locked && setExpanded(cat.id)}>
                         <div style={{ width:52, height:52, borderRadius:16, background:cat.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:26, flexShrink:0 }}>{cat.icon}</div>
                         <div style={{ flex:1 }}>
-                          <div style={{ fontSize:15, fontWeight:900, color: cat.locked ? '#aaa' : 'var(--dark)' }}>{cat.name}</div>
-                          <div style={{ fontSize:12, color:'#888', fontWeight:600, marginTop:2 }}>{cat.desc}</div>
+                          <div style={{ fontSize:15, fontWeight:900, color:cat.locked ? 'var(--text-muted)' : 'var(--dark)' }}>{cat.name}</div>
+                          <div style={{ fontSize:12, color:'var(--text-muted)', fontWeight:600, marginTop:2 }}>{cat.desc}</div>
                           <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:6 }}>
-                            <div style={{ flex:1, height:6, background:'#e0e8f0', borderRadius:99, overflow:'hidden' }}>
+                            <div style={{ flex:1, height:6, background:'var(--border)', borderRadius:99, overflow:'hidden' }}>
                               <div style={{ height:'100%', width:`${(cat.done/cat.total)*100}%`, background:cat.accent, borderRadius:99 }}></div>
                             </div>
-                            <div style={{ fontSize:11, fontWeight:800, color:'#888' }}>{cat.done}/{cat.total}</div>
+                            <div style={{ fontSize:11, fontWeight:800, color:'var(--text-muted)' }}>{cat.done}/{cat.total}</div>
                           </div>
                         </div>
-                        <div style={{ fontSize:18, color:'#ccc' }}>{cat.locked ? '🔒' : '›'}</div>
+                        <div style={{ fontSize:18, color:'var(--text-muted)' }}>{cat.locked ? '🔒' : '›'}</div>
                       </div>
                       {renderSolicitarLiberacao(cat)}
                       {renderReiniciarAtividades(cat)}
                     </div>
-                ))}
-              </div>
-
-              {/* coluna direita: trilha de fases */}
-              <div style={{ background:'#fff', borderRadius:24, padding:24, boxShadow:'var(--shadow-card)' }}>
-                <div style={{ fontSize:13, fontWeight:900, letterSpacing:2, textTransform:'uppercase', color:'#888', marginBottom:20 }}>
-                  {categories.find(c => c.id === expanded)?.icon} {categories.find(c => c.id === expanded)?.name} — Fases
+                  ))}
                 </div>
-                {(categories.find(c => c.id === expanded)?.phases || []).length > 0 ? (
-                  <PhaseTrack phases={categories.find(c => c.id === expanded)?.phases || []} navigate={navigate} />
-                ) : (
-                  <div style={{ textAlign:'center', color:'#aaa', fontSize:14, fontWeight:600, paddingTop:40 }}>Selecione uma categoria para ver as fases</div>
-                )}
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

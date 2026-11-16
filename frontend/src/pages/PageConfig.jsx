@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import logoIcone from '../assets/logo-icone.png';
+import logoIconeBranco from '../assets/logo-icone-branco.png';
 import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings, IconRobot } from '../components/icons';
 import SidebarUser from '../components/SidebarUser';
 import { getSpeechRate, speakText } from '../hooks/voiceUtils';
@@ -67,6 +68,10 @@ function ConfigItem({ icon, bg, title, desc, right }) {
 }
 
 export default function PageConfig({ navigate }) {
+  const logoTema = document.body.classList.contains('autim-dark-theme')
+    ? logoIconeBranco
+    : logoIcone;
+
   const initialSettings = getStoredSettings();
   const [narrator, setNarrator]   = useState(initialSettings.narrator);
   const [darkMode, setDarkMode]   = useState(initialSettings.darkMode);
@@ -248,7 +253,7 @@ export default function PageConfig({ navigate }) {
       <div className="cfg-mobile" style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column' }}>
         <div style={{ background:'var(--blue)', padding:'4px 20px 20px', display:'flex', alignItems:'center', gap:12, flexShrink:0 }}>
           <button className="cfg-close-x" onClick={() => navigate('perfil')}>×</button>
-          <div style={{ fontSize:19, fontWeight:900, color:'#fff', flex:1, textAlign:'center' }}>Configurações</div>
+          <div style={{ fontSize:19, fontWeight:900, color:'#fff', flex:1, textAlign:'center' }}>⚙️ Configurações</div>
           <div style={{ width:36 }}></div>
         </div>
 
@@ -269,7 +274,7 @@ export default function PageConfig({ navigate }) {
       <div className="cfg-desktop">
         <nav className="desktop-sidebar">
           <div className="sidebar-logo">
-            <img src={logoIcone} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
+            <img src={logoTema} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
             <span className="sidebar-logo-name">Autim</span>
           </div>
           {[
@@ -293,7 +298,7 @@ export default function PageConfig({ navigate }) {
             <div style={{ display:'flex', alignItems:'center', gap:16, marginBottom:28 }}>
               <button className="cfg-close-x" onClick={() => navigate('perfil')} style={{ width:40, height:40, background:'#ff5b50' }}>×</button>
               <div>
-                <div style={{ fontSize:28, fontWeight:900, color:'var(--dark)' }}>Configurações</div>
+                <div style={{ fontSize:28, fontWeight:900, color:'var(--dark)' }}>⚙️ Configurações</div>
                 <div style={{ fontSize:14, color:'#888', fontWeight:600, marginTop:4 }}>Preferências e suporte</div>
               </div>
             </div>

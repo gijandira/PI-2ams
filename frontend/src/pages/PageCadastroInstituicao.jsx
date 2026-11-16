@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
-
+import logoIcone from '../assets/logo-icone.png';
+import logoIconeBranco from '../assets/logo-icone-branco.png';
 
 export default function PageCadastroInstituicao({ navigate }) {
+  const logoTema = document.body.classList.contains('autim-dark-theme')
+    ? logoIconeBranco
+    : logoIcone;
 
   const [loading, setLoading] = useState(false);
   const [notificacao, setNotificacao] = useState(null);
@@ -184,9 +188,9 @@ const handleCadastroInstituicao = async () => {
         .cadi-desktop .field input:focus { border-color: var(--green) !important; box-shadow: 0 0 0 3px rgba(72,195,120,.12) !important; }
         .code-input input { letter-spacing: 3px; font-size: 16px; font-weight: 800; text-align: center; border-color: var(--green) !important; background: #edfaf3 !important; }
         .input-icon-wrap { position: relative; }
-        .input-icon-wrap input { padding-right: 44px; }
-        .input-icon-wrap .field-icon { position:absolute; right:14px; top:70%; transform:translateY(-50%); font-size:16px; cursor:pointer; color:#aaa; user-select:none; }
-        .input-icon-wrap .input-group .field-icon { top:50%; }
+        .input-icon-wrap .input-group { position:relative; width:100%; }
+        .input-icon-wrap .input-group input { padding-right:48px; }
+        .input-icon-wrap .field-icon { position:absolute; top:50%; right:14px; transform:translateY(-50%); width:24px; height:24px; display:flex; align-items:center; justify-content:center; border:0; padding:0; background:transparent; font-size:16px; cursor:pointer; color:#aaa; user-select:none; }
         
         @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes slideOut { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-20px); opacity: 0; } }
@@ -243,7 +247,7 @@ const handleCadastroInstituicao = async () => {
       {/* MOBILE */}
       <div className="cadi-mobile" style={{ minHeight:'100vh', background:'var(--white)', display:'flex', flexDirection:'column' }}>
         <div style={{ padding:'4px 24px 0' }}>
-          <div style={{ fontSize:19, fontWeight:900, color:'var(--dark)', textAlign:'center', textTransform:'uppercase', letterSpacing:1, paddingBottom:10 }}>Cadastro da Instituição</div>
+          <div style={{ fontSize:19, fontWeight:900, color:'var(--dark)', textAlign:'center', textTransform:'uppercase', letterSpacing:1, paddingBottom:10 }}>🏫 Cadastro da Instituição</div>
           <div className="steps" style={{ paddingBottom:12 }}>
             <div className="step-dot done"></div><div className="step-line"></div>
             <div className="step-dot active"></div><div className="step-line"></div>
@@ -287,7 +291,7 @@ const handleCadastroInstituicao = async () => {
           <div style={{ position:'absolute', bottom:'12%', left:'8%', width:180, height:180, borderRadius:'40% 60% 70% 30%/40% 50% 60% 50%', background:'rgba(253,190,45,.14)', animation:'blob 10s ease-in-out infinite reverse', filter:'blur(2px)' }}></div>
 
           <div style={{ position:'relative', zIndex:1, textAlign:'center' }}>
-            <span style={{ fontSize:80, display:'block', marginBottom:60, animation:'float4 4s ease-in-out infinite', filter:'drop-shadow(0 10px 20px rgba(0,0,0,.3))' }}>🏫</span>
+            <img src={logoTema} alt="Autim" style={{ width:180, height:180, objectFit:'contain', display:'block', margin:'0 auto 30px', animation:'float4 4s ease-in-out infinite', filter:'drop-shadow(0 10px 20px rgba(0,0,0,.3))' }} />
             <div style={{ fontSize:48, fontWeight:900, letterSpacing:8, color:'#fff', marginBottom:12 }}>Autim</div>
             <div style={{ width:60, height:4, borderRadius:99, background:'linear-gradient(90deg,var(--blue),var(--green))', margin:'0 auto 20px' }}></div>
             <p style={{ fontSize:15, fontWeight:600, color:'rgba(255,255,255,.78)', lineHeight:1.75, maxWidth:320, marginBottom:44 }}>
@@ -316,7 +320,7 @@ const handleCadastroInstituicao = async () => {
           <div style={{ width:'100%', maxWidth:500 }}>
             <div style={{ marginBottom:28 }}>
               <div style={{ fontSize:13, fontWeight:800, color:'var(--green)', textTransform:'uppercase', letterSpacing:1.5, marginBottom:8 }}>Passo 2 de 3</div>
-              <h1 style={{ fontSize:32, fontWeight:900, color:'var(--dark)', letterSpacing:-1, marginBottom:6 }}>Criar conta — Instituição</h1>
+              <h1 style={{ fontSize:32, fontWeight:900, color:'var(--dark)', letterSpacing:-1, marginBottom:6 }}>🏢 Criar conta — Instituição</h1>
               <p style={{ fontSize:14, color:'#888', fontWeight:600 }}>Preencha os dados da sua instituição</p>
             </div>
 
@@ -336,8 +340,8 @@ const handleCadastroInstituicao = async () => {
                   setForm({...form,telefone: digits});
                 }}/></div>
                 <div className="field"><label>E-mail institucional:</label><input type="email" placeholder="email@instituicao.com"value={form.email}onChange={(e) =>setForm({...form,email: e.target.value})} /></div>
-                <div className="field input-icon-wrap"><label>Crie uma senha:</label><div className="input-group"><input type={mostrarSenha ? 'text' : 'password'} placeholder="••••••••" value={form.senha}onChange={(e) =>setForm({...form,senha: e.target.value})} /><span className="field-icon" onClick={() => setMostrarSenha(!mostrarSenha)}>{mostrarSenha ? '🙈' : '👁️'}</span></div></div>
-                <div className="field input-icon-wrap"><label>Confirme a senha:</label><div className="input-group"><input type={mostrarConfirmarSenha ? 'text' : 'password'} placeholder="••••••••"value={form.confirmarsenha}onChange={(e) =>setForm({...form,confirmarsenha: e.target.value})} /><span className="field-icon" onClick={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}>{mostrarConfirmarSenha ? '🙈' : '👁️'}</span></div></div>
+                <div className="field input-icon-wrap"><label htmlFor="senha-instituicao">Crie uma senha:</label><div className="input-group"><input id="senha-instituicao" type={mostrarSenha ? 'text' : 'password'} placeholder="••••••••" value={form.senha}onChange={(e) =>setForm({...form,senha: e.target.value})} /><button type="button" className="field-icon" aria-label={mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'} onClick={() => setMostrarSenha(!mostrarSenha)}>{mostrarSenha ? '🙈' : '👁️'}</button></div></div>
+                <div className="field input-icon-wrap"><label htmlFor="confirmar-senha-instituicao">Confirme a senha:</label><div className="input-group"><input id="confirmar-senha-instituicao" type={mostrarConfirmarSenha ? 'text' : 'password'} placeholder="••••••••"value={form.confirmarsenha}onChange={(e) =>setForm({...form,confirmarsenha: e.target.value})} /><button type="button" className="field-icon" aria-label={mostrarConfirmarSenha ? 'Ocultar confirmação de senha' : 'Mostrar confirmação de senha'} onClick={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}>{mostrarConfirmarSenha ? '🙈' : '👁️'}</button></div></div>
                 <div className="field col-span-2 code-input"><label>Código de acesso:</label><input type="text" placeholder="Ex: Autim-2024" maxLength={12} value={form.codigo}onChange={(e) =>setForm({...form,codigo: e.target.value})}/></div>
                 <div className="col-span-2">
                   <div style={{ background:'#edfaf3', border:'1.5px solid var(--green)', borderRadius:16, padding:'14px 18px', display:'flex', alignItems:'center', gap:12, marginBottom:20 }}>

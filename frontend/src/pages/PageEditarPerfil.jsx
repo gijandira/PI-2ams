@@ -1,9 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import logoIcone from '../assets/logo-icone.png';
+import logoIconeBranco from '../assets/logo-icone-branco.png';
 import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconRobot, IconSettings } from '../components/icons';
 import SidebarUser from '../components/SidebarUser';
 
 export default function PageEditarPerfil({ navigate }) {
+  const logoTema = document.body.classList.contains('autim-dark-theme')
+    ? logoIconeBranco
+    : logoIcone;
   const [form, setForm] = useState({
     nomeAluno: '',
     dataNascimento: '',
@@ -248,7 +252,7 @@ export default function PageEditarPerfil({ navigate }) {
       <div className="ep-desktop">
         <nav className="desktop-sidebar">
           <div className="sidebar-logo">
-            <img src={logoIcone} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
+            <img src={logoTema} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
             <span className="sidebar-logo-name">Autim</span>
           </div>
           {[
@@ -273,7 +277,7 @@ export default function PageEditarPerfil({ navigate }) {
               <div style={{ display:'flex', alignItems:'center', gap:16 }}>
                 <button className="autim-close-button" onClick={() => navigate('perfil')} aria-label="Fechar">×</button>
                 <div>
-                  <div style={{ fontSize:28, fontWeight:900, color:'var(--dark)' }}>Editar Perfil</div>
+                  <div style={{ fontSize:28, fontWeight:900, color:'var(--dark)' }}>✏️ Editar Perfil</div>
                   <div style={{ fontSize:14, color:'#888', fontWeight:600, marginTop:4 }}>Atualize suas informações</div>
                 </div>
               </div>

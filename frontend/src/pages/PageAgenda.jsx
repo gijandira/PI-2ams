@@ -1,5 +1,6 @@
 import { useCallback, useState, useEffect } from 'react';
 import logoIcone from '../assets/logo-icone.png';
+import logoIconeBranco from '../assets/logo-icone-branco.png';
 import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings, IconRobot } from '../components/icons';
 import SidebarUser from '../components/SidebarUser';
 
@@ -370,6 +371,10 @@ function NewEventModal({ onClose, onSaveEvent, alunoId }) {
 }
 
 export default function PageAgenda({ navigate }) {
+  const logoTema = document.body.classList.contains('autim-dark-theme')
+    ? logoIconeBranco
+    : logoIcone;
+
   const [weekOffset, setWeekOffset] = useState(0);
   const DAYS = generateWeekDays(weekOffset);
   const [activeDay, setActiveDay] = useState(0);
@@ -559,9 +564,9 @@ export default function PageAgenda({ navigate }) {
         {/* header azul com mini calendário */}
         <div style={{ marginTop: 0, background: 'var(--blue)', padding: 'calc(env(safe-area-inset-top, 12px) + 10px) 20px 12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, zIndex: 1001 }}>
           <div style={{ width: 52, height: 52, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', boxShadow: '0 3px 12px rgba(0,0,0,.2)' }}>
-            <img src={logoIcone} alt="Autim" style={{ width: 42, height: 42, objectFit: 'contain' }} />
+            <img src={logoTema} alt="Autim" style={{ width: 42, height: 42, objectFit: 'contain' }} />
           </div>
-          <div style={{ fontSize: 19, fontWeight: 900, color: '#fff' }}>Agenda</div>
+          <div style={{ fontSize: 19, fontWeight: 900, color: '#fff' }}>📅 Agenda</div>
           {/* controles de semana */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 12, paddingTop: 8 }}>
             <button
@@ -660,7 +665,7 @@ export default function PageAgenda({ navigate }) {
       <div className="ag-desktop">
         <nav className="desktop-sidebar">
           <div className="sidebar-logo">
-            <img src={logoIcone} alt="Autim" style={{ width: 28, height: 28, objectFit: 'contain' }} />
+            <img src={logoTema} alt="Autim" style={{ width: 28, height: 28, objectFit: 'contain' }} />
             <span className="sidebar-logo-name">Autim</span>
           </div>
           {[
@@ -689,7 +694,7 @@ export default function PageAgenda({ navigate }) {
             {/* top row */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
               <div>
-                <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--dark)' }}>Agenda</div>
+                <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--dark)' }}>📅 Agenda</div>
                 <div style={{ fontSize: 14, color: '#888', fontWeight: 600, marginTop: 4 }}>Acompanhe compromissos e atividades</div>
               </div>
               <button className="fab-btn-desk" onClick={() => setShowNewEvent(true)}>＋ Novo evento</button>

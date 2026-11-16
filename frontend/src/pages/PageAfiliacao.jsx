@@ -1,9 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import logoIcone from '../assets/logo-icone.png';
+import logoIconeBranco from '../assets/logo-icone-branco.png';
 import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings, IconRobot } from '../components/icons';
 import SidebarUser from '../components/SidebarUser';
 
 export default function PageAfiliacao({ navigate }) {
+  const logoTema = document.body.classList.contains('autim-dark-theme')
+    ? logoIconeBranco
+    : logoIcone;
+
   const [code, setCode] = useState('');
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -93,7 +98,7 @@ export default function PageAfiliacao({ navigate }) {
         .code-input-af::placeholder { color:var(--text-muted); opacity:1; }
         .code-input-af:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(72,195,120,.12); }
         .af-mobile-content { width:100%; max-width:620px; align-self:center; }
-        .af-mobile .af-intro { padding-top:0; }
+        .af-mobile .af-intro { padding-top:0; gap:16px !important; }
         .af-mobile .af-intro-icon { height:55px; display:flex; align-items:flex-start; line-height:1; font-size:44px; }
         .af-mobile-header .autim-close-button { width:36px; height:36px; font-size:22px; background:rgba(255,255,255,.2); }
         .af-mobile .af-intro-icon { height:62px; font-size:52px; }
@@ -129,7 +134,7 @@ export default function PageAfiliacao({ navigate }) {
       <div className="af-mobile" style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column' }}>
         <div className="af-mobile-header" style={{ background:'var(--green)', padding:'4px 10px 8px', display:'flex', alignItems:'center', gap:12, flexShrink:0, position:'relative', zIndex:20 }}>
           <button className="autim-close-button" onClick={() => navigate('perfil')} aria-label="Voltar">‹</button>
-          <div style={{ fontSize:14, fontWeight:900, color:'#fff', flex:1, textAlign:'center' }}>Afiliação</div>
+          <div style={{ fontSize:14, fontWeight:900, color:'#fff', flex:1, textAlign:'center' }}>🏥 Afiliação</div>
           <button
             type="button"
             aria-label="Abrir menu de navegação"
@@ -199,7 +204,7 @@ export default function PageAfiliacao({ navigate }) {
       <div className="af-desktop">
         <nav className="desktop-sidebar">
           <div className="sidebar-logo">
-            <img src={logoIcone} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
+            <img src={logoTema} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
             <span className="sidebar-logo-name">Autim</span>
           </div>
           {[
@@ -222,13 +227,13 @@ export default function PageAfiliacao({ navigate }) {
             <div style={{ display:'flex', alignItems:'center', gap:16, marginBottom:28 }}>
               <button className="autim-close-button" onClick={() => navigate('perfil')} aria-label="Fechar">×</button>
               <div>
-                <div style={{ fontSize:28, fontWeight:900, color:'var(--dark)' }}>Afiliação</div>
+                <div style={{ fontSize:28, fontWeight:900, color:'var(--dark)' }}>🏥 Afiliação</div>
                 <div style={{ fontSize:14, color:'#888', fontWeight:600, marginTop:4 }}>Vincule o aluno a uma instituição</div>
               </div>
             </div>
 
             <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
-              <div style={{ background:'#fff', borderRadius:24, padding:32, boxShadow:'var(--shadow-card)', display:'flex', flexDirection:'column', alignItems:'center', gap:12, textAlign:'center' }}>
+              <div style={{ background:'#fff', borderRadius:24, padding:32, boxShadow:'var(--shadow-card)', display:'flex', flexDirection:'column', alignItems:'center', gap:20, textAlign:'center' }}>
                 <div style={{ fontSize:64 }}>🏫</div>
                 <div style={{ fontSize:20, fontWeight:900, color:'var(--dark)' }}>Conecte-se à sua instituição</div>
                 <div style={{ fontSize:14, color:'#888', fontWeight:600, lineHeight:1.6, maxWidth:420 }}>Insira o código fornecido pela escola, clínica ou terapeuta para vinculá-los ao perfil do aluno.</div>
