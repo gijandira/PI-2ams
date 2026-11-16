@@ -97,9 +97,10 @@ const titulosLicoesPorSecao = {
 };
 
 const obterIntervalo = periodo => {
-  if (periodo === 'total') return { inicio: null };
+  if (periodo === 'total') return { inicio: null, fim: null };
   const dias = periodo === 'mes' ? 30 : 7;
-  return { inicio: new Date(Date.now() - dias * 24 * 60 * 60 * 1000) };
+  const fim = new Date();
+  return { inicio: new Date(fim.getTime() - dias * 24 * 60 * 60 * 1000), fim };
 };
 
 exports.obterDashboardAluno = async (req, res) => {
@@ -142,28 +143,43 @@ exports.obterDashboardAluno = async (req, res) => {
     );
     if (alunos.length === 0) return res.status(404).json({ erro: 'Aluno não encontrado.' });
 
-    const params = intervalo.inicio ? [alunoId, intervalo.inicio] : [alunoId];
-    const dateClause = intervalo.inicio ? 'AND s.SES_DTINICIO >= ?' : '';
+    const params = intervalo.inicio ? [alunoId, intervalo.inicio, intervalo.fim] : [alunoId];
+    const dateClause = intervalo.inicio
+      ? 'AND s.SES_DTINICIO >= ? AND s.SES_DTINICIO <= ?'
+      : '';
     const [resumo] = await pool.query(
       `SELECT COUNT(*) AS licoes, COALESCE(SUM(s.SES_ACERTOS), 0) AS acertos,
+              COALESCE(SUM(GREATEST(s.SES_TOTALPERGUNTAS - s.SES_ACERTOS, 0)), 0) AS erros,
               COALESCE(SUM(s.SES_TOTALPERGUNTAS), 0) AS perguntas
-       FROM SESSAO_ATIVIDADE s WHERE s.ALU_ID = ? ${dateClause}`,
+       FROM SESSAO_ATIVIDADE s
+       WHERE s.ALU_ID = ? AND s.SES_TOTALPERGUNTAS > 0 ${dateClause}`,
       params
     );
     const [categorias] = await pool.query(
-      `SELECT c.CAT_ID AS id, c.CAT_NOME AS nome, c.CAT_SLUG AS slug, c.CAT_ICONE AS icone,
+      `SELECT MIN(c.CAT_ID) AS id,
+              MIN(TRIM(REPLACE(c.CAT_NOME, COALESCE(NULLIF(c.CAT_ICONE, ''), '💫'), ''))) AS nome,
+              MIN(c.CAT_SLUG) AS slug, MAX(c.CAT_ICONE) AS icone,
               COUNT(DISTINCT a.ATI_ID) AS total,
-              COUNT(DISTINCT CASE WHEN s.SES_ID IS NOT NULL THEN a.ATI_ID END) AS concluidas
+              COUNT(DISTINCT CASE
+                WHEN s.SES_ID IS NOT NULL
+                  AND s.SES_TOTALPERGUNTAS > 0
+                  AND s.SES_ACERTOS >= s.SES_TOTALPERGUNTAS
+                THEN a.ATI_ID END) AS concluidas
        FROM CATEGORIA c
        LEFT JOIN SUBCATEGORIA sub ON sub.CAT_ID = c.CAT_ID
        LEFT JOIN ATIVIDADE a ON a.SUB_ID = sub.SUB_ID
-       LEFT JOIN SESSAO_ATIVIDADE s ON s.ATI_ID = a.ATI_ID AND s.ALU_ID = ? ${intervalo.inicio ? 'AND s.SES_DTINICIO >= ?' : ''}
-       GROUP BY c.CAT_ID, c.CAT_NOME, c.CAT_SLUG, c.CAT_ICONE ORDER BY c.CAT_ID`,
-      intervalo.inicio ? [alunoId, intervalo.inicio] : [alunoId]
+       LEFT JOIN SESSAO_ATIVIDADE s ON s.ATI_ID = a.ATI_ID AND s.ALU_ID = ?
+         AND s.SES_TOTALPERGUNTAS > 0
+         AND s.SES_ACERTOS >= s.SES_TOTALPERGUNTAS ${dateClause}
+       GROUP BY LOWER(TRIM(REPLACE(c.CAT_NOME, COALESCE(NULLIF(c.CAT_ICONE, ''), '💫'), '')))
+       ORDER BY MIN(c.CAT_ID)`,
+      params
     );
     const [feedback] = await pool.query(
       `SELECT s.SES_FEEDBACK_RESPONSAVEL AS resposta, COUNT(*) AS quantidade
-       FROM SESSAO_ATIVIDADE s WHERE s.ALU_ID = ? AND s.SES_FEEDBACK_RESPONSAVEL IS NOT NULL ${dateClause}
+       FROM SESSAO_ATIVIDADE s
+       WHERE s.ALU_ID = ? AND s.SES_TOTALPERGUNTAS > 0
+         AND s.SES_FEEDBACK_RESPONSAVEL IS NOT NULL ${dateClause}
        GROUP BY s.SES_FEEDBACK_RESPONSAVEL`,
       params
     );
@@ -172,6 +188,17 @@ exports.obterDashboardAluno = async (req, res) => {
               s.SES_FEEDBACK_RESPONSAVEL AS resposta, s.USU_ID IS NOT NULL AS responsavelPresente
        FROM SESSAO_ATIVIDADE s INNER JOIN ATIVIDADE a ON a.ATI_ID = s.ATI_ID
        WHERE s.ALU_ID = ? ${dateClause} ORDER BY s.SES_DTINICIO DESC LIMIT 10`,
+      params
+    );
+    const [evolucao] = await pool.query(
+      `SELECT s.SES_ID AS id, a.ATI_TITULO AS titulo, s.SES_DTINICIO AS data,
+              s.SES_ACERTOS AS acertos,
+              GREATEST(s.SES_TOTALPERGUNTAS - s.SES_ACERTOS, 0) AS erros,
+              s.SES_TOTALPERGUNTAS AS totalPerguntas
+       FROM SESSAO_ATIVIDADE s
+       INNER JOIN ATIVIDADE a ON a.ATI_ID = s.ATI_ID
+       WHERE s.ALU_ID = ? AND s.SES_TOTALPERGUNTAS > 0 ${dateClause}
+       ORDER BY s.SES_DTINICIO ASC, s.SES_ID ASC`,
       params
     );
 
@@ -189,13 +216,20 @@ exports.obterDashboardAluno = async (req, res) => {
       resumo: {
         licoes: Number(resumo[0].licoes),
         acertos: Number(resumo[0].acertos),
+        erros: Number(resumo[0].erros),
         xp: Number(alunos[0].xp || 0),
         diasOfensiva: Number(alunos[0].diasOfensiva || 0),
         taxaAcerto: totalPerguntas ? Math.round((Number(resumo[0].acertos) / totalPerguntas) * 100) : 0
       },
       categorias: categorias.map(item => ({ ...item, total: Number(item.total), concluidas: Number(item.concluidas), percentual: Number(item.total) ? Math.round((Number(item.concluidas) / Number(item.total)) * 100) : 0 })),
       feedback: respostas,
-      recentes
+      recentes,
+      evolucao: evolucao.map(item => ({
+        ...item,
+        acertos: Number(item.acertos),
+        erros: Number(item.erros),
+        totalPerguntas: Number(item.totalPerguntas)
+      }))
     });
   } catch (error) {
     console.error('Erro ao carregar dashboard do aluno:', error);
@@ -269,7 +303,9 @@ exports.obterLicoes = async (req, res) => {
         atividadeLegadaId = atividadesLegadas[0]?.ATI_ID || null;
         if (atividadeLegadaId) {
           const [sessoesLegadas] = await pool.query(
-            'SELECT SES_ID FROM SESSAO_ATIVIDADE WHERE ALU_ID = ? AND ATI_ID = ? LIMIT 1',
+            `SELECT SES_ID FROM SESSAO_ATIVIDADE
+             WHERE ALU_ID = ? AND ATI_ID = ? AND SES_TOTALPERGUNTAS > 0
+               AND SES_ACERTOS >= SES_TOTALPERGUNTAS LIMIT 1`,
             [alunoId, atividadeLegadaId]
           );
           sessoesLegadasSentimentos = sessoesLegadas.length > 0;
@@ -305,7 +341,9 @@ exports.obterLicoes = async (req, res) => {
         }
 
         const [sessoes] = await pool.query(
-          'SELECT SES_ID FROM SESSAO_ATIVIDADE WHERE ALU_ID = ? AND ATI_ID = ? LIMIT 1',
+          `SELECT SES_ID FROM SESSAO_ATIVIDADE
+           WHERE ALU_ID = ? AND ATI_ID = ? AND SES_TOTALPERGUNTAS > 0
+             AND SES_ACERTOS >= SES_TOTALPERGUNTAS LIMIT 1`,
           [alunoId, atividadeId]
         );
 
@@ -447,13 +485,24 @@ exports.registrarSessaoAtividade = async (req, res) => {
     const usuarioId = Number(req.userId);
     const alunoIdInput = req.body?.alunoId ?? req.query?.alunoId;
     let atividadeId = Number(req.body?.atividadeId || 0);
-    const acertos = Number(req.body?.acertos || 0);
-    const totalPerguntas = Number(req.body?.totalPerguntas || 1);
-    const pontos = Number(req.body?.pontos || 0);
+    const acertos = Number(req.body?.acertos ?? 0);
+    const totalPerguntas = Number(req.body?.totalPerguntas ?? 1);
+    const pontos = Number(req.body?.pontos ?? 0);
     const feedbackResponsavel = req.body?.feedbackResponsavel || null;
 
     if (!usuarioId) {
       return res.status(401).json({ erro: 'Usuário não autenticado.' });
+    }
+    if (
+      !Number.isInteger(acertos) || acertos < 0
+      || !Number.isInteger(totalPerguntas) || totalPerguntas < 0
+      || acertos > totalPerguntas
+      || !Number.isFinite(pontos) || pontos < 0
+    ) {
+      return res.status(400).json({ erro: 'Resultado da atividade inválido.' });
+    }
+    if (feedbackResponsavel !== null && !['sim', 'parcialmente', 'quase', 'nao'].includes(feedbackResponsavel)) {
+      return res.status(400).json({ erro: 'Avaliação do responsável inválida.' });
     }
 
     let alunoId = Number(alunoIdInput);
@@ -556,6 +605,52 @@ exports.registrarSessaoAtividade = async (req, res) => {
       atividadeId = Number(licoes[0].ATI_ID);
     }
 
+    if (req.body?.categoria !== undefined || req.body?.fase !== undefined) {
+      const categoria = String(req.body.categoria);
+      const fase = Number(req.body.fase);
+      if (fase > 1) {
+        const fasesAnteriores = Array.from(
+          { length: fase - 1 },
+          (_, index) => `${categoria} - Fase ${index + 1}`
+        );
+        const titulosAnteriores = categoria === 'Sentimentos'
+          ? [...fasesAnteriores, 'Sentimentos - Histórico legado']
+          : fasesAnteriores;
+        const [progressoAnterior] = await pool.query(
+          `SELECT COUNT(DISTINCT CASE
+             WHEN a.ATI_TITULO = 'Sentimentos - Histórico legado'
+               THEN 'Sentimentos - Fase 1'
+             ELSE a.ATI_TITULO
+           END) AS fasesConcluidas
+           FROM SESSAO_ATIVIDADE s
+           INNER JOIN ATIVIDADE a ON a.ATI_ID = s.ATI_ID
+           WHERE s.ALU_ID = ? AND s.SES_TOTALPERGUNTAS > 0
+             AND s.SES_ACERTOS >= s.SES_TOTALPERGUNTAS
+             AND a.ATI_TITULO IN (${titulosAnteriores.map(() => '?').join(', ')})`,
+          [alunoId, ...titulosAnteriores]
+        );
+        if (Number(progressoAnterior[0]?.fasesConcluidas || 0) !== fase - 1) {
+          return res.status(409).json({
+            erro: 'Conclua corretamente a fase anterior antes de acessar esta lição.'
+          });
+        }
+      }
+    }
+
+    const ehLicao = req.body?.categoria !== undefined || req.body?.fase !== undefined;
+    if (ehLicao && totalPerguntas > 0) {
+      const feedbackAprovado = ['sim', 'parcialmente'].includes(feedbackResponsavel);
+      const sessaoAprovada = acertos >= totalPerguntas;
+      if (
+        (sessaoAprovada && !feedbackAprovado)
+        || (feedbackResponsavel !== null && feedbackAprovado !== sessaoAprovada)
+      ) {
+        return res.status(400).json({
+          erro: 'A conclusão da lição deve corresponder à avaliação do responsável.'
+        });
+      }
+    }
+
     const [atividadeSelecionada] = await pool.query(
       `SELECT a.ATI_TITULO AS titulo, c.CAT_SLUG AS categoria
        FROM ATIVIDADE a
@@ -582,6 +677,21 @@ exports.registrarSessaoAtividade = async (req, res) => {
       [alunoId]
     );
     const primeiroAcessoHoje = atividadeHoje.length === 0;
+    let diasOfensiva = Number(alunoAtual[0].ALU_DIAS_OFENSIVA || 0);
+    if (primeiroAcessoHoje) {
+      const [ultimaAtividade] = await pool.query(
+        `SELECT CASE
+           WHEN MAX(DATE(SES_DTINICIO)) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) THEN 1
+           ELSE 0
+         END AS atividadeOntem
+         FROM SESSAO_ATIVIDADE
+         WHERE ALU_ID = ? AND SES_DTINICIO < CURDATE()`,
+        [alunoId]
+      );
+      diasOfensiva = Number(ultimaAtividade[0]?.atividadeOntem)
+        ? diasOfensiva + 1
+        : 1;
+    }
 
     const [resultado] = await pool.query(
       `INSERT INTO SESSAO_ATIVIDADE
@@ -591,8 +701,8 @@ exports.registrarSessaoAtividade = async (req, res) => {
         alunoId,
         atividadeId,
         usuarioId,
-        Math.max(0, acertos),
-        Math.max(1, totalPerguntas),
+        acertos,
+        totalPerguntas,
         feedbackResponsavel,
         xpGanho,
       ]
@@ -601,9 +711,9 @@ exports.registrarSessaoAtividade = async (req, res) => {
     await pool.query(
       `UPDATE ALUNO
        SET ALU_XP_TOTAL = ALU_XP_TOTAL + ?,
-           ALU_DIAS_OFENSIVA = ALU_DIAS_OFENSIVA + ?
+           ALU_DIAS_OFENSIVA = ?
        WHERE ALU_ID = ?`,
-      [xpGanho, primeiroAcessoHoje ? 1 : 0, alunoId]
+      [xpGanho, diasOfensiva, alunoId]
     );
 
     const xpTotal = Number(alunoAtual[0].ALU_XP_TOTAL || 0) + xpGanho;
@@ -614,7 +724,7 @@ exports.registrarSessaoAtividade = async (req, res) => {
       alunoId,
       xpGanho,
       xpTotal,
-      diasOfensiva: Number(alunoAtual[0].ALU_DIAS_OFENSIVA || 0) + (primeiroAcessoHoje ? 1 : 0)
+      diasOfensiva
     });
   } catch (error) {
     console.error('Erro ao registrar sessão de atividade:', error);
