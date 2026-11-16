@@ -33,7 +33,9 @@ exports.secaoSentimentosConcluida = async alunoId => {
      END) AS concluidas
      FROM SESSAO_ATIVIDADE s
      INNER JOIN ATIVIDADE a ON a.ATI_ID = s.ATI_ID
-     WHERE s.ALU_ID = ? AND a.ATI_TITULO IN (${sentimentosTitulos.map(() => '?').join(', ')})`,
+     WHERE s.ALU_ID = ? AND s.SES_TOTALPERGUNTAS > 0
+       AND s.SES_ACERTOS >= s.SES_TOTALPERGUNTAS
+       AND a.ATI_TITULO IN (${sentimentosTitulos.map(() => '?').join(', ')})`,
     [alunoId, ...sentimentosTitulos]
   );
 

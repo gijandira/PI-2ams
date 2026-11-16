@@ -123,10 +123,13 @@ exports.listarSolicitacoesInstituicao = async (req, res) => {
       `SELECT s.SOL_ID AS id, s.SOL_STATUS AS status,
               s.SOL_DT_SOLICITACAO AS dataSolicitacao,
               a.ALU_ID AS alunoId, a.ALU_NOME AS alunoNome,
+              TIMESTAMPDIFF(YEAR, a.ALU_DTNASC, CURDATE()) AS age,
+              a.ALU_DIAGNOSTICO AS diag, i.INS_COD_ACESSO AS code,
               u.USU_NOME AS responsavelNome, u.USU_TELEFONE AS responsavelTelefone,
               u.USU_EMAIL AS responsavelEmail
        FROM SOLICITACAO_AFILIACAO s
        INNER JOIN ALUNO a ON a.ALU_ID = s.ALU_ID
+       INNER JOIN INSTITUICAO i ON i.INS_ID = s.INS_ID
        INNER JOIN ALUNO_USUARIO au ON au.ALU_ID = a.ALU_ID
        INNER JOIN USUARIO u ON u.USU_ID = au.USU_ID
        WHERE s.INS_ID = ?
