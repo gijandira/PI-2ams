@@ -1,13 +1,8 @@
 import { useEffect, useState } from 'react';
 import logoIcone from '../assets/logo-icone.png';
-import logoIconeBranco from '../assets/logo-icone-branco.png';
 import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings, IconRobot } from '../components/icons';
 
 export default function PagePerfil({ navigate }) {
-  const logoTema = document.body.classList.contains('autim-dark-theme')
-    ? logoIconeBranco
-    : logoIcone;
-
   const [perfil, setPerfil] = useState({ usuario:{}, aluno:{} });
   const [resumo, setResumo] = useState({ diasOfensiva:0, xp:0, licoes:0 });
 
@@ -128,7 +123,7 @@ export default function PagePerfil({ navigate }) {
       <div className="pf-desktop" style={{ display:'none' }}>
         <nav className="desktop-sidebar">
           <div className="sidebar-logo">
-            <img src={logoTema} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
+            <img src={logoIcone} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
             <span className="sidebar-logo-name">Autim</span>
           </div>
           {[

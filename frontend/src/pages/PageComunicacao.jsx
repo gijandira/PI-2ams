@@ -1,6 +1,5 @@
   import { useState, useEffect } from 'react';
   import logoIcone from '../assets/logo-icone.png';
-  import logoIconeBranco from '../assets/logo-icone-branco.png';
   import { IconHome, IconChat, IconSchool, IconCalendar, IconPerson, IconSettings, IconRobot } from '../components/icons';
   import SidebarUser from '../components/SidebarUser';
   import { preloadSpeech, speakText } from '../hooks/voiceUtils';
@@ -262,10 +261,6 @@
 
   // ─── Página principal ─────────────────────────────────────────────────────────
   export default function PageComunicacao({ navigate }) {
-    const logoTema = document.body.classList.contains('autim-dark-theme')
-      ? logoIconeBranco
-      : logoIcone;
-
     var [activeCat,  setActiveCat]  = useState(null);
     var [categorias, setCategorias] = useState([]);
     var [allCards,   setAllCards]   = useState({});
@@ -375,7 +370,7 @@
 
           <div style={{ background:'var(--blue)', padding:'6px 20px 16px', display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
             <div style={{ width:56, height:56, borderRadius:'50%', background:'#fff', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 3px 12px rgba(0,0,0,.2)', overflow:'hidden' }}>
-              <img src={logoTema} alt="Autim" style={{ width:46, height:46, objectFit:'contain' }} />
+              <img src={logoIcone} alt="Autim" style={{ width:46, height:46, objectFit:'contain' }} />
             </div>
             <div style={{ fontSize:19, fontWeight:900, color:'#fff' }}>Comunicação</div>
             {/* botão de logout móvel removido — disponível apenas em Perfil */}
@@ -435,7 +430,7 @@
         <div className="com-desktop">
           <nav className="desktop-sidebar">
             <div className="sidebar-logo">
-              <img src={logoTema} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
+              <img src={logoIcone} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
               <span className="sidebar-logo-name">Autim</span>
             </div>
             {[
@@ -469,7 +464,7 @@
 
           <div className="main-content">
             <div className="page-wrapper">
-              <div style={{ marginBottom:28, textAlign:'left' }}>
+              <div style={{ marginBottom:28 }}>
                 <div style={{ fontSize:28, fontWeight:900, color:'var(--dark)' }}>💬 Comunicação</div>
                 <div style={{ fontSize:14, color:'#888', fontWeight:600, marginTop:4 }}>Clique em um card para ouvir a palavra em voz alta</div>
               </div>

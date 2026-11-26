@@ -59,7 +59,7 @@ export default function PageLogin({ navigate, initialTab = 'responsavel' }) {
           localStorage.removeItem('alunoId');
         }
 
-        navigate('home-aluno');
+        navigate(data.usuario.cargo === 'adm_master' ? 'home-admin' : 'home-aluno');
       } else {
         exibirMensagem('erro', 'Falha no login', data.erro || 'E-mail ou senha inválidos.');
       }

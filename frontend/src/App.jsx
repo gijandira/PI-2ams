@@ -9,6 +9,7 @@ import PageCadastroInstituicao from './pages/PageCadastroInstituicao';
 import PageCadastroEscolha from './pages/PageCadastroEscolha';
 import PageHomeAluno from './pages/PageHomeAluno';
 import PageHomeInstituicao from './pages/PageHomeInstituicao';
+import PageHomeAdmin from './pages/PageHomeAdmin';
 import PageComunicacao from './pages/PageComunicacao';
 import PageAgenda from './pages/PageAgenda';
 import PageRecuperarSenha from './pages/PageRecuperarSenha';
@@ -38,6 +39,7 @@ const ROUTE_PATHS = {
   'cadastro-instituicao': '/cadastro-instituicao',
   'home-aluno': '/home-aluno',
   'home-instituicao': '/home-instituicao',
+  'home-admin': '/home-admin',
   comunicacao: '/comunicacao',
   agenda: '/agenda',
   perfil: '/perfil',
@@ -145,6 +147,7 @@ export default function App() {
       {page === 'cadastro-instituicao' && <PageCadastroInstituicao  navigate={navigate} />}
       {page === 'home-aluno'           && <PageHomeAluno            navigate={navigate} />}
       {page === 'home-instituicao'     && <PageHomeInstituicao      navigate={navigate} />}
+      {page === 'home-admin'           && <PageHomeAdmin            navigate={navigate} />}
       {page === 'comunicacao'          && <PageComunicacao          navigate={navigate} />}
       {page === 'agenda'               && <PageAgenda               navigate={navigate} />}
       {page === 'perfil'               && <PagePerfil               navigate={navigate} />}
