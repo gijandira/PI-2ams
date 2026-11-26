@@ -214,6 +214,7 @@ CREATE TABLE `instituicao` (
   `INS_EMAIL` varchar(100) NOT NULL,
   `INS_SENHA` varchar(255) NOT NULL,
   `INS_COD_ACESSO` varchar(50) NOT NULL,
+  `INS_STATUS` varchar(20) NOT NULL DEFAULT 'aprovado',
   `INS_DTCAD` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -221,9 +222,9 @@ CREATE TABLE `instituicao` (
 -- Despejando dados para a tabela `instituicao`
 --
 
-INSERT INTO `instituicao` (`INS_ID`, `INS_NOME`, `INS_TELEFONE`, `INS_EMAIL`, `INS_SENHA`, `INS_COD_ACESSO`, `INS_DTCAD`) VALUES
-(1, 'Fatec Taubaté', '12666554433', 'Taubaté@fatec.com.br', '$2b$10$rDfCpqesimaVBDNSP0/INubWlsJ3TGk6IHRGK3QZJ2gZ47dZ9j1hC', 'INS-S24ABU', '2026-06-16 08:36:49'),
-(2, 'Unitau', '12555332211', 'unitau@unitau.com', '$2b$10$qeXuURRVQyRwFZZkYtoLOur.X/O4P8BQ3SnL8SOApZek1gd64JOae', 'UNI-2026', '2026-09-29 23:02:22');
+INSERT INTO `instituicao` (`INS_ID`, `INS_NOME`, `INS_TELEFONE`, `INS_EMAIL`, `INS_SENHA`, `INS_COD_ACESSO`, `INS_STATUS`, `INS_DTCAD`) VALUES
+(1, 'Fatec Taubaté', '12666554433', 'Taubaté@fatec.com.br', '$2b$10$rDfCpqesimaVBDNSP0/INubWlsJ3TGk6IHRGK3QZJ2gZ47dZ9j1hC', 'INS-S24ABU', 'aprovado', '2026-06-16 08:36:49'),
+(2, 'Unitau', '12555332211', 'unitau@unitau.com', '$2b$10$qeXuURRVQyRwFZZkYtoLOur.X/O4P8BQ3SnL8SOApZek1gd64JOae', 'UNI-2026', 'aprovado', '2026-09-29 23:02:22');
 
 -- --------------------------------------------------------
 
@@ -472,7 +473,7 @@ CREATE TABLE `usuario` (
   `USU_EMAIL` varchar(150) NOT NULL,
   `USU_TELEFONE` varchar(11) DEFAULT NULL,
   `USU_SENHA` varchar(255) NOT NULL,
-  `USU_CARGO` enum('responsavel','auxiliar') NOT NULL,
+  `USU_CARGO` enum('responsavel','auxiliar','adm_master') NOT NULL,
   `USU_DTCAD` datetime NOT NULL DEFAULT current_timestamp(),
   `USU_DTALT` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

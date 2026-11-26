@@ -136,21 +136,15 @@ exports.cadastroInstituicao = async (req, res) => {
 
     const senhaCriptografada = await bcrypt.hash(senha, 10);
 
-    const [result] = await pool.query(
-      `INSERT INTO INSTITUICAO (INS_NOME, INS_TELEFONE, INS_EMAIL, INS_SENHA, INS_COD_ACESSO)
-       VALUES (?, ?, ?, ?, ?)`,
+    await pool.query(
+      `INSERT INTO INSTITUICAO (INS_NOME, INS_TELEFONE, INS_EMAIL, INS_SENHA, INS_COD_ACESSO, INS_STATUS)
+       VALUES (?, ?, ?, ?, ?, 'pendente')`,
       [nome, telefone || '', email, senhaCriptografada, codAcesso]
     );
 
-    const token = jwt.sign(
-      { id: result.insertId, tipo: 'instituicao' },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-
     return res.status(201).json({
-  mensagem: 'Instituição cadastrada com sucesso!'
-});
+      mensagem: 'Solicitação enviada. Aguarde a aprovação do Administrador Master para acessar.'
+    });
 
   } catch (error) {
     console.error('Erro em cadastroInstituicao:', error);
@@ -239,6 +233,13 @@ exports.loginInstituicao = async (req, res) => {
 
     if (!senhaCorreta) {
       return res.status(401).json({ erro: 'E-mail ou senha inválidos.' });
+    }
+
+    if (inst.INS_STATUS === 'pendente') {
+      return res.status(403).json({ erro: 'O cadastro da sua instituição ainda está aguardando aprovação do Administrador Master.' });
+    }
+    if (inst.INS_STATUS === 'recusado') {
+      return res.status(403).json({ erro: 'O pedido de cadastro desta instituição foi recusado pelo Administrador Master.' });
     }
 
     const token = jwt.sign(

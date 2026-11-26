@@ -80,6 +80,10 @@ npm run dev:frontend
 
 Crie o banco MySQL `autim`, importe `database/autim.sql` e configure
 `backend/.env` com os valores locais.
+Para habilitar o painel Master, configure `ADMIN_MASTER_EMAIL` e uma senha
+forte e exclusiva em `backend/.env` (mínimo de 12 caracteres). Na inicialização,
+a API adiciona as colunas necessárias; instituições existentes permanecem
+aprovadas e novos cadastros aguardam aprovação do Administrador Master.
 RabbitMQ e necessario apenas para testar a liberacao de secoes por mensageria.
 
 Veja [Execucao local](docs/EXECUCAO-LOCAL.md) para os passos completos e
