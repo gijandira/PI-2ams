@@ -144,8 +144,8 @@ const handleCadastroInstituicao = async () => {
 
       setNotificacao({
         tipo: 'sucesso',
-        titulo: 'Instituição cadastrada com sucesso!',
-        mensagens: ['Você será redirecionado para o login em breve']
+        titulo: 'Solicitação enviada!',
+        mensagens: [data.mensagem || 'Aguarde a aprovação do Administrador Master para acessar.']
       });
 
       setTimeout(() => navigate('login-instituicao'), 2000);
@@ -155,7 +155,7 @@ const handleCadastroInstituicao = async () => {
       setNotificacao({
         tipo: 'erro',
         titulo: 'Erro ao cadastrar',
-        mensagens: [data.mensagem || 'Ocorreu um erro ao processar seu cadastro']
+        mensagens: [data.erro || data.mensagem || 'Ocorreu um erro ao processar seu cadastro']
       });
 
     }

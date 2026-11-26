@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import logoIcone from '../assets/logo-icone.png';
-import logoIconeBranco from '../assets/logo-icone-branco.png';
 import { IconHome, IconPerson } from '../components/icons';
 
 const IconMsg = () => <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>;
@@ -8,9 +7,6 @@ const IconCfg = () => <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.
 const IconAlunos = () => <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>;
 
 export default function PagePerfilInst({ navigate }) {
-  const logoTema = document.body.classList.contains('autim-dark-theme')
-    ? logoIconeBranco
-    : logoIcone;
   const [perfil, setPerfil] = useState(null);
   const [estatisticas, setEstatisticas] = useState({ alunos:0, pendentes:0, xpTotal:0, taxaAcerto:0 });
   const [editing, setEditing] = useState(false);
@@ -60,21 +56,6 @@ export default function PagePerfilInst({ navigate }) {
     localStorage.removeItem('token');
     localStorage.removeItem('instituicao');
     navigate('index');
-  };
-
-  const abrirRelatorio = () => {
-    localStorage.setItem('autim.home-instituicao-tab', 'relatorio');
-    navigate('home-instituicao');
-  };
-
-  const abrirItem = item => {
-    if (item.danger) {
-      sair();
-    } else if (item.title === 'Ver Progresso') {
-      abrirRelatorio();
-    } else if (item.page) {
-      navigate(item.page);
-    }
   };
 
   const menuItems = [
@@ -136,7 +117,7 @@ export default function PagePerfilInst({ navigate }) {
 
         <div style={{ flex:1, width:'100%', minWidth:0, overflowY:'auto', padding:'6px 16px 80px', display:'flex', flexDirection:'column', gap:8 }}>
           {menuItems.map((item,i) => (
-            <div key={i} className="pi-menu-item" onClick={() => abrirItem(item)}>
+            <div key={i} className="pi-menu-item" onClick={() => item.danger ? sair() : item.page && navigate(item.page)}>
               <div style={{ width:40, height:40, borderRadius:12, background:item.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, flexShrink:0 }}>{item.icon}</div>
               <div style={{ flex:1, minWidth:0, textAlign:'center' }}>
                 <div style={{ fontSize:14, fontWeight:800, color: item.danger ? 'var(--red)' : 'var(--dark)' }}>{item.title}</div>
@@ -161,7 +142,7 @@ export default function PagePerfilInst({ navigate }) {
       <div className="pi-desktop" style={{ display:'none' }}>
         <nav className="desktop-sidebar">
           <div className="sidebar-logo">
-            <img src={logoTema} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
+            <img src={logoIcone} alt="Autim" style={{ width:28, height:28, objectFit:'contain' }} />
             <span className="sidebar-logo-name">Autim</span>
           </div>
           {[
@@ -200,7 +181,7 @@ export default function PagePerfilInst({ navigate }) {
             </div>
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
               {menuItems.map((item,i) => (
-                <div key={i} className="pi-menu-item" onClick={() => abrirItem(item)} style={{ borderRadius:18, padding:'18px 20px' }}>
+                <div key={i} className="pi-menu-item" onClick={() => item.danger ? sair() : item.page && navigate(item.page)} style={{ borderRadius:18, padding:'18px 20px' }}>
                   <div style={{ width:48, height:48, borderRadius:14, background:item.bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:24, flexShrink:0 }}>{item.icon}</div>
                   <div style={{ flex:1 }}>
                     <div style={{ fontSize:14, fontWeight:800, color: item.danger ? 'var(--red)' : 'var(--dark)' }}>{item.title}</div>

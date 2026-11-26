@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
 import logoIcone from '../assets/logo-icone.png';
-import logoIconeBranco from '../assets/logo-icone-branco.png';
 import {
   IconHome,
   IconChat,
@@ -51,7 +50,7 @@ function getHoraAtual() {
   return agora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-function AvatarIA({ size = 32, logoSrc }) {
+function AvatarIA({ size = 32 }) {
   return (
     <div
       className="autim-avatar-ia"
@@ -68,7 +67,7 @@ function AvatarIA({ size = 32, logoSrc }) {
       }}
     >
       <img
-        src={logoSrc}
+        src={logoIcone}
         alt="Autim"
         style={{ width: '100%', height: '100%', objectFit: 'contain' }}
       />
@@ -485,7 +484,7 @@ export default function PageAssistenteIA({ navigate }) {
 
             <div>
               <div style={{ fontSize: 17, fontWeight: 900, color: '#ffffff', letterSpacing: -0.2 }}>
-                🤖 Assistente Autim
+                Assistente Autim
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
                 <span
@@ -531,7 +530,7 @@ export default function PageAssistenteIA({ navigate }) {
               }}
             >
               <img
-                src={darkMode ? logoIconeBranco : logoIcone}
+                src={logoIcone}
                 alt="Autim"
                 style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               />
@@ -562,7 +561,7 @@ export default function PageAssistenteIA({ navigate }) {
                     gap: 8
                   }}
                 >
-                  {!isUser && <AvatarIA size={30} logoSrc={darkMode ? logoIconeBranco : logoIcone} />}
+                  {!isUser && <AvatarIA size={30} />}
 
                   <div
                     className={isUser ? 'autim-bubble-user' : 'autim-bubble-ia'}
@@ -605,7 +604,7 @@ export default function PageAssistenteIA({ navigate }) {
           {/* Indicador de Digitação */}
           {isLoading && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: -4 }}>
-              <AvatarIA size={30} logoSrc={darkMode ? logoIconeBranco : logoIcone} />
+              <AvatarIA size={30} />
               <div
                 className="autim-typing-box"
                 style={{
@@ -711,7 +710,7 @@ export default function PageAssistenteIA({ navigate }) {
       <div className="ai-desktop">
         <nav className="desktop-sidebar">
           <div className="sidebar-logo">
-            <img src={darkMode ? logoIconeBranco : logoIcone} alt="Autim" style={{ width: 28, height: 28, objectFit: 'contain' }} />
+            <img src={logoIcone} alt="Autim" style={{ width: 28, height: 28, objectFit: 'contain' }} />
             <span className="sidebar-logo-name">Autim</span>
           </div>
 
@@ -840,7 +839,7 @@ export default function PageAssistenteIA({ navigate }) {
                   }}
                 >
                   <img
-                    src={darkMode ? logoIconeBranco : logoIcone}
+                    src={logoIcone}
                     alt="Autim"
                     style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                   />
@@ -871,7 +870,7 @@ export default function PageAssistenteIA({ navigate }) {
                         gap: 12
                       }}
                     >
-                      {!isUser && <AvatarIA size={36} logoSrc={darkMode ? logoIconeBranco : logoIcone} />}
+                      {!isUser && <AvatarIA size={36} />}
 
                       <div
                         className={isUser ? 'autim-bubble-user' : 'autim-bubble-ia'}
@@ -912,7 +911,7 @@ export default function PageAssistenteIA({ navigate }) {
 
               {isLoading && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <AvatarIA size={36} logoSrc={darkMode ? logoIconeBranco : logoIcone} />
+                  <AvatarIA size={36} />
                   <div
                     className="autim-typing-box"
                     style={{
