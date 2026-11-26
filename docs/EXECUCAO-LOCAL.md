@@ -18,7 +18,12 @@ e documentacao. Execute os comandos a partir da pasta raiz, onde esta o
 3. Configure `DB_HOST`, `DB_USER`, `DB_PASS` e `DB_NAME`. Para o fluxo de
    liberacao com RabbitMQ, configure tambem `AMQP_URL` com a URL AMQP completa
    do seu servidor local.
-4. Instale as dependencias dos dois modulos na raiz:
+4. Para criar o Administrador Master, defina `ADMIN_MASTER_EMAIL` e
+   `ADMIN_MASTER_PASSWORD` no `.env`; use uma senha forte e exclusiva com pelo
+   menos 12 caracteres. A API prepara as colunas de status e cargo na
+   inicializacao. Instituicoes ja cadastradas permanecem aprovadas, enquanto
+   novos cadastros aguardam aprovacao.
+5. Instale as dependencias dos dois modulos na raiz:
 
    ```sh
    npm run install:all

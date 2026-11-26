@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon node/server.js",
     "start": "node node/server.js",
-    "test": "node --test node/tests/distributed-patterns.test.js node/tests/dashboard-performance.test.js",
+    "test": "node --test node/tests/distributed-patterns.test.js node/tests/dashboard-performance.test.js node/tests/admin-approval.test.js",
     "test:gaps": "node --test node/tests/distributed-gaps.test.js",
     "test:integration": "node --test node/tests/integration-local-services.test.js",
     "test:rf07": "node --test node/tests/RF07.test.js"

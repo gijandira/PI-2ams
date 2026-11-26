@@ -8,6 +8,7 @@ const fs = require('fs');
 const emailService = require('./services/emailService');
 const sectionAccessService = require('./services/sectionAccessService');
 const rabbitmqService = require('./services/rabbitmqService');
+const adminController = require('./controllers/admincontroller');
 
 const app = express();
 
@@ -33,6 +34,7 @@ const eventoRoutes       = require('./routes/eventoroutes');
 const iaRoutes           = require('./routes/iaroutes');
 const afiliacaoRoutes    = require('./routes/afiliacaoroutes');
 const dashboardRoutes    = require('./routes/dashboardroutes');
+const adminRoutes        = require('./routes/adminroutes');
 
 app.use('/auth',         authRoutes);
 app.use('/comunicacao',  comunicacaoRoutes);
@@ -40,12 +42,20 @@ app.use('/evento',       eventoRoutes);
 app.use('/ia',            iaRoutes);
 app.use('/afiliacao',     afiliacaoRoutes);
 app.use('/dashboard',     dashboardRoutes);
+app.use('/admin',         adminRoutes);
 
 app.get('/', (req, res) => {
   res.send('API funcionando');
 });
 
 const iniciarServidor = async () => {
+  try {
+    await adminController.garantirSchemaAdmin();
+    await adminController.garantirAdminMaster();
+  } catch (error) {
+    console.error('Não foi possível preparar o acesso do Administrador Master:', error);
+  }
+
   let schemaDisponivel = false;
   try {
     await sectionAccessService.ensureSchema();
